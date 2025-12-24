@@ -99,6 +99,11 @@
                 <artifactId>spring4demo-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.kev1n</groupId>
+                <artifactId>spring4demo-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Database -->
             <dependency>
