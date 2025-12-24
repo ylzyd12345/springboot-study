@@ -135,10 +135,10 @@ Spring4demo 采用分层架构设计，从客户端到基础设施共分为七�
 - 支持多种客户端接入：Web浏览器、移动应用、第三方系统
 - 提供统一的API访问入口
 
-**🌐 网关层**
-- **API Gateway**: 使用 Spring Cloud Gateway 实现路由转发、负载均衡
+**🌐 接入层**
 - **负载均衡**: Nginx/HAProxy 实现流量分发
-- **限流熔断**: Sentinel 提供流量控制和熔断保护
+- **限流熔断**: Sentinel 提供应用级别的流量控制和熔断保护
+- **反向代理**: 通过 Nginx 实现静态资源服务和请求转发
 
 **⚙️ 应用层**
 - **Web MVC**: 基于 Spring MVC 的传统同步Web开发
@@ -182,10 +182,9 @@ graph TB
         B --> C[第三方系统]
     end
     
-    subgraph "网关层"
-        D[API Gateway] --> D1[Spring Cloud Gateway]
-        E[负载均衡] --> E1[Nginx/HAProxy]
-        F[限流熔断] --> F1[Sentinel]
+    subgraph "接入层"
+        D[负载均衡] --> D1[Nginx/HAProxy]
+        E[限流熔断] --> E1[Sentinel]
     end
     
     subgraph "应用层"
@@ -695,6 +694,172 @@ kubectl apply -f k8s/
 | [🔧 配置参考](docs/configuration.md) | 完整的配置参数说明 |
 | [❓ 常见问题](docs/faq.md) | 常见问题和解决方案 |
 | [📊 性能优化](docs/performance.md) | 性能调优和最佳实践 |
+
+## 🚀 微服务架构演进计划
+
+### 📋 演进路线图
+
+基于当前 Spring Boot 单应用项目，我们规划了完整的微服务架构演进路线：
+
+#### 阶段一：服务拆分设计 (1-2个月)
+- **领域驱动设计 (DDD)**: 基于业务边界进行服务拆分
+- **服务识别**: 识别核心业务域和支撑域
+- **接口定义**: 设计服务间的 API 契约
+- **数据分离**: 规划数据库拆分策略
+
+#### 阶段二：微服务基础架构 (2-3个月)
+- **服务注册与发现**: Spring Cloud Alibaba Nacos
+- **配置中心**: Spring Cloud Alibaba Nacos Config
+- **服务网关**: Spring Cloud Gateway
+- **负载均衡**: Spring Cloud LoadBalancer
+- **熔断限流**: Sentinel + Seata
+
+#### 阶段三：服务治理体系 (1-2个月)
+- **分布式事务**: Seata AT/TCC 模式
+- **分布式链路追踪**: Spring Cloud Sleuth + Zipkin
+- **消息驱动架构**: Spring Cloud Stream + RocketMQ
+- **服务监控**: Spring Boot Admin + Prometheus
+- **日志聚合**: ELK Stack
+
+#### 阶段四：容器化与云原生 (1-2个月)
+- **容器化**: Docker 镜像标准化
+- **服务编排**: Docker Compose → Kubernetes
+- **服务网格**: Istio (可选)
+- **云平台部署**: AWS/Azure/GCP 集成
+- **CI/CD 流水线**: Jenkins/GitLab CI
+
+### 🏗️ 微服务技术栈规划
+
+#### 核心框架
+```
+Spring Cloud Alibaba 2022.x
+├── Nacos (服务注册发现 + 配置中心)
+├── Gateway (API 网关)
+├── OpenFeign (声明式服务调用)
+├── LoadBalancer (客户端负载均衡)
+├── Sentinel (流量控制、熔断降级)
+└── Seata (分布式事务解决方案)
+```
+
+#### 服务治理
+```
+Spring Cloud + 其他组件
+├── Spring Cloud Sleuth (链路追踪)
+├── Zipkin (链路追踪收集)
+├── Spring Cloud Config (配置管理，备选)
+├── Spring Cloud Bus (消息总线，备选)
+├── Spring Boot Admin (服务监控)
+└── Micrometer + Prometheus (指标监控)
+```
+
+#### 消息与数据
+```
+分布式数据管理
+├── Spring Cloud Stream (消息驱动)
+├── RocketMQ (消息队列)
+├── Redis (分布式缓存)
+├── Sharding-JDBC (分库分表)
+└── MongoDB (文档数据库，特定场景)
+```
+
+#### 容器化部署
+```
+云原生技术栈
+├── Docker (容器化)
+├── Kubernetes (容器编排)
+├── Helm (K8s 包管理)
+├── Istio (服务网格，可选)
+├── Jenkins X (CI/CD)
+└── ArgoCD (GitOps 部署)
+```
+
+### 📦 服务拆分策略
+
+#### 核心业务服务
+1. **用户服务 (User Service)**
+   - 用户注册、登录、信息管理
+   - 权限认证、角色管理
+   - JWT Token 生成与验证
+
+2. **产品服务 (Product Service)**
+   - 产品信息管理
+   - 产品分类、搜索
+   - 库存管理
+
+3. **订单服务 (Order Service)**
+   - 订单创建、支付
+   - 订单状态管理
+   - 订单历史查询
+
+4. **支付服务 (Payment Service)**
+   - 支付接口集成
+   - 支付状态回调
+   - 账务管理
+
+#### 支撑服务
+1. **通知服务 (Notification Service)**
+   - 邮件通知
+   - 短信通知
+   - 站内消息
+
+2. **文件服务 (File Service)**
+   - 文件上传下载
+   - 图片处理
+   - 文件存储管理
+
+3. **日志服务 (Log Service)**
+   - 日志收集
+   - 日志分析
+   - 审计日志
+
+### 🎯 演进收益
+
+#### 技术收益
+- **独立部署**: 服务可独立发布，提升交付效率
+- **技术异构**: 不同服务可采用最适合的技术栈
+- **弹性伸缩**: 根据负载独立扩展服务
+- **故障隔离**: 单个服务故障不影响整体系统
+
+#### 业务收益
+- **快速响应**: 业务变更可快速实现和部署
+- **团队自治**: 小团队负责特定服务，提升开发效率
+- **风险控制**: 降低单点故障风险
+- **成本优化**: 按需使用资源，降低运营成本
+
+### 📅 实施时间表
+
+```mermaid
+gantt
+    title 微服务架构演进时间表
+    dateFormat  YYYY-MM-DD
+    section 阶段一：服务拆分设计
+    领域驱动设计     :a1, 2024-01-01, 30d
+    服务识别         :a2, after a1, 15d
+    接口定义         :a3, after a2, 15d
+    数据分离规划     :a4, after a3, 15d
+    
+    section 阶段二：微服务基础架构
+    服务注册发现     :b1, after a4, 20d
+    配置中心         :b2, after b1, 15d
+    服务网关         :b3, after b2, 20d
+    负载均衡         :b4, after b3, 10d
+    熔断限流         :b5, after b4, 15d
+    
+    section 阶段三：服务治理体系
+    分布式事务       :c1, after b5, 20d
+    链路追踪         :c2, after c1, 15d
+    消息驱动架构     :c3, after c2, 20d
+    服务监控         :c4, after c3, 15d
+    日志聚合         :c5, after c4, 15d
+    
+    section 阶段四：容器化与云原生
+    容器化           :d1, after c5, 15d
+    服务编排         :d2, after d1, 20d
+    云平台部署       :d3, after d2, 20d
+    CI/CD流水线      :d4, after d3, 15d
+```
+
+---
 
 ## 🤝 贡献指南
 

@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-这是一个基于 Spring Boot 4.0.1 和 Java 25 的学习项目，旨在展示 Spring Boot 最佳实践和常见集成模式。项目采用 Maven 构建系统，使用标准的 Spring Boot 项目结构。
+这是一个基于 Spring Boot 4.0.1 和 Java 25 的单应用学习项目，旨在展示 Spring Boot 最佳实践和常见集成模式。项目采用 Maven 构建系统，使用标准的 Spring Boot 单体应用架构。后续将基于此项目演进为微服务架构。
 
 ## 技术栈
 
