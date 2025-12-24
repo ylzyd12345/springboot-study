@@ -127,6 +127,54 @@ docker-compose up -d
 
 ## 🏗️ 技术架构
 
+Spring4demo 采用分层架构设计，从客户端到基础设施共分为七个层次，每层都有明确的职责和技术组件支撑。
+
+### 架构层次说明
+
+**🖥️ 客户端层**
+- 支持多种客户端接入：Web浏览器、移动应用、第三方系统
+- 提供统一的API访问入口
+
+**🌐 网关层**
+- **API Gateway**: 使用 Spring Cloud Gateway 实现路由转发、负载均衡
+- **负载均衡**: Nginx/HAProxy 实现流量分发
+- **限流熔断**: Sentinel 提供流量控制和熔断保护
+
+**⚙️ 应用层**
+- **Web MVC**: 基于 Spring MVC 的传统同步Web开发
+- **WebFlux**: 基于 Spring WebFlux 的响应式Web开发
+- **WebSocket**: 实时双向通信支持
+- **GraphQL**: 灵活的查询接口
+- **Web Services**: SOAP协议支持
+- **模板引擎**: Thymeleaf/FreeMarker 服务端渲染
+- **HATEOAS**: RESTful超媒体API
+
+**🏢 业务层**
+- **业务服务**: 核心业务逻辑处理
+- **安全认证**: Spring Security + JWT + OAuth2/OIDC
+- **消息处理**: RabbitMQ + Kafka + RocketMQ
+- **任务调度**: Spring Task + Quartz 定时任务
+- **企业集成**: Spring Integration + RSocket 企业集成模式
+
+**💾 数据层**
+- **关系型数据库**: MySQL + PostgreSQL + 多种数据访问技术
+- **NoSQL数据库**: MongoDB + Redis + Elasticsearch + Neo4j + InfluxDB
+- **数据访问**: JPA/Hibernate + MyBatis/MyBatis-Plus + R2DBC + Spring Data JDBC
+
+**📊 监控运维层**
+- **应用监控**: Spring Boot Actuator + Micrometer + Prometheus + Grafana
+- **链路追踪**: Zipkin + OpenTelemetry 遥测数据
+- **日志系统**: Logback + ELK Stack
+- **健康检查**: 自定义健康检查端点
+
+**🏗️ 基础设施层**
+- **容器化**: Docker + Docker Compose
+- **编排管理**: Kubernetes + Helm
+- **云原生**: GraalVM原生镜像 + 云平台集成
+- **开发工具**: Spring Boot DevTools + Lombok + MapStruct + Testcontainers
+
+### 整体系统架构
+
 ```mermaid
 graph TB
     subgraph "客户端层"
@@ -135,37 +183,72 @@ graph TB
     end
     
     subgraph "网关层"
-        D[API Gateway]
-        E[负载均衡]
+        D[API Gateway] --> D1[Spring Cloud Gateway]
+        E[负载均衡] --> E1[Nginx/HAProxy]
+        F[限流熔断] --> F1[Sentinel]
     end
     
     subgraph "应用层"
-        F[Web MVC]
-        G[WebFlux]
-        H[WebSocket]
-        I[GraphQL]
+        G[Web MVC] --> G1[Spring MVC]
+        H[WebFlux] --> H1[Spring WebFlux]
+        I[WebSocket] --> I1[Spring WebSocket]
+        J[GraphQL] --> J1[Spring GraphQL]
+        K[Web Services] --> K1[Spring WS]
+        L[模板引擎] --> L1[Thymeleaf/FreeMarker]
+        M[HATEOAS] --> M1[Spring HATEOAS]
     end
     
     subgraph "业务层"
-        J[业务服务]
-        K[安全认证]
-        L[消息处理]
-        M[任务调度]
+        N[业务服务] --> N1[业务逻辑组件]
+        O[安全认证] --> O1[Spring Security]
+        O1 --> O2[JWT认证]
+        O1 --> O3[OAuth2/OIDC]
+        P[消息处理] --> P1[RabbitMQ]
+        P1 --> P2[Apache Kafka]
+        P1 --> P3[RocketMQ]
+        Q[任务调度] --> Q1[Spring Task]
+        Q1 --> Q2[Quartz]
+        R[企业集成] --> R1[Spring Integration]
+        R1 --> R2[RSocket]
     end
     
     subgraph "数据层"
-        N[MySQL]
-        O[Redis]
-        P[Elasticsearch]
-        Q[MongoDB]
-        R[Neo4j]
+        S[关系型数据库] --> S1[MySQL]
+        S1 --> S2[PostgreSQL]
+        T[NoSQL数据库] --> T1[MongoDB]
+        T1 --> T2[Redis]
+        T1 --> T3[Elasticsearch]
+        T1 --> T4[Neo4j]
+        T1 --> T5[InfluxDB]
+        U[数据访问] --> U1[JPA/Hibernate]
+        U1 --> U2[MyBatis/MyBatis-Plus]
+        U1 --> U3[R2DBC]
+        U1 --> U4[Spring Data JDBC]
     end
     
-    subgraph "基础设施"
-        S[Docker]
-        T[Kubernetes]
-        U[监控系统]
-        V[日志系统]
+    subgraph "监控运维层"
+        V[应用监控] --> V1[Spring Boot Actuator]
+        V1 --> V2[Micrometer]
+        V1 --> V3[Prometheus]
+        V1 --> V4[Grafana]
+        W[链路追踪] --> W1[Zipkin]
+        W1 --> W2[OpenTelemetry]
+        X[日志系统] --> X1[Logback]
+        X1 --> X2[ELK Stack]
+        Y[健康检查] --> Y1[自定义健康检查]
+    end
+    
+    subgraph "基础设施层"
+        Z[容器化] --> Z1[Docker]
+        Z1 --> Z2[Docker Compose]
+        AA[编排管理] --> AA1[Kubernetes]
+        AA1 --> AA2[Helm]
+        BB[云原生] --> BB1[GraalVM原生镜像]
+        BB1 --> BB2[云平台集成]
+        CC[开发工具] --> CC1[Spring Boot DevTools]
+        CC1 --> CC2[Lombok]
+        CC1 --> CC3[MapStruct]
+        CC1 --> CC4[Testcontainers]
     end
     
     A --> D
@@ -173,24 +256,238 @@ graph TB
     C --> D
     D --> E
     E --> F
-    E --> G
-    E --> H
-    E --> I
+    F --> G
+    F --> H
+    F --> I
     F --> J
-    G --> J
-    H --> J
-    I --> J
-    J --> K
-    J --> L
-    J --> M
+    F --> K
+    F --> L
+    F --> M
+    G --> N
+    H --> N
+    I --> N
     J --> N
-    J --> O
-    J --> P
-    J --> Q
-    J --> R
-    S --> T
+    K --> N
+    L --> N
+    M --> N
+    N --> O
+    N --> P
+    N --> Q
+    N --> R
+    O --> S
+    O --> T
+    P --> S
+    P --> T
+    Q --> S
+    Q --> T
+    R --> S
+    R --> T
+    S --> U
     T --> U
     U --> V
+    V --> W
+    W --> X
+    X --> Y
+    Y --> Z
+    Z --> AA
+    AA --> BB
+    BB --> CC
+```
+
+### 技术栈映射图
+
+```mermaid
+graph LR
+    subgraph "Spring Boot 4.0.1 核心"
+        SB[Spring Boot] --> SF[Spring Framework 6.x]
+        SB --> JAVA[Java 25]
+        SB --> MAVEN[Maven 3.9.12]
+    end
+    
+    subgraph "Web技术栈集成"
+        SB --> WEB1[spring-boot-starter-web]
+        WEB1 --> MVC[Spring MVC + Tomcat]
+        SB --> WEB2[spring-boot-starter-webflux]
+        WEB2 --> FLUX[Spring WebFlux + Netty]
+        SB --> WEB3[spring-boot-starter-websocket]
+        WEB3 --> WS[WebSocket]
+        SB --> WEB4[spring-boot-starter-graphql]
+        WEB4 --> GQL[GraphQL]
+        SB --> WEB5[spring-boot-starter-web-services]
+        WEB5 --> SOAP[Spring WS]
+        SB --> WEB6[spring-boot-starter-groovy-templates]
+        WEB6 --> GT[Groovy Templates]
+        SB --> WEB7[spring-boot-starter-hateoas]
+        WEB7 --> HAL[HATEOAS]
+    end
+    
+    subgraph "数据存储集成"
+        SB --> DATA1[spring-boot-starter-data-jpa]
+        DATA1 --> JPA[JPA + Hibernate]
+        SB --> DATA2[spring-boot-starter-data-jdbc]
+        DATA2 --> JDBC[Spring Data JDBC]
+        SB --> DATA3[spring-boot-starter-jdbc]
+        DATA3 --> HIKARI[HikariCP]
+        SB --> DATA4[spring-boot-starter-data-mongodb]
+        DATA4 --> MONGO[MongoDB]
+        SB --> DATA5[spring-boot-starter-data-redis]
+        DATA5 --> REDIS[Redis]
+        SB --> DATA6[spring-boot-starter-data-elasticsearch]
+        DATA6 --> ES[Elasticsearch]
+        SB --> DATA7[spring-boot-starter-data-neo4j]
+        DATA7 --> NEO4J[Neo4j]
+        SB --> DATA8[spring-boot-starter-data-r2dbc]
+        DATA8 --> R2DBC[R2DBC]
+        SB --> DATA9[spring-boot-starter-data-influxdb]
+        DATA9 --> INFLUX[InfluxDB]
+    end
+    
+    subgraph "消息中间件集成"
+        SB --> MSG1[spring-boot-starter-amqp]
+        MSG1 --> RABBIT[RabbitMQ]
+        SB --> MSG2[spring-boot-starter-kafka]
+        MSG2 --> KAFKA[Apache Kafka]
+        SB --> MSG3[spring-boot-starter-rocketmq]
+        MSG3 --> ROCKETMQ[Apache RocketMQ]
+        SB --> MSG4[spring-boot-starter-integration]
+        MSG4 --> INTEGRATION[Spring Integration]
+        SB --> MSG5[spring-boot-starter-rsocket]
+        MSG5 --> RSOCKET[RSocket]
+    end
+    
+    subgraph "安全认证集成"
+        SB --> SEC1[spring-boot-starter-security]
+        SEC1 --> SECURITY[Spring Security]
+        SB --> SEC2[spring-boot-starter-oauth2-client]
+        SEC2 --> OAUTH2_CLIENT[OAuth2 Client]
+        SB --> SEC3[spring-boot-starter-oauth2-resource-server]
+        SEC3 --> OAUTH2_SERVER[OAuth2 Resource Server]
+        SECURITY --> JWT[JWT Token]
+        SECURITY --> OAUTH2[OAuth2/OIDC]
+    end
+    
+    subgraph "监控运维集成"
+        SB --> MON1[spring-boot-starter-actuator]
+        MON1 --> ACTUATOR[Actuator]
+        SB --> MON2[spring-boot-starter-metrics]
+        MON2 --> MICROMETER[Micrometer]
+        ACTUATOR --> HEALTH[健康检查]
+        ACTUATOR --> METRICS[指标收集]
+        MICROMETER --> PROMETHEUS[Prometheus]
+        PROMETHEUS --> GRAFANA[Grafana]
+        MON3[OpenTelemetry] --> TELEMETRY[遥测数据]
+        MON4[Zipkin] --> TRACING[链路追踪]
+    end
+    
+    subgraph "开发工具集成"
+        DEV1[Spring Boot DevTools] --> HOTRELOAD[热重载]
+        DEV2[Spring Boot Configuration Processor] --> CONFIGMETA[配置元数据]
+        DEV3[Lombok] --> REDUCECODE[减少样板代码]
+        DEV4[MapStruct] --> BEANMAPPING[Bean映射]
+        DEV5[Testcontainers] --> INTEGRATIONTEST[集成测试]
+    end
+    
+    %% 数据库连接关系
+    JPA --> MYSQL[MySQL]
+    JPA --> POSTGRESQL[PostgreSQL]
+    JDBC --> MYSQL
+    JDBC --> POSTGRESQL
+    HIKARI --> MYSQL
+    HIKARI --> POSTGRESQL
+    MONGO --> MONGODB_SERVER[MongoDB Server]
+    REDIS --> REDIS_SERVER[Redis Server]
+    ES --> ELASTICSEARCH_SERVER[Elasticsearch Cluster]
+    NEO4J --> NEO4J_SERVER[Neo4j Server]
+    R2DBC --> R2DBC_DB[响应式数据库]
+    INFLUX --> INFLUXDB_SERVER[InfluxDB Server]
+    
+    %% 消息队列连接关系
+    RABBIT --> RABBIT_SERVER[RabbitMQ Server]
+    KAFKA --> KAFKA_CLUSTER[Kafka Cluster]
+    ROCKETMQ --> ROCKETMQ_SERVER[RocketMQ Server]
+    INTEGRATION --> RABBIT
+    INTEGRATION --> KAFKA
+    RSOCKET --> RSOCKET_SERVER[RSocket Server]
+```
+
+### 技术组件依赖关系图
+
+```mermaid
+graph TB
+    subgraph "应用启动流程"
+        APP[Spring4demoApplication] --> CONFIG[@SpringBootApplication]
+        CONFIG --> AUTOCONFIG[@EnableAutoConfiguration]
+        CONFIG --> COMPONENTSCAN[@ComponentScan]
+        CONFIG --> BOOTSTRAP[Bootstrap Context]
+    end
+    
+    subgraph "配置管理"
+        CONFIG --> YAML[application.yaml]
+        YAML --> PROFILES[Spring Profiles]
+        PROFILES --> DEV[dev环境]
+        PROFILES --> TEST[test环境]
+        PROFILES --> PROD[prod环境]
+        CONFIG --> CONFIGPROP[Configuration Properties]
+        CONFIGPROP --> VALIDATOR[JSR-303 Validation]
+    end
+    
+    subgraph "依赖注入容器"
+        AUTOCONFIG --> CONTEXT[ApplicationContext]
+        CONTEXT --> BEANFACTORY[BeanFactory]
+        CONTEXT --> AOP[Aspect-Oriented Programming]
+        CONTEXT --> TRANSACTION[Transaction Management]
+    end
+    
+    subgraph "Web层架构"
+        CONTEXT --> SERVLET[Servlet Container]
+        SERVLET --> DISPATCHER[DispatcherServlet]
+        DISPATCHER --> CONTROLLER[@Controller/@RestController]
+        CONTROLLER --> SERVICE[@Service]
+        SERVICE --> REPOSITORY[@Repository]
+        REPOSITORY --> ENTITY[@Entity]
+        
+        CONTEXT --> REACTIVE[Reactive Container]
+        REACTIVE --> DISPATCHERFLUX[DispatcherHandler]
+        DISPATCHERFLUX --> CONTROLLERFLUX[@RestController]
+        CONTROLLERFLUX --> SERVICEFLUX[@Service]
+        SERVICEFLUX --> REPOSITORYFLUX[ReactiveRepository]
+    end
+    
+    subgraph "数据访问层"
+        REPOSITORY --> JPA_IMPL[JpaRepository]
+        REPOSITORY --> MONGO_IMPL[MongoRepository]
+        REPOSITORY --> REDIS_IMPL[RedisRepository]
+        REPOSITORY --> ES_IMPL[ElasticsearchRepository]
+        REPOSITORY --> NEO4J_IMPL[Neo4jRepository]
+        
+        JPA_IMPL --> HIBERNATE[Hibernate ORM]
+        MONGO_IMPL --> MONGO_DRIVER[MongoDB Driver]
+        REDIS_IMPL --> LETTUCE[Lettuce Client]
+        ES_IMPL --> REST_CLIENT[REST High Level Client]
+        NEO4J_IMPL --> NEO4J_DRIVER[Neo4j Java Driver]
+    end
+    
+    subgraph "安全架构"
+        CONTEXT --> SECURITY_CHAIN[Security Filter Chain]
+        SECURITY_CHAIN --> AUTHENTICATION[Authentication Manager]
+        SECURITY_CHAIN --> AUTHORIZATION[Authorization Manager]
+        AUTHENTICATION --> JWT_PROVIDER[JWT Provider]
+        AUTHENTICATION --> OAUTH2_PROVIDER[OAuth2 Provider]
+        AUTHORIZATION --> ROLE_BASED[Role-based Access]
+        AUTHORIZATION --> METHOD_SECURITY[Method Security]
+    end
+    
+    subgraph "监控集成"
+        CONTEXT --> ACTUATOR_ENDPOINTS[Actuator Endpoints]
+        ACTUATOR_ENDPOINTS --> HEALTH_ENDPOINT[Health Endpoint]
+        ACTUATOR_ENDPOINTS --> METRICS_ENDPOINT[Metrics Endpoint]
+        ACTUATOR_ENDPOINTS --> INFO_ENDPOINT[Info Endpoint]
+        METRICS_ENDPOINT --> MICROMETER_REGISTRY[Micrometer Registry]
+        MICROMETER_REGISTRY --> PROMETHEUS_REGISTRY[Prometheus Registry]
+        CONTEXT --> OPENTELEMETRY[OpenTelemetry]
+        OPENTELEMETRY --> TRACER[Tracer Provider]
+        TRACER --> ZIPKIN_REPORTER[Zipkin Reporter]
+    end
 ```
 
 ## 📚 技术栈

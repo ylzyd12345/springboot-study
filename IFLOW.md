@@ -6,69 +6,84 @@
 
 ## 技术栈
 
-- **框架**: Spring Boot 4.0.1
-- **Java版本**: Java 25
-- **构建工具**: Maven 3.9.12
-- **数据库支持**: MySQL, Neo4j, Redis, Elasticsearch
-- **容器化**: Docker Compose
+### 🔧 核心技术
+
+| 技术 | 版本 | 说明 |
+|------|------|------|
+| Spring Boot | 4.0.1 | 应用框架核心 |
+| Spring Framework | 6.x | 依赖注入、AOP等核心功能 |
+| Java | 25 | 编程语言 |
+| Maven | 3.9.12 | 构建工具 |
+
+### 🌐 Web技术栈
+
+- [x] **spring-boot-starter-web** - Spring MVC Web应用（默认Tomcat）
+- [x] **spring-boot-starter-webflux** - 响应式Web编程
+- [x] **spring-boot-starter-websocket** - WebSocket支持
+- [x] **spring-boot-starter-web-services** - Spring Web Services
+- [x] **spring-boot-starter-groovy-templates** - Groovy模板引擎
+- [x] **spring-boot-starter-hateoas** - RESTful超媒体支持
+- [x] **spring-boot-starter-graphql** - GraphQL应用支持
+
+### 💾 数据存储技术栈
+
+#### 关系型数据库
+- [x] **spring-boot-starter-data-jpa** - JPA数据访问（Hibernate）
+- [x] **spring-boot-starter-data-jdbc** - Spring Data JDBC
+- [x] **spring-boot-starter-jdbc** - JDBC（HikariCP连接池）
+- [x] **spring-boot-starter-Mybatis** - Mybatis(Druid连接池)
+- [x] **spring-boot-starter-Mybatis-Plus** - Mybatis-Plus访问层
+
+#### NoSQL数据库
+- [x] **spring-boot-starter-data-mongodb** - MongoDB文档数据库
+- [x] **spring-boot-starter-data-mongodb-reactive** - MongoDB响应式支持
+- [x] **spring-boot-starter-data-redis** - Redis键值存储
+- [x] **spring-boot-starter-data-redis-reactive** - Redis响应式支持
+- [x] **spring-boot-starter-data-elasticsearch** - Elasticsearch搜索引擎
+- [x] **spring-boot-starter-data-neo4j** - Neo4j图数据库
+- [x] **spring-boot-starter-data-r2dbc** - R2DBC响应式数据库访问
+- [x] **spring-boot-starter-data-influxdb** - InfluxDB时间序列数据库
+
+### 📨 消息中间件技术栈
+
+- [x] **spring-boot-starter-amqp** - Spring AMQP和RabbitMQ
+- [x] **spring-boot-starter-rocketmq** - Apache RocketMQ消息队列
+- [x] **spring-boot-starter-kafka** - Apache Kafka消息队列
+- [x] **spring-boot-starter-integration** - Spring Integration企业集成模式
+- [x] **spring-boot-starter-rsocket** - RSocket客户端和服务端
+
+### 🔐 安全认证技术栈
+
+- [x] **spring-boot-starter-security** - Spring Security安全框架
+- [x] **spring-boot-starter-oauth2-client** - OAuth2/OpenID Connect客户端
+- [x] **spring-boot-starter-oauth2-resource-server** - OAuth2资源服务器
+
+### 📊 监控运维技术栈
+
+- [x] **spring-boot-starter-actuator** - 生产就绪监控和管理功能
+- [x] **spring-boot-starter-metrics** - Micrometer指标收集
+- [x] **OpenTelemetry** - 遥测数据导出
+- [x] **Zipkin** - 链路追踪
+- [x] **Prometheus** - 指标收集
+- [x] **Grafana** - 监控面板
+
+### 🛠️ 开发工具和测试
+
+- [x] **Spring Boot DevTools** - 热重载开发工具
+- [x] **Spring Boot Configuration Processor** - 配置元数据生成
+- [x] **Lombok** - 减少样板代码
+- [x] **MapStruct** - Bean映射框架
+- [x] **Testcontainers** - 集成测试容器支持
 
 ## 项目结构
-
-```
-F:\codes\local_git\spring4demo\
-├───src/
-│   ├───main/
-│   │   ├───java/com/kev1n/spring4demo/
-│   │   │   └───Spring4demoApplication.java  # 主应用程序入口
-│   │   └───resources/
-│   │       ├───application.yaml             # 主配置文件
-│   │       └───db/migration/                # 数据库迁移脚本目录
-│   └───test/
-│       └───java/com/kev1n/spring4demo/
-│           └───Spring4demoApplicationTests.java  # 主测试类
-├───compose.yaml                    # Docker Compose 配置
-├───pom.xml                         # Maven 配置文件
-├───README.md                       # 项目详细说明
-└───HELP.md                         # Spring Boot 参考文档
-```
 
 ## 构建和运行命令
 
 ### 基本构建命令
-```bash
-# 清理并编译项目
-mvn clean compile
-
-# 打包项目
-mvn clean package
-
-# 运行项目
-mvn spring-boot:run
-
-# 运行测试
-mvn test
-```
 
 ### Docker 相关命令
-```bash
-# 启动所有依赖服务（MySQL, Redis, Elasticsearch, Neo4j）
-docker-compose up -d
-
-# 停止所有服务
-docker-compose down
-```
 
 ### GraalVM 原生镜像支持
-```bash
-# 使用 Cloud Native Buildpacks 创建轻量级容器
-./mvnw spring-boot:build-image -Pnative
-
-# 使用 Native Build Tools 创建可执行文件
-./mvnw native:compile -Pnative
-
-# 在原生镜像中运行测试
-./mvnw test -PnativeTest
-```
 
 ## 配置说明
 
@@ -78,17 +93,11 @@ docker-compose down
 - **配置格式**: YAML（推荐）
 
 ### 数据库配置（Docker Compose）
-- **MySQL**: 端口 3306，数据库名 mydatabase，用户 myuser
-- **Redis**: 端口 6379
-- **Elasticsearch**: 端口 9200/9300，单节点模式
-- **Neo4j**: 端口 7687，认证 neo4j/notverysecret
 
 ## 开发约定
 
 ### 包结构
 - 基础包名: `com.kev1n.spring4demo`
-- 主应用类: `Spring4demoApplication.java`
-- 测试包名: `com.kev1n.spring4demo`（与主包相同）
 
 ### 代码风格
 - 使用 Lombok 减少样板代码
@@ -103,7 +112,7 @@ docker-compose down
 ## 扩展指南
 
 ### 添加新功能
-1. 在 `com.kev1n.spring4demo` 包下创建新的类
+1. 在 `com.kev1n.spring4demo` 包下创建新的module
 2. 在 `application.yaml` 中添加相关配置
 3. 如需数据库支持，在 `db/migration` 目录添加迁移脚本
 4. 编写对应的测试类
@@ -111,7 +120,7 @@ docker-compose down
 ### 依赖管理
 - 所有依赖通过 `pom.xml` 管理
 - 继承自 Spring Boot 父 POM，版本统一管理
-- 建议使用 Spring Boot BOM 管理第三方依赖版本
+- 使用 Spring Boot BOM 管理第三方依赖版本
 
 ## 常见问题
 
