@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-这是一个基于 Spring Boot 3.5.9 和 Java 21 的单应用学习项目，旨在展示 Spring Boot 最佳实践和常见集成模式。项目采用 Maven 构建系统，使用标准的 Spring Boot 单体应用架构。后续将基于此项目演进为微服务架构。
+这是一个基于 Spring Boot 3.2.10 和 Java 21 的单应用学习项目，旨在展示 Spring Boot 最佳实践和常见集成模式。项目采用 Maven 构建系统，使用标准的 Spring Boot 单体应用架构。后续将基于此项目演进为微服务架构。
 
 ## 技术栈
 
@@ -10,7 +10,7 @@
 
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| Spring Boot | 3.5.9 | 应用框架核心 |
+| Spring Boot | 3.2.10 | 应用框架核心 |
 | Spring Framework | 3.x | 依赖注入、AOP等核心功能 |
 | Java | 21 | 编程语言 |
 | Maven | 3.9.12 | 构建工具 |
@@ -135,7 +135,7 @@
 
 ## 参考资源
 
-- [Spring Boot 官方文档](https://docs.spring.io/spring-boot/3.5.9/reference/)
+- [Spring Boot 官方文档](https://docs.spring.io/spring-boot/3.2.10/reference/)
 - [Maven 官方文档](https://maven.apache.org/guides/)
 - 项目 README.md 文件包含详细的模块说明和架构设计
 - HELP.md 文件包含 Spring Boot 各功能模块的参考文档链接

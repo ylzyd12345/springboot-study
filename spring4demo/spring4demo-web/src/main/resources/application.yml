@@ -233,7 +233,7 @@ springdoc:
     tags-sorter: alpha
   info:
     title: Spring4demo API
-    description: Spring Boot 3.5.9 企业级生态环境集成项目API文档
+    description: Spring Boot 3.2.10 企业级生态环境集成项目API文档
     version: 1.0.0
     contact:
       name: Spring4demo Team

@@ -11,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(scanBasePackages = "com.kev1n.spring4demo")
 public class Spring4demoWebApplication {
-    static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(Spring4demoWebApplication.class, args);
     }
 }
