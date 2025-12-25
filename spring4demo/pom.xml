@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>com.kev1n</groupId>
     <artifactId>spring4demo</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <name>spring4demo</name>
-    <description>Spring Boot 4.0.1 企业级生态环境集成项目</description>
-    
+    <description>Spring Boot 3.5.9 企业级生态环境集成项目</description>
+
     <modules>
         <module>spring4demo-common</module>
         <module>spring4demo-core</module>
@@ -19,47 +19,46 @@
         <module>spring4demo-integration</module>
         <module>spring4demo-admin</module>
     </modules>
-    
+
     <properties>
-        <java.version>25</java.version>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Spring Boot -->
-        <spring-boot.version>4.0.0</spring-boot.version>
-        <spring-framework.version>6.1.0</spring-framework.version>
+        <spring-boot.version>3.5.9</spring-boot.version>
 
         <!-- Database -->
         <mysql.version>9.5.0</mysql.version>
-        <druid.version>1.2.27</druid.version>
-        <mybatis.version>3.5.19</mybatis.version>
-        <mybatis-spring.version>3.0.5</mybatis-spring.version>
-        <mybatis-plus.version>3.5.15</mybatis-plus.version>
-        <pagehelper.version>2.1.1</pagehelper.version>
+        <druid.version>1.2.31</druid.version>
+        <mybatis.version>3.5.21</mybatis.version>
+        <mybatis-spring.version>3.0.7</mybatis-spring.version>
+        <mybatis-plus.version>3.5.6</mybatis-plus.version>
+        <pagehelper.version>2.1.3</pagehelper.version>
 
         <!-- Cache -->
-        <caffeine.version>3.1.8</caffeine.version>
-        <jedis.version>5.0.1</jedis.version>
-        <lettuce.version>6.3.1</lettuce.version>
+        <caffeine.version>3.2.1</caffeine.version>
+        <jedis.version>5.1.0</jedis.version>
+        <lettuce.version>6.3.3</lettuce.version>
 
         <!-- Message Queue -->
-        <rabbitmq.version>5.19.0</rabbitmq.version>
-        <kafka.version>4.1.1</kafka.version>
-        <rocketmq.version>5.3.2</rocketmq.version>
+        <rabbitmq.version>5.20.0</rabbitmq.version>
+        <kafka.version>4.2.2</kafka.version>
+        <rocketmq.version>5.4.0</rocketmq.version>
 
         <!-- Search -->
-        <elasticsearch.version>8.11.0</elasticsearch.version>
+        <elasticsearch.version>8.13.0</elasticsearch.version>
 
         <!-- Security -->
-        <jwt.version>0.13.0</jwt.version>
+        <jwt.version>0.13.5</jwt.version>
 
         <!-- Utils -->
-        <lombok.version>1.18.42</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <hutool.version>5.8.40</hutool.version>
+        <hutool.version>5.8.22</hutool.version>
         <fastjson2.version>2.0.41</fastjson2.version>
 
         <!-- Test -->
@@ -106,6 +105,11 @@
             </dependency>
 
             <!-- Database -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.4.240</version>
+            </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
@@ -381,164 +385,4 @@
             </build>
         </profile>
     </profiles>
-<!--    -->
-<!--    <repositories>-->
-<!--        &lt;!&ndash; 阿里云镜像仓库 &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>aliyun-maven</id>-->
-<!--            <name>Aliyun Maven Repository</name>-->
-<!--            <url>https://maven.aliyun.com/repository/public</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        -->
-<!--        &lt;!&ndash; 华为云镜像仓库 &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>huaweicloud-maven</id>-->
-<!--            <name>Huawei Cloud Maven Repository</name>-->
-<!--            <url>https://repo.huaweicloud.com/repository/maven/</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        -->
-<!--        &lt;!&ndash; Spring Milestones &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>spring-milestones</id>-->
-<!--            <name>Spring Milestones</name>-->
-<!--            <url>https://repo.spring.io/milestone</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        -->
-<!--        &lt;!&ndash; Spring Snapshots &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>spring-snapshots</id>-->
-<!--            <name>Spring Snapshots</name>-->
-<!--            <url>https://repo.spring.io/snapshot</url>-->
-<!--            <releases>-->
-<!--                <enabled>false</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        -->
-<!--        &lt;!&ndash; Apache Snapshots &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>apache-snapshots</id>-->
-<!--            <name>Apache Snapshots</name>-->
-<!--            <url>https://repository.apache.org/snapshots</url>-->
-<!--            <releases>-->
-<!--                <enabled>false</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        -->
-<!--        &lt;!&ndash; Maven Central &ndash;&gt;-->
-<!--        <repository>-->
-<!--            <id>central</id>-->
-<!--            <name>Maven Central</name>-->
-<!--            <url>https://repo1.maven.org/maven2</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--    </repositories>-->
-<!--    -->
-<!--    <pluginRepositories>-->
-<!--        &lt;!&ndash; 阿里云镜像仓库 &ndash;&gt;-->
-<!--        <pluginRepository>-->
-<!--            <id>aliyun-maven</id>-->
-<!--            <name>Aliyun Maven Repository</name>-->
-<!--            <url>https://maven.aliyun.com/repository/public</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--        -->
-<!--        &lt;!&ndash; 华为云镜像仓库 &ndash;&gt;-->
-<!--        <pluginRepository>-->
-<!--            <id>huaweicloud-maven</id>-->
-<!--            <name>Huawei Cloud Maven Repository</name>-->
-<!--            <url>https://repo.huaweicloud.com/repository/maven/</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--        -->
-<!--        &lt;!&ndash; Spring Milestones &ndash;&gt;-->
-<!--        <pluginRepository>-->
-<!--            <id>spring-milestones</id>-->
-<!--            <name>Spring Milestones</name>-->
-<!--            <url>https://repo.spring.io/milestone</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--        -->
-<!--        &lt;!&ndash; Spring Snapshots &ndash;&gt;-->
-<!--        <pluginRepository>-->
-<!--            <id>spring-snapshots</id>-->
-<!--            <name>Spring Snapshots</name>-->
-<!--            <url>https://repo.spring.io/snapshot</url>-->
-<!--            <releases>-->
-<!--                <enabled>false</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--        -->
-<!--        &lt;!&ndash; Apache Snapshots &ndash;&gt;-->
-<!--        <pluginRepository>-->
-<!--            <id>apache-snapshots</id>-->
-<!--            <name>Apache Snapshots</name>-->
-<!--            <url>https://repository.apache.org/snapshots</url>-->
-<!--            <releases>-->
-<!--                <enabled>false</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--        -->
-<!--        &lt;!&ndash; Maven Central &ndash;&gt;-->
-<!--        <pluginRepository>-->
-<!--            <id>central</id>-->
-<!--            <name>Maven Central</name>-->
-<!--            <url>https://repo1.maven.org/maven2</url>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--            </releases>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--    </pluginRepositories>-->
 </project>

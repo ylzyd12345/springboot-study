@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-这是一个基于 Spring Boot 4.0.1 和 Java 25 的单应用学习项目，旨在展示 Spring Boot 最佳实践和常见集成模式。项目采用 Maven 构建系统，使用标准的 Spring Boot 单体应用架构。后续将基于此项目演进为微服务架构。
+这是一个基于 Spring Boot 3.5.9 和 Java 21 的单应用学习项目，旨在展示 Spring Boot 最佳实践和常见集成模式。项目采用 Maven 构建系统，使用标准的 Spring Boot 单体应用架构。后续将基于此项目演进为微服务架构。
 
 ## 技术栈
 
@@ -10,9 +10,9 @@
 
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| Spring Boot | 4.0.1 | 应用框架核心 |
-| Spring Framework | 6.x | 依赖注入、AOP等核心功能 |
-| Java | 25 | 编程语言 |
+| Spring Boot | 3.5.9 | 应用框架核心 |
+| Spring Framework | 3.x | 依赖注入、AOP等核心功能 |
+| Java | 21 | 编程语言 |
 | Maven | 3.9.12 | 构建工具 |
 
 ### 🌐 Web技术栈
@@ -131,11 +131,11 @@
 确保 Docker 服务已启动，并且应用程序配置与 Docker 服务配置匹配。
 
 ### 原生镜像编译
-需要安装 GraalVM 25+ 版本，并确保系统满足原生镜像编译要求。
+需要安装 GraalVM 21+ 版本，并确保系统满足原生镜像编译要求。
 
 ## 参考资源
 
-- [Spring Boot 官方文档](https://docs.spring.io/spring-boot/4.0.1/reference/)
+- [Spring Boot 官方文档](https://docs.spring.io/spring-boot/3.5.9/reference/)
 - [Maven 官方文档](https://maven.apache.org/guides/)
 - 项目 README.md 文件包含详细的模块说明和架构设计
 - HELP.md 文件包含 Spring Boot 各功能模块的参考文档链接

@@ -1,5 +1,5 @@
 # 使用多阶段构建
-FROM maven:3.9.12-openjdk-25-slim AS builder
+FROM maven:3.9.12-openjdk-21-slim AS builder
 
 # 设置工作目录
 WORKDIR /app
@@ -28,7 +28,7 @@ COPY spring4demo-integration/src ./spring4demo-integration/src
 RUN mvn clean package -DskipTests
 
 # 运行阶段
-FROM openjdk:25-jre-slim
+FROM openjdk:21-jre-slim
 
 # 安装必要的工具
 RUN apt-get update && apt-get install -y \
