@@ -56,4 +56,21 @@ public final class ApiConstants {
     /** 排序方向 */
     public static final String ORDER_ASC = "asc";
     public static final String ORDER_DESC = "desc";
+    
+    /** 错误代码 */
+    public static final int CODE_ERROR = -1;
+    public static final int CODE_SUCCESS = 200;
+    public static final int CODE_BAD_REQUEST = 400;
+    public static final int CODE_UNAUTHORIZED = 401;
+    public static final int CODE_FORBIDDEN = 403;
+    public static final int CODE_NOT_FOUND = 404;
+    public static final int CODE_INTERNAL_SERVER_ERROR = 500;
+    
+    /** 错误消息 */
+    public static final String MESSAGE_SUCCESS = "操作成功";
+    public static final String MESSAGE_BAD_REQUEST = "请求参数错误";
+    public static final String MESSAGE_UNAUTHORIZED = "未授权访问";
+    public static final String MESSAGE_FORBIDDEN = "禁止访问";
+    public static final String MESSAGE_NOT_FOUND = "资源不存在";
+    public static final String MESSAGE_INTERNAL_SERVER_ERROR = "服务器内部错误";
 }

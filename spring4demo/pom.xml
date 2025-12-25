@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,7 +32,7 @@
 
         <!-- Spring Boot -->
         <spring-boot.version>3.2.10</spring-boot.version>
-        
+
         <!-- Maven Repository URLs -->
         <aliyun-maven-central-url>https://maven.aliyun.com/repository/central</aliyun-maven-central-url>
         <aliyun-maven-public-url>https://maven.aliyun.com/repository/public</aliyun-maven-public-url>
@@ -514,7 +514,7 @@
                 <version>3.0.1</version>
                 <scope>test</scope>
             </dependency>
-            
+
         </dependencies>
     </dependencyManagement>
 

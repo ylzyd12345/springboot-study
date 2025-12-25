@@ -1,5 +1,7 @@
-package com.kev1n.spring4demo.common.security;
+package com.kev1n.spring4demo.core.security;
 
+import com.kev1n.spring4demo.common.security.JwtAccessDeniedHandler;
+import com.kev1n.spring4demo.common.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

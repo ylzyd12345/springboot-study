@@ -1,6 +1,6 @@
-package com.kev1n.spring4demo.common.security;
+package com.kev1n.spring4demo.core.security;
 
-import com.kev1n.spring4demo.common.util.JwtUtils;
+import com.kev1n.spring4demo.core.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

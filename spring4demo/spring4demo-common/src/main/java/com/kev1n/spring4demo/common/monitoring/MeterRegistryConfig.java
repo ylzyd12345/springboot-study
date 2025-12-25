@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.common.monitoring;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
@@ -52,7 +53,7 @@ public class MeterRegistryConfig {
     /**
      * 记录仪表盘数据
      */
-    public void recordGauge(String gaugeName, double value, String... tags) {
+    public void recordGauge(String gaugeName, double value, Iterable<Tag> tags) {
         meterRegistry.gauge(gaugeName, tags, value);
     }
 }

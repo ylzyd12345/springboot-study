@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.security;
+package com.kev1n.spring4demo.core.security;
 
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.repository.UserRepository;

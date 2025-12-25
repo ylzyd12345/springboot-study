@@ -1,6 +1,5 @@
 package com.kev1n.spring4demo.core.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

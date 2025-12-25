@@ -1,9 +1,9 @@
 package com.kev1n.spring4demo.web.service;
 
-import com.kev1n.spring4demo.common.security.UserPrincipal;
-import com.kev1n.spring4demo.common.util.JwtUtils;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.repository.UserRepository;
+import com.kev1n.spring4demo.core.security.UserPrincipal;
+import com.kev1n.spring4demo.core.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

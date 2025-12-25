@@ -13,7 +13,8 @@
     <artifactId>spring4demo-starter</artifactId>
     <name>spring4demo-starter</name>
     <description>启动模块 - 应用启动类、配置文件</description>
-    
+
+
     <dependencies>
         <!-- 依赖其他模块 -->
         <dependency>
@@ -59,18 +60,36 @@
     </dependencies>
     
     <build>
+
+        <!-- 拼接artifactId + 自定义后缀 + 版本号 -->
+        <finalName>spring4demo-${project.version}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- 指定主类 -->
+                    <mainClass>com.kev1n.spring4demo.Spring4demoApplication</mainClass>
+                    <!-- 包含所有依赖 -->
+                    <includeSystemScope>true</includeSystemScope>
+                    <!-- 排除Lombok -->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <!-- 启用可执行jar -->
+                    <executable>true</executable>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             
             <plugin>

@@ -25,8 +25,6 @@ public class CustomMetrics {
     private final MeterRegistry meterRegistry;
 
     // 业务计数器
-    private final Counter userLoginCounter;
-    private final Counter userRegistrationCounter;
     private final Counter apiRequestCounter;
     private final Counter errorCounter;
 
@@ -36,7 +34,6 @@ public class CustomMetrics {
     private final Timer cacheAccessTimer;
 
     // 业务仪表盘
-    private final AtomicLong activeUsers = new AtomicLong(0);
     private final AtomicLong cacheHits = new AtomicLong(0);
     private final AtomicLong cacheMisses = new AtomicLong(0);
 
@@ -45,15 +42,6 @@ public class CustomMetrics {
 
     public CustomMetrics(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
-
-        // 初始化计数器
-        this.userLoginCounter = Counter.builder("user.login.count")
-                .description("用户登录次数")
-                .register(meterRegistry);
-
-        this.userRegistrationCounter = Counter.builder("user.registration.count")
-                .description("用户注册次数")
-                .register(meterRegistry);
 
         this.apiRequestCounter = Counter.builder("api.request.count")
                 .description("API请求次数")
@@ -77,38 +65,32 @@ public class CustomMetrics {
                 .register(meterRegistry);
 
         // 初始化仪表盘
-        Gauge.builder("user.active.count")
-                .description("活跃用户数")
-                .register(meterRegistry, activeUsers, AtomicLong::get);
 
-        Gauge.builder("cache.hits.count")
+        Gauge.builder("cache.hits.count", cacheHits, AtomicLong::get)
                 .description("缓存命中次数")
-                .register(meterRegistry, cacheHits, AtomicLong::get);
+                .register(meterRegistry);
 
-        Gauge.builder("cache.misses.count")
+        Gauge.builder("cache.misses.count", cacheMisses, AtomicLong::get)
                 .description("缓存未命中次数")
-                .register(meterRegistry, cacheMisses, AtomicLong::get);
-    }
-
-    // 用户登录指标
-    public void recordUserLogin(String username, boolean success) {
-        userLoginCounter.increment("success", String.valueOf(success));
-        if (success) {
-            activeUsers.incrementAndGet();
-        }
-    }
-
-    // 用户注册指标
-    public void recordUserRegistration(String username) {
-        userRegistrationCounter.increment();
+                .register(meterRegistry);
     }
 
     // API请求指标
     public void recordApiRequest(String endpoint, String method, int statusCode) {
-        apiRequestCounter.increment("endpoint", endpoint, "method", method, "status", String.valueOf(statusCode));
+        Counter apiCounter = Counter.builder("api_request")
+                .tag("endpoint", endpoint)
+                .tag("method", method)
+                .tag("status", String.valueOf(statusCode))
+                .register(meterRegistry);
+        apiCounter.increment();
         
         if (statusCode >= 400) {
-            errorCounter.increment("type", "api_error", "endpoint", endpoint, "status", String.valueOf(statusCode));
+            Counter errorCounter = Counter.builder("api_error")
+                    .tag("type", "api_error")
+                    .tag("endpoint", endpoint)
+                    .tag("status", String.valueOf(statusCode))
+                    .register(meterRegistry);
+            errorCounter.increment();
         }
     }
 
@@ -152,18 +134,30 @@ public class CustomMetrics {
         meterRegistry.counter(name, tags).increment();
     }
 
+    // 停止计时器
+    public void stopTimer(Timer.Sample sample, String timerName, String... tags) {
+        sample.stop(Timer.builder(timerName)
+                .tags(tags)
+                .register(meterRegistry));
+    }
+
     public void setCustomGauge(String name, double value, String... tags) {
         AtomicLong gauge = customGauges.computeIfAbsent(name, k -> new AtomicLong(0));
         gauge.set((long) value);
         
-        Gauge.builder(name)
+        Gauge.builder(name, gauge, AtomicLong::get)
                 .tags(tags)
-                .register(meterRegistry, gauge, AtomicLong::get);
+                .register(meterRegistry);
     }
 
     // 业务异常指标
     public void recordBusinessException(String exceptionType, String operation) {
-        errorCounter.increment("type", "business_exception", "exception", exceptionType, "operation", operation);
+        Counter counter = Counter.builder("business_exception")
+                .tag("type", "business_exception")
+                .tag("exception", exceptionType)
+                .tag("operation", operation)
+                .register(meterRegistry);
+        counter.increment();
     }
 
     // 系统资源指标

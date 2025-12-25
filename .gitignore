@@ -1,4 +1,5 @@
 ### JAVA ###
+.flattened-pom.xml
 
 target/
 logs

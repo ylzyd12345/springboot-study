@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.security;
+package com.kev1n.spring4demo.core.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

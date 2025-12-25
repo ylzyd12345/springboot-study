@@ -15,6 +15,12 @@
     <description>Web应用模块 - 控制器、配置、启动类</description>
     
     <dependencies>
+        <!-- 依赖common模块 -->
+        <dependency>
+            <groupId>com.kev1n</groupId>
+            <artifactId>spring4demo-common</artifactId>
+        </dependency>
+        
         <!-- 依赖core模块 -->
         <dependency>
             <groupId>com.kev1n</groupId>

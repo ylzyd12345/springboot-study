@@ -2,7 +2,6 @@ package com.kev1n.spring4demo.generator;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
-import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

@@ -2,7 +2,6 @@ package com.kev1n.spring4demo.common.test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * Mock测试基类

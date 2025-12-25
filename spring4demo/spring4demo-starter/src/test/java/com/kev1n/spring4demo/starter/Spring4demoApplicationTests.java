@@ -1,6 +1,5 @@
 package com.kev1n.spring4demo.starter;
 
-import com.kev1n.spring4demo.common.test.BaseTestContainer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-class Spring4demoApplicationTests extends BaseTestContainer {
+class Spring4demoApplicationTests  {
 
     @Test
     @DisplayName("应用上下文应该能够正常加载")

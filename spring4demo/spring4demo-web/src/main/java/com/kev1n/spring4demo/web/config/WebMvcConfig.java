@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Web MVC配置
- * 
+ *
  * @author spring4demo
  * @version 1.0.0
  */

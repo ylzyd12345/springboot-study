@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.common.monitoring;
 
 import io.micrometer.core.instrument.Timer;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -9,8 +10,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 监控切面
@@ -172,13 +171,13 @@ public class MonitoringAspect {
             Object result = joinPoint.proceed();
             
             customMetrics.recordCacheHit(joinPoint.getTarget().getClass().getSimpleName());
-            sample.stop(customMetrics.apiResponseTimer);
+            customMetrics.recordApiResponseTime(sample, "cache", "access");
             
             return result;
             
         } catch (Exception e) {
             customMetrics.recordCacheMiss(joinPoint.getTarget().getClass().getSimpleName());
-            sample.stop(customMetrics.apiResponseTimer);
+            customMetrics.recordApiResponseTime(sample, "cache", "access");
             
             throw e;
         }

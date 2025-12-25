@@ -1,12 +1,12 @@
 package com.kev1n.spring4demo.web.controller;
 
 import com.kev1n.spring4demo.common.constant.ApiConstants;
-import com.kev1n.spring4demo.common.security.UserPrincipal;
-import com.kev1n.spring4demo.common.util.JwtUtils;
-import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.repository.UserRepository;
+import com.kev1n.spring4demo.core.security.UserPrincipal;
+import com.kev1n.spring4demo.core.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * 认证控制器

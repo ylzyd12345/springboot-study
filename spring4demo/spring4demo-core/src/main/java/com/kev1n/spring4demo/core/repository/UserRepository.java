@@ -1,8 +1,6 @@
 package com.kev1n.spring4demo.core.repository;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kev1n.spring4demo.core.entity.User;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,13 +13,13 @@ import java.util.Optional;
 
 /**
  * 用户数据访问层
- * 支持MyBatis-Plus和Spring Data JPA双重访问
+ * 使用Spring Data JPA
  * 
  * @author spring4demo
  * @version 1.0.0
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, String>, BaseMapper<User> {
+public interface UserRepository extends JpaRepository<User, String> {
 
     /**
      * 根据用户名查找用户
@@ -74,4 +72,5 @@ public interface UserRepository extends JpaRepository<User, String>, BaseMapper<
      */
     @Query("SELECT u FROM User u WHERE u.status = 1 ORDER BY u.createTime DESC")
     List<User> findRecentActiveUsers();
-}
+
+    }
