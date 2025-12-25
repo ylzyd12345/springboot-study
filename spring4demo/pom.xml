@@ -18,6 +18,7 @@
         <module>spring4demo-api</module>
         <module>spring4demo-integration</module>
         <module>spring4demo-admin</module>
+        <module>spring4demo-starter</module>
     </modules>
     
     <properties>
@@ -45,6 +46,7 @@
         <lettuce.version>6.3.1</lettuce.version>
 
         <!-- Message Queue -->
+        <starter-kafka.version>4.0.1</starter-kafka.version>
         <rabbitmq.version>5.18.0</rabbitmq.version>
         <kafka.version>3.5.0</kafka.version>
         <rocketmq.version>5.3.2</rocketmq.version>
@@ -54,6 +56,12 @@
 
         <!-- Security -->
         <jwt.version>0.13.0</jwt.version>
+        
+        <!-- API Documentation -->
+        <springdoc.version>2.3.0</springdoc.version>
+        
+        <!-- H2 Database -->
+        <h2.version>2.4.240</h2.version>
 
         <!-- Utils -->
         <lombok.version>1.18.42</lombok.version>
@@ -108,7 +116,7 @@
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.4.240</version>
+                <version>${h2.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
@@ -155,6 +163,11 @@
 
             <!-- Message Queue -->
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-kafka</artifactId>
+                <version>${starter-kafka.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
                 <version>${rabbitmq.version}</version>
@@ -175,6 +188,13 @@
                 <groupId>co.elastic.clients</groupId>
                 <artifactId>elasticsearch-java</artifactId>
                 <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <!-- API Documentation -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
 
             <!-- Security -->

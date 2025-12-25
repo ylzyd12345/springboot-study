@@ -1,0 +1,136 @@
+# 生产环境配置
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://mysql-prod:3306/spring4demo?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai
+    username: ${DB_USERNAME:spring4demo}
+    password: ${DB_PASSWORD:password}
+    druid:
+      initial-size: 10
+      min-idle: 10
+      max-active: 50
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall
+      connection-properties: druid.stat.mergeSql=false;druid.stat.slowSqlMillis=2000
+      web-stat-filter:
+        enabled: false
+      stat-view-servlet:
+        enabled: false
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+  thymeleaf:
+    cache: true
+      
+# Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:redis-prod}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      lettuce:
+        pool:
+          max-active: 32
+          max-wait: -1ms
+          max-idle: 16
+          min-idle: 8
+        timeout: 10000ms
+        
+# 日志配置
+logging:
+  level:
+    root: warn
+    com.kev1n.spring4demo: info
+    org.springframework.web: warn
+    org.springframework.security: error
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{userId:-}] %logger{50} - %msg%n"
+  file:
+    name: /app/logs/spring4demo-prod.log
+    
+# MyBatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    call-setters-on-nulls: false
+    jdbc-type-for-null: 'null'
+  global-config:
+    db-config:
+      id-type: AUTO
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath:mapper/**/*.xml
+    
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus"
+  endpoint:
+    health:
+      show-details: never
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        
+# 生产环境特殊配置
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+  tomcat:
+    max-threads: 800
+    accept-count: 1000
+    min-spare-threads: 100
+    connection-timeout: 5000
+    
+# 缓存配置
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterAccess=3600s
+      
+# 异步任务配置
+  task:
+    execution:
+      pool:
+        core-size: 20
+        max-size: 100
+        queue-capacity: 1000
+        keep-alive: 60s
+        thread-name-prefix: async-task-
+    scheduling:
+      pool:
+        size: 10
+        thread-name-prefix: scheduled-task-
+        
+# 生产环境安全配置
+security:
+  headers:
+    frame-options: DENY
+    content-type-options: nosniff
+    xss-protection: "1; mode=block"
