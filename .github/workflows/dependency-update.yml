@@ -1,0 +1,168 @@
+name: Dependency Update
+
+on:
+  schedule:
+    # 每周一凌晨3点检查依赖更新
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+jobs:
+  # 检查Maven依赖更新
+  check-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Check for Maven dependency updates
+      run: |
+        mvn versions:display-dependency-updates -DoutputFile=dependency-updates.txt
+        mvn versions:display-plugin-updates -DoutputFile=plugin-updates.txt
+        mvn versions:display-property-updates -DoutputFile=property-updates.txt
+
+    - name: Upload dependency reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-reports
+        path: |
+          dependency-updates.txt
+          plugin-updates.txt
+          property-updates.txt
+
+    - name: Create Pull Request for updates
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: '🔧 Update dependencies'
+        title: '🔧 Automated Dependency Update'
+        body: |
+          ## 依赖更新报告
+          
+          此PR由自动化工作流创建，包含以下更新：
+          
+          ### Maven依赖更新
+          ```
+          $(cat dependency-updates.txt)
+          ```
+          
+          ### Maven插件更新
+          ```
+          $(cat plugin-updates.txt)
+          ```
+          
+          ### 属性更新
+          ```
+          $(cat property-updates.txt)
+          ```
+          
+          请仔细检查更新内容，测试通过后合并。
+        branch: dependency-updates
+        delete-branch: true
+
+  # 检查安全漏洞
+  security-vulnerabilities:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'spring4demo'
+        path: '.'
+        format: 'HTML'
+        
+    - name: Check for vulnerabilities
+      run: |
+        if [ -f "reports/dependency-check-report.html" ]; then
+          echo "Vulnerability report generated"
+        fi
+
+    - name: Upload vulnerability reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: vulnerability-reports
+        path: reports/
+
+  # 更新Docker基础镜像
+  update-docker-base:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for Docker base image updates
+      run: |
+        echo "Checking for Docker base image updates..."
+        # 检查Dockerfile中的基础镜像版本
+        grep FROM ./spring4demo/Dockerfile
+
+    - name: Create Pull Request for Docker updates
+      if: contains(steps.check.outputs.base-images, 'update-available')
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: '🐳 Update Docker base images'
+        title: '🐳 Automated Docker Base Image Update'
+        body: |
+          ## Docker基础镜像更新
+          
+          此PR更新了Docker基础镜像到最新版本，包含安全修复和性能改进。
+          
+          请在测试通过后合并此PR。
+        branch: docker-updates
+        delete-branch: true
+
+  # 通知结果
+  notify-results:
+    runs-on: ubuntu-latest
+    needs: [check-dependencies, security-vulnerabilities, update-docker-base]
+    if: always()
+    steps:
+    - name: Download reports
+      uses: actions/download-artifact@v3
+      with:
+        path: reports/
+
+    - name: Create summary report
+      run: |
+        echo "# 依赖更新报告" > update-summary.md
+        echo "生成时间: $(date)" >> update-summary.md
+        echo "" >> update-summary.md
+        echo "## 检查结果" >> update-summary.md
+        echo "- Maven依赖检查: ${{ needs.check-dependencies.result }}" >> update-summary.md
+        echo "- 安全漏洞检查: ${{ needs.security-vulnerabilities.result }}" >> update-summary.md
+        echo "- Docker基础镜像检查: ${{ needs.update-docker-base.result }}" >> update-summary.md
+
+    - name: Upload summary report
+      uses: actions/upload-artifact@v3
+      with:
+        name: update-summary
+        path: update-summary.md

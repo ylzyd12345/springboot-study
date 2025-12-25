@@ -1,0 +1,152 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # 代码格式检查
+  code-format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run Google Java Format
+      run: |
+        mvn com.coveo:fmt-maven-plugin:format
+        mvn com.coveo:fmt-maven-plugin:check
+
+    - name: Check for formatting changes
+      run: |
+        if [[ -n $(git status --porcelain) ]]; then
+          echo "Code formatting issues found. Please run 'mvn fmt:format' locally."
+          exit 1
+        fi
+
+  # 静态代码分析
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run SonarCloud scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Run SpotBugs
+      run: |
+        mvn spotbugs:check spotbugs:xml
+
+    - name: Upload SpotBugs results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: spotbugs-reports
+        path: spring4demo/**/target/spotbugsXml.xml
+
+  # 性能测试
+  performance-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Build application
+      run: |
+        mvn clean package -DskipTests
+
+    - name: Run JMeter performance tests
+      run: |
+        echo "Running performance tests..."
+        # 添加JMeter测试命令
+
+    - name: Upload performance test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-results
+        path: performance-test-results/
+
+  # 代码覆盖率检查
+  coverage-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run tests with coverage
+      run: |
+        mvn clean test jacoco:report
+
+    - name: Check coverage threshold
+      run: |
+        mvn jacoco:check
+      env:
+        jacoco.line.coverage: "0.80"
+        jacoco.branch.coverage: "0.70"
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./spring4demo/target/site/jacoco/jacoco.xml
+        flags: unittests
+        name: codecov-umbrella

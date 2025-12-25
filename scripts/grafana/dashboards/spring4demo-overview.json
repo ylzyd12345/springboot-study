@@ -1,0 +1,217 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Spring4Demo 应用监控",
+    "tags": ["spring4demo", "spring-boot"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "应用状态",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"spring4demo\"}",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN",
+                    "color": "red"
+                  },
+                  "1": {
+                    "text": "UP",
+                    "color": "green"
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "JVM内存使用",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{application=\"spring4demo\"}",
+            "legendFormat": "Used"
+          },
+          {
+            "expr": "jvm_memory_max_bytes{application=\"spring4demo\"}",
+            "legendFormat": "Max"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Bytes",
+            "format": "bytes"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "HTTP请求率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{application=\"spring4demo\"}[5m])",
+            "legendFormat": "{{method}} {{uri}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests/sec"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "API响应时间",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{application=\"spring4demo\"}[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_server_requests_seconds_bucket{application=\"spring4demo\"}[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Seconds"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "数据库连接池",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "hikaricp_connections_active{application=\"spring4demo\"}",
+            "legendFormat": "Active"
+          },
+          {
+            "expr": "hikaricp_connections_idle{application=\"spring4demo\"}",
+            "legendFormat": "Idle"
+          },
+          {
+            "expr": "hikaricp_connections_max{application=\"spring4demo\"}",
+            "legendFormat": "Max"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Connections"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 6,
+        "title": "用户登录统计",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(user_login_count_total{application=\"spring4demo\"}[1h])",
+            "legendFormat": "Last Hour"
+          }
+        ],
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 7,
+        "title": "错误率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{application=\"spring4demo\",status=~\"5..\"}[5m]) / rate(http_server_requests_seconds_count{application=\"spring4demo\"}[5m])",
+            "legendFormat": "5xx Error Rate"
+          },
+          {
+            "expr": "rate(http_server_requests_seconds_count{application=\"spring4demo\",status=~\"4..\"}[5m]) / rate(http_server_requests_seconds_count{application=\"spring4demo\"}[5m])",
+            "legendFormat": "4xx Error Rate"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Error Rate",
+            "format": "percentunit"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 16
+        }
+      },
+      {
+        "id": 8,
+        "title": "活跃用户数",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "user_active_count{application=\"spring4demo\"}",
+            "legendFormat": "Active Users"
+          }
+        ],
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

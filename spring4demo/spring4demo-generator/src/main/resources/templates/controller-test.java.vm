@@ -1,0 +1,132 @@
+package ${package.Controller};
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import ${package.Entity}.${entity};
+import ${package.Service}.${table.serviceName};
+import ${package.Common}.test.WebTestBase;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+/**
+ * ${entity}控制器测试
+ * 
+ * @author ${author}
+ * @version 1.0.0
+ */
+class ${entity}ControllerTest extends WebTestBase {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private ${table.serviceName} ${table.serviceName?uncap_first};
+
+    @Test
+    @DisplayName("应该能够创建${entity}")
+    void shouldCreate${entity}() throws Exception {
+        // Given
+        ${entity} ${entityInstanceName} = new ${entity}();
+        ${entityInstanceName}.set${entity.setIdMethod}("1");
+
+        when(${table.serviceName?uncap_first}.save(any(${entity}.class))).thenReturn(${entityInstanceName});
+
+        // When & Then
+        mockMvc.perform(post("/api/${entityInstanceName}s")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(${entityInstanceName})))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value("1"));
+
+        verify(${table.serviceName?uncap_first}).save(any(${entity}.class));
+    }
+
+    @Test
+    @DisplayName("应该能够获取${entity}列表")
+    void shouldGet${entity}s() throws Exception {
+        // When & Then
+        mockMvc.perform(get("/api/${entityInstanceName}s"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+
+        verify(${table.serviceName?uncap_first}).findAll(any());
+    }
+
+    @Test
+    @DisplayName("应该能够根据ID获取${entity}")
+    void shouldGet${entity}ById() throws Exception {
+        // Given
+        ${entity} ${entityInstanceName} = new ${entity}();
+        ${entityInstanceName}.set${entity.setIdMethod}("1");
+
+        when(${table.serviceName?uncap_first}.findById("1")).thenReturn(Optional.of(${entityInstanceName}));
+
+        // When & Then
+        mockMvc.perform(get("/api/${entityInstanceName}s/{id}", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"));
+
+        verify(${table.serviceName?uncap_first}).findById("1");
+    }
+
+    @Test
+    @DisplayName("当${entity}不存在时应该返回404")
+    void shouldReturn404When${entity}NotFound() throws Exception {
+        // Given
+        when(${table.serviceName?uncap_first}.findById("1")).thenReturn(Optional.empty());
+
+        // When & Then
+        mockMvc.perform(get("/api/${entityInstanceName}s/{id}", "1"))
+                .andExpect(status().isNotFound());
+
+        verify(${table.serviceName?uncap_first}).findById("1");
+    }
+
+    @Test
+    @DisplayName("应该能够更新${entity}")
+    void shouldUpdate${entity}() throws Exception {
+        // Given
+        ${entity} ${entityInstanceName} = new ${entity}();
+        ${entityInstanceName}.set${entity.setIdMethod}("1");
+
+        when(${table.serviceName?uncap_first}.existsById("1")).thenReturn(true);
+        when(${table.serviceName?uncap_first}.save(any(${entity}.class))).thenReturn(${entityInstanceName});
+
+        // When & Then
+        mockMvc.perform(put("/api/${entityInstanceName}s/{id}", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(${entityInstanceName})))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"));
+
+        verify(${table.serviceName?uncap_first}).existsById("1");
+        verify(${table.serviceName?uncap_first}).save(any(${entity}.class));
+    }
+
+    @Test
+    @DisplayName("应该能够删除${entity}")
+    void shouldDelete${entity}() throws Exception {
+        // Given
+        when(${table.serviceName?uncap_first}.existsById("1")).thenReturn(true);
+
+        // When & Then
+        mockMvc.perform(delete("/api/${entityInstanceName}s/{id}", "1"))
+                .andExpect(status().isNoContent());
+
+        verify(${table.serviceName?uncap_first}).existsById("1");
+        verify(${table.serviceName?uncap_first}).deleteById("1");
+    }
+}

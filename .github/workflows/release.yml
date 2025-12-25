@@ -1,0 +1,185 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # 创建发布
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # 生成变更日志
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## 变更内容
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ## 下载地址
+          - Docker镜像: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+          - JAR包: 见下方Assets
+        draft: false
+        prerelease: false
+
+  # 构建和测试
+  build-and-test:
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run tests
+      run: |
+        mvn clean test -Dspring.profiles.active=test
+
+    - name: Build application
+      run: |
+        mvn clean package -DskipTests
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: spring4demo/**/target/*.jar
+
+  # 构建和推送Docker镜像
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [create-release, build-and-test]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=tag
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./spring4demo
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # 上传发布资产
+  upload-assets:
+    runs-on: ubuntu-latest
+    needs: [create-release, build-and-test]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+        path: build-artifacts
+
+    - name: Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: build-artifacts/spring4demo/spring4demo-starter/target/spring4demo-starter-1.0.0-SNAPSHOT.jar
+        asset_name: spring4demo-${{ github.ref_name }}.jar
+        asset_content_type: application/java-archive
+
+  # 通知发布
+  notify-release:
+    runs-on: ubuntu-latest
+    needs: [create-release, docker-build, upload-assets]
+    if: always()
+    steps:
+    - name: Notify on success
+      if: success()
+      run: |
+        echo "🎉 Release ${{ github.ref_name }} published successfully!"
+        echo "📦 Docker image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}"
+        
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "❌ Release ${{ github.ref_name }} failed!"
+
+  # 部署到生产环境
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: [create-release, docker-build, upload-assets]
+    environment: production
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "🚀 Deploying release ${{ github.ref_name }} to production..."
+        # 添加生产环境部署脚本
+        
+    - name: Run smoke tests
+      run: |
+        echo "🧪 Running smoke tests..."
+        # 添加冒烟测试
+        
+    - name: Health check
+      run: |
+        echo "💓 Performing health check..."
+        # 添加健康检查

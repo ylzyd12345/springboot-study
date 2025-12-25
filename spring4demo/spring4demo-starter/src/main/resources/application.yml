@@ -191,3 +191,30 @@ springdoc:
     license:
       name: MIT
       url: https://opensource.org/licenses/MIT
+
+# JWT配置
+jwt:
+  secret: spring4demo-secret-key-for-jwt-token-generation-and-validation
+  expiration: 86400000  # 24小时
+  refresh-expiration: 604800000  # 7天
+  header: Authorization
+  prefix: "Bearer "
+
+# API版本配置
+api:
+  version:
+    default: "1"
+    header: "X-API-Version"
+    deprecated-warning: true
+    max-versions: 5
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics:
+    enabled: true
+    jvm: true
+    system: true
+  health:
+    enabled: true
+    custom-checks: true

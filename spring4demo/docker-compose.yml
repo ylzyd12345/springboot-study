@@ -239,6 +239,53 @@ services:
     depends_on:
       - prometheus
 
+  # Node Exporter系统监控
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: spring4demo-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - spring4demo-network
+    restart: unless-stopped
+
+  # MySQL Exporter
+  mysql-exporter:
+    image: prom/mysqld-exporter:v0.14.0
+    container_name: spring4demo-mysql-exporter
+    ports:
+      - "9104:9104"
+    environment:
+      DATA_SOURCE_NAME: "spring4demo:password@(mysql:3306)/"
+    networks:
+      - spring4demo-network
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+  # Redis Exporter
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.44.0
+    container_name: spring4demo-redis-exporter
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: "redis://redis:6379"
+    networks:
+      - spring4demo-network
+    depends_on:
+      - redis
+    restart: unless-stopped
+
   # Zipkin链路追踪
   zipkin:
     image: openzipkin/zipkin:2.24

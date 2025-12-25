@@ -1,0 +1,31 @@
+package ${package.Dto}.request;
+
+import lombok.Data;
+import jakarta.validation.constraints.*;
+import java.time.LocalDateTime;
+
+/**
+ * ${entity}请求DTO
+ * 
+ * @author ${author}
+ * @version 1.0.0
+ */
+@Data
+public class ${entity}Request {
+
+    @NotBlank(message = "主键不能为空")
+    private ${entity.idType} id;
+
+    @NotBlank(message = "创建人不能为空")
+    private String createBy;
+
+    private LocalDateTime createTime;
+
+    private String updateBy;
+
+    private LocalDateTime updateTime;
+
+    private Integer deleted;
+
+    private Integer version;
+}
