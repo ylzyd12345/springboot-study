@@ -41,16 +41,11 @@
         <!-- Database -->
         <mysql.version>9.5.0</mysql.version>
         <druid.version>1.2.20</druid.version>
-        <mybatis.version>3.5.7</mybatis.version>
-        <mybatis-spring.version>3.0.5</mybatis-spring.version>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <pagehelper.version>1.4.7</pagehelper.version>
 
         <!-- Cache -->
         <caffeine.version>3.1.6</caffeine.version>
-        <lettuce.version>6.3.1</lettuce.version>
-        <jedis.version>5.2.0</jedis.version>
-        <redisson.version>3.23.3</redisson.version>
         <guava.version>32.1.3-jre</guava.version>
 
         <!-- Message Queue -->
@@ -62,10 +57,12 @@
         <!-- Search -->
         <elasticsearch.version>8.11.4</elasticsearch.version>
 
-        <!-- Security -->
+        <!-- Sa-Token -->
+        <sa-token.version>1.37.0</sa-token.version>
 
         <!-- API Documentation -->
         <springdoc.version>2.3.0</springdoc.version>
+        <knife4j.version>4.4.0</knife4j.version>
 
         <!-- H2 Database -->
         <h2.version>2.4.240</h2.version>
@@ -74,7 +71,7 @@
         <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <hutool.version>5.8.40</hutool.version>
-        <fastjson2.version>2.0.32</fastjson2.version>
+        <fastjson2.version>2.0.57</fastjson2.version>
 
         <!-- Test -->
         <testcontainers.version>1.19.6</testcontainers.version>
@@ -97,6 +94,9 @@
         <maven-pmd-plugin.version>3.21.0</maven-pmd-plugin.version>
         <fmt-maven-plugin.version>2.21.1</fmt-maven-plugin.version>
         <dependency-check-maven.version>8.4.0</dependency-check-maven.version>
+
+        <!-- api doc -->
+        <knife4j-version>4.4.0</knife4j-version>
     </properties>
 
     <repositories>
@@ -253,6 +253,7 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
@@ -265,23 +266,8 @@
                 <version>${druid.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis</artifactId>
-                <version>${mybatis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.mybatis</groupId>
-                <artifactId>mybatis-spring</artifactId>
-                <version>${mybatis-spring.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybatis-plus.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-extension</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
@@ -297,27 +283,12 @@
                 <version>${caffeine.version}</version>
             </dependency>
             <dependency>
-                <groupId>redis.clients</groupId>
-                <artifactId>jedis</artifactId>
-                <version>${jedis.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.redisson</groupId>
-                <artifactId>redisson-spring-boot-starter</artifactId>
-                <version>${redisson.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
 
             <!-- Message Queue -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-kafka</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
@@ -344,44 +315,26 @@
             <!-- API Documentation -->
             <dependency>
                 <groupId>org.springdoc</groupId>
-                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
                 <version>${springdoc.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
 
-            <!-- Security -->
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-security</artifactId>
-                        <version>${spring-boot.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-oauth2-client</artifactId>
-                        <version>${spring-boot.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-                        <version>${spring-boot.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.springframework.security</groupId>
-                        <artifactId>spring-security-test</artifactId>
-                        <version>6.2.4</version>
-                        <scope>test</scope>
-                    </dependency>
-                    
-                    <!-- Sa-Token -->
-                    <dependency>
-                        <groupId>cn.dev33</groupId>
-                        <artifactId>sa-token-spring-boot3-starter</artifactId>
-                        <version>1.37.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>cn.dev33</groupId>
-                        <artifactId>sa-token-redis-jackson</artifactId>
-                        <version>1.37.0</version>
-                    </dependency>
+            <!-- Sa-Token -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
 
             <!-- Utils -->
             <dependency>
@@ -407,14 +360,8 @@
 
             <!-- Monitoring -->
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-actuator</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-metrics</artifactId>
-                <version>${spring-boot.version}</version>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-core</artifactId>
             </dependency>
 
             <!-- Configuration Processor -->
@@ -438,64 +385,24 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-webflux</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-websocket</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-graphql</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-thymeleaf</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-hateoas</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-validation</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jdbc</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-jdbc</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${spring-boot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.lettuce</groupId>
-                        <artifactId>lettuce-core</artifactId>
-                    </exclusion>
-                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-devtools</artifactId>
                 <version>${spring-boot.version}</version>
+                <optional>true</optional>
             </dependency>
 
             <!-- Test -->
@@ -503,36 +410,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>mysql</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>redis</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>rabbitmq</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>kafka</artifactId>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>elasticsearch</artifactId>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -552,6 +429,7 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -619,7 +497,6 @@
                     <version>3.3.0</version>
                     <configuration>
                         <configLocation>checkstyle.xml</configLocation>
-                        <encoding>UTF-8</encoding>
                         <consoleOutput>true</consoleOutput>
                         <failsOnError>true</failsOnError>
                     </configuration>
@@ -666,19 +543,6 @@
                         <execution>
                             <goals>
                                 <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>com.coveo</groupId>
-                    <artifactId>fmt-maven-plugin</artifactId>
-                    <version>2.21.1</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>format</goal>
                             </goals>
                         </execution>
                     </executions>

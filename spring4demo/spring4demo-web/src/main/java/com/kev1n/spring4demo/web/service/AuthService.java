@@ -3,7 +3,7 @@ package com.kev1n.spring4demo.web.service;
 import cn.dev33.satoken.stp.StpUtil;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.service.UserService;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -261,8 +261,8 @@ public class AuthService {
     /**
      * 认证结果
      */
-    @lombok.Builder
-    @lombok.Data
+    @Builder
+    @Data
     public static class AuthResult {
         private boolean success;
         private String token;
@@ -275,8 +275,8 @@ public class AuthService {
     /**
      * 用户DTO
      */
-    @lombok.Builder
-    @lombok.Data
+    @Builder
+    @Data
     public static class UserDTO {
         private String id;
         private String username;

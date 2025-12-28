@@ -32,8 +32,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .match("/**")
                 .notMatch("/auth/login")
                 .notMatch("/auth/register")
-                .notMatch("/swagger-ui/**")
+                .notMatch("/doc.html")
                 .notMatch("/v3/api-docs/**")
+                .notMatch("/webjars/**")
+                .notMatch("/img.icons/**")
                 .notMatch("/actuator/**")
                 .notMatch("/error")
                 .check(r -> StpUtil.checkLogin());

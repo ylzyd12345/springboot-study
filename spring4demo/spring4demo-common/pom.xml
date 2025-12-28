@@ -15,12 +15,6 @@
     <description>通用模块 - 工具类、常量、异常、测试基类</description>
     
     <dependencies>
-        <!-- Spring Boot Starter - 核心功能 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        
         <!-- Configuration Processor - 配置处理 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -50,13 +44,7 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-        </dependency>
-
-        <!-- 基础测试依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     
