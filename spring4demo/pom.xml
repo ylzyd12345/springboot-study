@@ -40,28 +40,29 @@
 
         <!-- Database -->
         <mysql.version>9.5.0</mysql.version>
-        <druid.version>1.2.27</druid.version>
-        <mybatis.version>3.5.19</mybatis.version>
+        <druid.version>1.2.20</druid.version>
+        <mybatis.version>3.5.7</mybatis.version>
         <mybatis-spring.version>3.0.5</mybatis-spring.version>
-        <mybatis-plus.version>3.5.15</mybatis-plus.version>
-        <pagehelper.version>2.1.1</pagehelper.version>
+        <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <pagehelper.version>1.4.7</pagehelper.version>
 
         <!-- Cache -->
-        <caffeine.version>3.1.8</caffeine.version>
-        <jedis.version>5.0.1</jedis.version>
+        <caffeine.version>3.1.6</caffeine.version>
         <lettuce.version>6.3.1</lettuce.version>
+        <jedis.version>5.2.0</jedis.version>
+        <redisson.version>3.23.3</redisson.version>
+        <guava.version>32.1.3-jre</guava.version>
 
         <!-- Message Queue -->
         <starter-kafka.version>4.0.1</starter-kafka.version>
-        <rabbitmq.version>5.18.0</rabbitmq.version>
-        <kafka.version>3.5.0</kafka.version>
-        <rocketmq.version>5.3.2</rocketmq.version>
+        <rabbitmq.version>5.17.0</rabbitmq.version>
+        <kafka.version>3.6.1</kafka.version>
+        <rocketmq.version>5.1.4</rocketmq.version>
 
         <!-- Search -->
-        <elasticsearch.version>8.10.4</elasticsearch.version>
+        <elasticsearch.version>8.11.4</elasticsearch.version>
 
         <!-- Security -->
-        <jwt.version>0.13.0</jwt.version>
 
         <!-- API Documentation -->
         <springdoc.version>2.3.0</springdoc.version>
@@ -73,17 +74,22 @@
         <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <hutool.version>5.8.40</hutool.version>
-        <fastjson2.version>2.0.41</fastjson2.version>
+        <fastjson2.version>2.0.32</fastjson2.version>
 
         <!-- Test -->
-        <testcontainers.version>1.19.3</testcontainers.version>
+        <testcontainers.version>1.19.6</testcontainers.version>
         <jacoco.version>0.8.11</jacoco.version>
+        <wiremock.version>3.0.1</wiremock.version>
 
         <!-- Plugin -->
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        
+        <!-- Maven Cache Configuration -->
+        <maven.repo.local>F:/code-software/apache-maven-3.9.12/repository</maven.repo.local>
+        <maven.clean.cache>true</maven.clean.cache>
 
         <!-- Code Quality -->
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
@@ -94,6 +100,19 @@
     </properties>
 
     <repositories>
+
+        <repository>
+            <id>maven-central</id>
+            <name>*</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
         <repository>
             <id>aliyun-central</id>
             <name>Aliyun Central</name>
@@ -261,6 +280,11 @@
                 <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-extension</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper-spring-boot-starter</artifactId>
                 <version>${pagehelper.version}</version>
@@ -276,6 +300,16 @@
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
                 <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
             <!-- Message Queue -->
@@ -315,44 +349,39 @@
             </dependency>
 
             <!-- Security -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-security</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-oauth2-client</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-test</artifactId>
-                <version>6.2.4</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-api</artifactId>
-                <version>${jwt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-impl</artifactId>
-                <version>${jwt.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-jackson</artifactId>
-                <version>${jwt.version}</version>
-                <scope>runtime</scope>
-            </dependency>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-security</artifactId>
+                        <version>${spring-boot.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-oauth2-client</artifactId>
+                        <version>${spring-boot.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+                        <version>${spring-boot.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.springframework.security</groupId>
+                        <artifactId>spring-security-test</artifactId>
+                        <version>6.2.4</version>
+                        <scope>test</scope>
+                    </dependency>
+                    
+                    <!-- Sa-Token -->
+                    <dependency>
+                        <groupId>cn.dev33</groupId>
+                        <artifactId>sa-token-spring-boot3-starter</artifactId>
+                        <version>1.37.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>cn.dev33</groupId>
+                        <artifactId>sa-token-redis-jackson</artifactId>
+                        <version>1.37.0</version>
+                    </dependency>
 
             <!-- Utils -->
             <dependency>
@@ -456,19 +485,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
                 <version>${spring-boot.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.lettuce</groupId>
+                        <artifactId>lettuce-core</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-devtools</artifactId>
                 <version>${spring-boot.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-registry-prometheus</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-registry-influx</artifactId>
             </dependency>
 
             <!-- Test -->
@@ -509,9 +536,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.github.tomakehurst</groupId>
-                <artifactId>wiremock-jre8</artifactId>
-                <version>3.0.1</version>
+                <groupId>org.wiremock</groupId>
+                <artifactId>wiremock</artifactId>
+                <version>${wiremock.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -682,11 +709,14 @@
                     <configuration>
                         <updatePomFile>true</updatePomFile>
                         <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                        <outputDirectory>${project.build.directory}</outputDirectory>
+                        <flattenedPomFilename>.flattened-pom.xml</flattenedPomFilename>
+                        <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                     </configuration>
                     <executions>
                         <execution>
                             <id>flatten</id>
-                            <phase>process-resources</phase>
+                            <phase>validate</phase>
                             <goals>
                                 <goal>flatten</goal>
                             </goals>
@@ -699,6 +729,18 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-help-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -763,6 +805,37 @@
             <properties>
                 <spring.profiles.active>prod</spring.profiles.active>
             </properties>
+        </profile>
+        
+        <profile>
+            <id>cache-clean</id>
+            <properties>
+                <maven.clean.cache>true</maven.clean.cache>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>clean-cache</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <echo message="Cleaning Maven cache..."/>
+                                        <delete dir="${project.build.directory}" includeemptydirs="true" quiet="true"/>
+                                        <delete file="${project.basedir}/.flattened-pom.xml" quiet="true"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>

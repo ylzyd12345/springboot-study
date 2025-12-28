@@ -1,8 +1,7 @@
 package com.kev1n.spring4demo.core.test;
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * Core模块测试配置类
@@ -11,7 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * @version 1.0.0
  */
 @Configuration
-@EntityScan(basePackages = "com.kev1n.spring4demo.core.entity")
-@EnableJpaRepositories(basePackages = "com.kev1n.spring4demo.core.repository")
+@MapperScan("com.kev1n.spring4demo.core.mapper")
 public class TestConfiguration {
 }

@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.monitoring;
+package com.kev1n.spring4demo.web.monitoring;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -44,15 +44,13 @@ public class MeterRegistryConfig {
     }
 
     /**
-     * 记录计数器
-     */
+     * 记录计数*/
     public void incrementCounter(String counterName, String... tags) {
         meterRegistry.counter(counterName, tags).increment();
     }
 
     /**
-     * 记录仪表盘数据
-     */
+     * 记录仪表盘数*/
     public void recordGauge(String gaugeName, double value, Iterable<Tag> tags) {
         meterRegistry.gauge(gaugeName, tags, value);
     }

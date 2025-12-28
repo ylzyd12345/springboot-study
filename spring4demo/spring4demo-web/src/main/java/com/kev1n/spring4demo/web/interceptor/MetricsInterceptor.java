@@ -1,6 +1,6 @@
 package com.kev1n.spring4demo.web.interceptor;
 
-import com.kev1n.spring4demo.common.monitoring.CustomMetrics;
+import com.kev1n.spring4demo.web.monitoring.CustomMetrics;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +85,7 @@ public class MetricsInterceptor implements HandlerInterceptor {
      * 获取当前用户ID
      */
     private String getCurrentUserId(HttpServletRequest request) {
-        // 这里可以从SecurityContext或JWT Token中获取用户ID
+        // 这里可以从SecurityContext或Sa-Token中获取用户ID
         // 简化实现，实际应该从Spring Security获取
         return request.getHeader("X-User-Id");
     }

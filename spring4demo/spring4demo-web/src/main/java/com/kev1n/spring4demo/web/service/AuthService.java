@@ -1,20 +1,16 @@
 package com.kev1n.spring4demo.web.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.kev1n.spring4demo.core.entity.User;
-import com.kev1n.spring4demo.core.repository.UserRepository;
-import com.kev1n.spring4demo.core.security.UserPrincipal;
-import com.kev1n.spring4demo.core.util.JwtUtils;
+import com.kev1n.spring4demo.core.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,10 +24,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtils jwtUtils;
 
     /**
      * 用户登录
@@ -41,26 +35,48 @@ public class AuthService {
         log.info("用户登录认证: {}", username);
 
         try {
-            // 认证用户
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-            );
+            // 查找用户
+            Optional<User> userOpt = userService.findByUsername(username);
+            if (userOpt.isEmpty()) {
+                return AuthResult.builder()
+                    .success(false)
+                    .message("用户名或密码错误")
+                    .build();
+            }
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            User user = userOpt.get();
+
+            // 验证密码
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                return AuthResult.builder()
+                    .success(false)
+                    .message("用户名或密码错误")
+                    .build();
+            }
+
+            // 检查用户状态
+            if (user.getStatus() != 1) {
+                return AuthResult.builder()
+                    .success(false)
+                    .message("用户已被禁用")
+                    .build();
+            }
 
             // 更新最后登录时间
-            updateLastLoginTime(userPrincipal.getId());
+            updateLastLoginTime(user.getId());
 
-            // 生成JWT Token
-            String token = jwtUtils.generateToken(userPrincipal);
+            // 使用Sa-Token登录
+            StpUtil.login(user.getId());
+
+            // 获取token
+            String token = StpUtil.getTokenValue();
 
             return AuthResult.builder()
                 .success(true)
                 .token(token)
                 .tokenType("Bearer")
-                .expiresIn(jwtUtils.getExpirationTime())
-                .user(buildUserDTO(userPrincipal))
+                .expiresIn(StpUtil.getTokenTimeout())
+                .user(buildUserDTO(user))
                 .message("登录成功")
                 .build();
 
@@ -68,7 +84,7 @@ public class AuthService {
             log.error("用户登录失败: {}", e.getMessage());
             return AuthResult.builder()
                 .success(false)
-                .message("用户名或密码错误")
+                .message("登录失败")
                 .build();
         }
     }
@@ -81,7 +97,7 @@ public class AuthService {
         log.info("用户注册: {}", username);
 
         // 检查用户名是否已存在
-        if (userRepository.existsByUsername(username)) {
+        if (userService.existsByUsername(username)) {
             return AuthResult.builder()
                 .success(false)
                 .message("用户名已存在")
@@ -89,7 +105,7 @@ public class AuthService {
         }
 
         // 检查邮箱是否已存在
-        if (userRepository.existsByEmail(email)) {
+        if (userService.existsByEmail(email)) {
             return AuthResult.builder()
                 .success(false)
                 .message("邮箱已存在")
@@ -110,7 +126,7 @@ public class AuthService {
         user.setDeleted(0);
         user.setVersion(1);
 
-        userRepository.save(user);
+        userService.save(user);
 
         return AuthResult.builder()
             .success(true)
@@ -121,18 +137,34 @@ public class AuthService {
     /**
      * 刷新Token
      */
-    public AuthResult refreshToken(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        
-        // 生成新的JWT Token
-        String newToken = jwtUtils.generateToken(userPrincipal);
+    public AuthResult refreshToken() {
+        // 检查是否已登录
+        if (!StpUtil.isLogin()) {
+            return AuthResult.builder()
+                .success(false)
+                .message("用户未登录")
+                .build();
+        }
+
+        String userId = StpUtil.getLoginId().toString();
+        Optional<User> userOpt = userService.getOptById(userId);
+        if (userOpt.isEmpty()) {
+            return AuthResult.builder()
+                .success(false)
+                .message("用户不存在")
+                .build();
+        }
+
+        // 刷新token
+        StpUtil.renewTimeout(StpUtil.getTokenTimeout());
+        String token = StpUtil.getTokenValue();
 
         return AuthResult.builder()
             .success(true)
-            .token(newToken)
+            .token(token)
             .tokenType("Bearer")
-            .expiresIn(jwtUtils.getExpirationTime())
-            .user(buildUserDTO(userPrincipal))
+            .expiresIn(StpUtil.getTokenTimeout())
+            .user(buildUserDTO(userOpt.get()))
             .message("Token刷新成功")
             .build();
     }
@@ -140,19 +172,30 @@ public class AuthService {
     /**
      * 获取当前用户信息
      */
-    public UserDTO getCurrentUser(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        return buildUserDTO(userPrincipal);
+    public UserDTO getCurrentUser() {
+        if (!StpUtil.isLogin()) {
+            return null;
+        }
+
+        String userId = StpUtil.getLoginId().toString();
+        Optional<User> userOpt = userService.getOptById(userId);
+        return userOpt.map(this::buildUserDTO).orElse(null);
     }
 
     /**
      * 修改密码
      */
     @Transactional
-    public AuthResult changePassword(String username, String oldPassword, String newPassword) {
-        log.info("用户修改密码: {}", username);
+    public AuthResult changePassword(String oldPassword, String newPassword) {
+        if (!StpUtil.isLogin()) {
+            return AuthResult.builder()
+                .success(false)
+                .message("用户未登录")
+                .build();
+        }
 
-        Optional<User> userOpt = userRepository.findByUsername(username);
+        String userId = StpUtil.getLoginId().toString();
+        Optional<User> userOpt = userService.getOptById(userId);
         if (userOpt.isEmpty()) {
             return AuthResult.builder()
                 .success(false)
@@ -173,7 +216,7 @@ public class AuthService {
         // 更新密码
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdateTime(LocalDateTime.now());
-        userRepository.save(user);
+        userService.updateById(user);
 
         return AuthResult.builder()
             .success(true)
@@ -182,29 +225,36 @@ public class AuthService {
     }
 
     /**
+     * 退出登录
+     */
+    public void logout() {
+        StpUtil.logout();
+    }
+
+    /**
      * 更新最后登录时间
      */
     private void updateLastLoginTime(String userId) {
-        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<User> userOpt = userService.getOptById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setUpdateTime(LocalDateTime.now());
-            userRepository.save(user);
+            userService.updateById(user);
         }
     }
 
     /**
      * 构建用户DTO
      */
-    private UserDTO buildUserDTO(UserPrincipal userPrincipal) {
+    private UserDTO buildUserDTO(User user) {
         return UserDTO.builder()
-            .id(userPrincipal.getId())
-            .username(userPrincipal.getUsername())
-            .email(userPrincipal.getEmail())
-            .realName(userPrincipal.getRealName())
-            .avatar(userPrincipal.getAvatar())
-            .deptId(userPrincipal.getDeptId())
-            .authorities(userPrincipal.getAuthorities())
+            .id(user.getId())
+            .username(user.getUsername())
+            .email(user.getEmail())
+            .realName(user.getRealName())
+            .avatar(user.getAvatar())
+            .deptId(user.getDeptId())
+            .status(user.getStatus())
             .build();
     }
 
@@ -234,6 +284,6 @@ public class AuthService {
         private String realName;
         private String avatar;
         private String deptId;
-        private java.util.Collection<? extends org.springframework.security.core.GrantedAuthority> authorities;
+        private Integer status;
     }
 }

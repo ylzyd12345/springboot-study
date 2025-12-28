@@ -179,8 +179,8 @@ INSERT INTO `system_configs` (`config_key`, `config_value`, `description`, `conf
 ('system.author', 'Spring4demo Team', '系统作者', 'STRING', 1),
 ('file.upload.max.size', '104857600', '文件上传最大大小(字节)', 'LONG', 0),
 ('file.upload.allowed.types', 'jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx', '允许上传的文件类型', 'STRING', 0),
-('jwt.expiration', '86400000', 'JWT过期时间(毫秒)', 'LONG', 0),
-('jwt.refresh.expiration', '604800000', 'JWT刷新过期时间(毫秒)', 'LONG', 0),
+('satoken.timeout', '2592000', 'Sa-Token过期时间(秒)', 'LONG', 0),
+('satoken.activity.timeout', '-1', 'Sa-Token临时有效期(秒)', 'LONG', 0),
 ('password.min.length', '6', '密码最小长度', 'INTEGER', 0),
 ('password.max.length', '20', '密码最大长度', 'INTEGER', 0);
 

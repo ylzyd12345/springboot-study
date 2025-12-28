@@ -33,14 +33,7 @@ spring:
         login-username: admin
         login-password: admin
         allow: 127.0.0.1
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
+  
   thymeleaf:
     cache: false
       
@@ -72,20 +65,23 @@ logging:
   file:
     name: ./logs/spring4demo-dev.log
     
-# MyBatis配置
-mybatis:
+# MyBatis-Plus配置
+mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
     call-setters-on-nulls: true
     jdbc-type-for-null: 'null'
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
-      id-type: AUTO
+      id-type: assign_id
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
-  mapper-locations: classpath:mapper/**/*.xml
+      table-underline: true
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.kev1n.spring4demo.core.entity
     
 # 管理端点配置
 management:

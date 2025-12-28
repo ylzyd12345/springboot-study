@@ -28,21 +28,17 @@
 ### 💾 数据存储技术栈
 
 #### 关系型数据库
-- [x] **spring-boot-starter-data-jpa** - JPA数据访问（Hibernate）
-- [x] **spring-boot-starter-data-jdbc** - Spring Data JDBC
-- [x] **spring-boot-starter-jdbc** - JDBC（HikariCP连接池）
-- [x] **spring-boot-starter-Mybatis** - Mybatis(Druid连接池)
-- [x] **spring-boot-starter-Mybatis-Plus** - Mybatis-Plus访问层
+- [x] **MyBatis-Plus** - MyBatis 增强工具，简化 CRUD 操作
+- [x] **MyBatis-Plus-Boot-Starter** - MyBatis-Plus Spring Boot 集成
+- [x] **Druid** - 高性能数据库连接池
+- [x] **HikariCP** - Spring Boot 默认连接池
 
 #### NoSQL数据库
-- [x] **spring-boot-starter-data-mongodb** - MongoDB文档数据库
-- [x] **spring-boot-starter-data-mongodb-reactive** - MongoDB响应式支持
-- [x] **spring-boot-starter-data-redis** - Redis键值存储
-- [x] **spring-boot-starter-data-redis-reactive** - Redis响应式支持
-- [x] **spring-boot-starter-data-elasticsearch** - Elasticsearch搜索引擎
-- [x] **spring-boot-starter-data-neo4j** - Neo4j图数据库
-- [x] **spring-boot-starter-data-r2dbc** - R2DBC响应式数据库访问
-- [x] **spring-boot-starter-data-influxdb** - InfluxDB时间序列数据库
+- [x] **MongoDB** - MongoDB文档数据库
+- [x] **Redis** - Redis键值存储（Sa-Token 持久化支持）
+- [x] **Elasticsearch** - Elasticsearch搜索引擎
+- [x] **Neo4j** - Neo4j图数据库
+- [x] **InfluxDB** - InfluxDB时间序列数据库
 
 ### 📨 消息中间件技术栈
 
@@ -54,9 +50,9 @@
 
 ### 🔐 安全认证技术栈
 
-- [x] **spring-boot-starter-security** - Spring Security安全框架
-- [x] **spring-boot-starter-oauth2-client** - OAuth2/OpenID Connect客户端
-- [x] **spring-boot-starter-oauth2-resource-server** - OAuth2资源服务器
+- [x] **Sa-Token** - 轻量级 Java 权限认证框架
+- [x] **Sa-Token-OAuth2** - OAuth2/OpenID Connect 支持
+- [x] **Sa-Token-Redis** - Redis 持久化支持
 
 ### 📊 监控运维技术栈
 

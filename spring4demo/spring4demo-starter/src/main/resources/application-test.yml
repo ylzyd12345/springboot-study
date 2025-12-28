@@ -8,10 +8,7 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password:
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.H2Dialect
+  
   h2:
     console:
       enabled: true
@@ -44,8 +41,8 @@ logging:
   file:
     name: ./logs/spring4demo-test.log
     
-# MyBatis配置
-mybatis:
+# MyBatis-Plus配置
+mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
@@ -53,11 +50,13 @@ mybatis:
     jdbc-type-for-null: 'null'
   global-config:
     db-config:
-      id-type: AUTO
+      id-type: assign_id
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
-  mapper-locations: classpath:mapper/**/*.xml
+      table-underline: true
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.kev1n.spring4demo.core.entity
     
 # 管理端点配置
 management:

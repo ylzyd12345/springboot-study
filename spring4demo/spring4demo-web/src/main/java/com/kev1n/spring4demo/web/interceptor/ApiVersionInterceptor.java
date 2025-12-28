@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.interceptor;
+package com.kev1n.spring4demo.web.interceptor;
 
 import com.kev1n.spring4demo.common.annotation.ApiVersion;
 import com.kev1n.spring4demo.common.annotation.DeprecatedApi;

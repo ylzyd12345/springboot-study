@@ -101,7 +101,7 @@ docker-compose up -d
 - ⏱️ 时间序列数据库 (InfluxDB)
 
 ### 🔐 安全认证
-- 🛡️ Spring Security 安全框架
+- 🛡️ Sa-Token 轻量级权限认证框架
 - 🔑 JWT Token 认证
 - 🌐 OAuth2/OIDC 支持
 - 🔒 API 安全最佳实践
@@ -151,15 +151,15 @@ Spring4demo 采用分层架构设计，从客户端到基础设施共分为七�
 
 **🏢 业务层**
 - **业务服务**: 核心业务逻辑处理
-- **安全认证**: Spring Security + JWT + OAuth2/OIDC
+- **安全认证**: Sa-Token + JWT + OAuth2/OIDC
 - **消息处理**: RabbitMQ + Kafka + RocketMQ
 - **任务调度**: Spring Task + Quartz 定时任务
 - **企业集成**: Spring Integration + RSocket 企业集成模式
 
 **💾 数据层**
-- **关系型数据库**: MySQL + PostgreSQL + 多种数据访问技术
+- **关系型数据库**: MySQL + PostgreSQL + MyBatis-Plus 数据访问
 - **NoSQL数据库**: MongoDB + Redis + Elasticsearch + Neo4j + InfluxDB
-- **数据访问**: JPA/Hibernate + MyBatis/MyBatis-Plus + R2DBC + Spring Data JDBC
+- **数据访问**: MyBatis-Plus + Druid 连接池 + HikariCP
 
 **📊 监控运维层**
 - **应用监控**: Spring Boot Actuator + Micrometer + Prometheus + Grafana
@@ -513,21 +513,17 @@ graph TB
 ### 💾 数据存储技术栈
 
 #### 关系型数据库
-- [x] **spring-boot-starter-data-jpa** - JPA数据访问（Hibernate）
-- [x] **spring-boot-starter-data-jdbc** - Spring Data JDBC
-- [x] **spring-boot-starter-jdbc** - JDBC（HikariCP连接池）
-- [x] **spring-boot-starter-Mybatis** - Mybatis(Druid连接池)
-- [x] **spring-boot-starter-Mybatis-Plus** - Mybatis-Plus访问层
+- [x] **MyBatis-Plus** - MyBatis 增强工具，简化 CRUD 操作
+- [x] **MyBatis-Plus-Boot-Starter** - MyBatis-Plus Spring Boot 集成
+- [x] **Druid** - 高性能数据库连接池
+- [x] **HikariCP** - Spring Boot 默认连接池
 
 #### NoSQL数据库
-- [x] **spring-boot-starter-data-mongodb** - MongoDB文档数据库
-- [x] **spring-boot-starter-data-mongodb-reactive** - MongoDB响应式支持
-- [x] **spring-boot-starter-data-redis** - Redis键值存储
-- [x] **spring-boot-starter-data-redis-reactive** - Redis响应式支持
-- [x] **spring-boot-starter-data-elasticsearch** - Elasticsearch搜索引擎
-- [x] **spring-boot-starter-data-neo4j** - Neo4j图数据库
-- [x] **spring-boot-starter-data-r2dbc** - R2DBC响应式数据库访问
-- [x] **spring-boot-starter-data-influxdb** - InfluxDB时间序列数据库
+- [x] **MongoDB** - MongoDB文档数据库
+- [x] **Redis** - Redis键值存储（Sa-Token 持久化支持）
+- [x] **Elasticsearch** - Elasticsearch搜索引擎
+- [x] **Neo4j** - Neo4j图数据库
+- [x] **InfluxDB** - InfluxDB时间序列数据库
 
 ### 📨 消息中间件技术栈
 
@@ -539,9 +535,9 @@ graph TB
 
 ### 🔐 安全认证技术栈
 
-- [x] **spring-boot-starter-security** - Spring Security安全框架
-- [x] **spring-boot-starter-oauth2-client** - OAuth2/OpenID Connect客户端
-- [x] **spring-boot-starter-oauth2-resource-server** - OAuth2资源服务器
+- [x] **Sa-Token** - 轻量级 Java 权限认证框架
+- [x] **Sa-Token-OAuth2** - OAuth2/OpenID Connect 支持
+- [x] **Sa-Token-Redis** - Redis 持久化支持
 
 ### 📊 监控运维技术栈
 
@@ -628,17 +624,18 @@ spring:
     username: myuser
     password: mypassword
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 5
-  
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
   
   redis:
     host: localhost
@@ -649,6 +646,33 @@ spring:
         max-active: 8
         max-idle: 8
         min-idle: 0
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath*:/mapper/**/*.xml
+
+# Sa-Token 配置
+sa-token:
+  token-name: Authorization
+  timeout: 2592000
+  activity-timeout: -1
+  is-concurrent: true
+  is-share: false
+  token-style: uuid
+  is-log: false
+  is-print: false
+  jwt-secret-key: abcdefghijklmnopqrstuvwxyz
 ```
 
 ### 🧪 测试指南

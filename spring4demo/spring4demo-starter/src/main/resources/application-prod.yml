@@ -26,18 +26,7 @@ spring:
         enabled: false
       stat-view-servlet:
         enabled: false
-  jpa:
-    show-sql: false
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        format_sql: false
-        use_sql_comments: false
-        jdbc:
-          batch_size: 50
-        order_inserts: true
-        order_updates: true
+  
   thymeleaf:
     cache: true
       
@@ -68,8 +57,8 @@ logging:
   file:
     name: /app/logs/spring4demo-prod.log
     
-# MyBatis配置
-mybatis:
+# MyBatis-Plus配置
+mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
@@ -77,11 +66,13 @@ mybatis:
     jdbc-type-for-null: 'null'
   global-config:
     db-config:
-      id-type: AUTO
+      id-type: assign_id
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
-  mapper-locations: classpath:mapper/**/*.xml
+      table-underline: true
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.kev1n.spring4demo.core.entity
     
 # 管理端点配置
 management:

@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.monitoring;
+package com.kev1n.spring4demo.web.monitoring;
 
 import io.micrometer.core.instrument.Timer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 监控切面
- * 自动记录方法执行时间和调用次数
- * 
+ * 自动记录方法执行时间和调用次�? * 
  * @author spring4demo
  * @version 1.0.0
  */
@@ -134,8 +133,7 @@ public class MonitoringAspect {
     }
 
     /**
-     * 监控数据库操作
-     */
+     * 监控数据库操*/
     @Around("execution(* com.kev1n.spring4demo.core.repository.*.*(..))")
     public Object monitorDatabaseOperation(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();

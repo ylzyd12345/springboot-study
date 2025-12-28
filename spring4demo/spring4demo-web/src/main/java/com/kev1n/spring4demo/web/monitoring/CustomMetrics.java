@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.monitoring;
+package com.kev1n.spring4demo.web.monitoring;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
@@ -12,8 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 自定义监控指标
- * 
  * @author spring4demo
  * @version 1.0.0
  */
@@ -24,20 +22,20 @@ public class CustomMetrics {
 
     private final MeterRegistry meterRegistry;
 
-    // 业务计数器
+    // 业务计数
     private final Counter apiRequestCounter;
     private final Counter errorCounter;
 
-    // 业务计时器
+    // 业务计时
     private final Timer apiResponseTimer;
     private final Timer databaseQueryTimer;
     private final Timer cacheAccessTimer;
 
-    // 业务仪表盘
+    // 业务仪表
     private final AtomicLong cacheHits = new AtomicLong(0);
     private final AtomicLong cacheMisses = new AtomicLong(0);
 
-    // 自定义指标存储
+    // 自定义指标
     private final ConcurrentHashMap<String, AtomicLong> customGauges = new ConcurrentHashMap<>();
 
     public CustomMetrics(MeterRegistry meterRegistry) {
@@ -106,7 +104,7 @@ public class CustomMetrics {
                 .register(meterRegistry));
     }
 
-    // 数据库查询指标
+    // 数据库查询
     public Timer.Sample startDatabaseTimer() {
         return Timer.start(meterRegistry);
     }
@@ -129,12 +127,12 @@ public class CustomMetrics {
         meterRegistry.counter("cache.access.count", "cache", cacheName, "result", "miss").increment();
     }
 
-    // 自定义业务指标
+    // 自定义业务
     public void incrementCustomCounter(String name, String... tags) {
         meterRegistry.counter(name, tags).increment();
     }
 
-    // 停止计时器
+    // 停止计时
     public void stopTimer(Timer.Sample sample, String timerName, String... tags) {
         sample.stop(Timer.builder(timerName)
                 .tags(tags)
@@ -172,7 +170,7 @@ public class CustomMetrics {
         meterRegistry.gauge("jvm.memory.free.bytes", freeMemory);
         meterRegistry.gauge("jvm.memory.total.bytes", totalMemory);
 
-        // 线程数指标
+        // 线程数指
         ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
         int activeThreads = threadGroup.activeCount();
         meterRegistry.gauge("jvm.threads.active.count", activeThreads);
@@ -184,8 +182,8 @@ public class CustomMetrics {
             while (true) {
                 try {
                     recordSystemMetrics();
-                    Thread.sleep(30000); // 每30秒记录一次
-                } catch (InterruptedException e) {
+                    Thread.sleep(30000);
+                    } catch (InterruptedException e) {
                     log.warn("System metrics reporting interrupted", e);
                     break;
                 }
