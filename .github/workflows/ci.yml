@@ -33,17 +33,17 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Run Checkstyle
+    - name: Run Checkstyle with parallel compilation
       run: |
-        mvn checkstyle:check -Dcheckstyle.config.location=checkstyle.xml
+        mvn checkstyle:check -Dcheckstyle.config.location=checkstyle.xml -T 4
 
     - name: Run SpotBugs
       run: |
-        mvn spotbugs:check
+        mvn spotbugs:check -T 4
 
     - name: Run PMD Analysis
       run: |
-        mvn pmd:check
+        mvn pmd:check -T 4
 
   # 单元测试
   unit-test:
@@ -66,9 +66,10 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Run unit tests
+    - name: Run unit tests with parallel execution
       run: |
-        mvn clean test -Dspring.profiles.active=test
+        # 使用并行编译和并行测试加速
+        mvn clean test -Dspring.profiles.active=test -T 4
 
     - name: Generate test report
       uses: dorny/test-reporter@v1
@@ -134,9 +135,10 @@ jobs:
       run: |
         sleep 30
 
-    - name: Run integration tests
+    - name: Run integration tests with parallel execution
       run: |
-        mvn clean verify -Dspring.profiles.active=test -Dspring.datasource.url=jdbc:mysql://localhost:3306/spring4demo_test
+        # 使用并行编译加速集成测试
+        mvn clean verify -Dspring.profiles.active=test -Dspring.datasource.url=jdbc:mysql://localhost:3306/spring4demo_test -T 4
       env:
         SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/spring4demo_test
         SPRING_DATASOURCE_USERNAME: root
@@ -207,9 +209,10 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Build application
+    - name: Build application with optimizations
       run: |
-        mvn clean package -DskipTests
+        # 使用并行编译（4线程）和跳过 JaCoCo 加速构建
+        mvn clean package -DskipTests -Djacoco.skip=true -T 4
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
