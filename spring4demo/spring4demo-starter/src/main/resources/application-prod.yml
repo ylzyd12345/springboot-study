@@ -83,10 +83,17 @@ management:
   endpoint:
     health:
       show-details: never
+    prometheus:
+      enabled: true
   metrics:
     export:
       prometheus:
         enabled: true
+        step: 1m
+        descriptions: true
+    tags:
+      application: ${spring.application.name}
+      environment: prod
         
 # 生产环境特殊配置
 server:

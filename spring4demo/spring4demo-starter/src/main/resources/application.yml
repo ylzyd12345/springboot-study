@@ -137,7 +137,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info,metrics,prometheus
       base-path: /actuator
       cors:
         allowed-origins: "*"
@@ -160,10 +160,14 @@ management:
         http.server.requests: 0.5,0.9,0.95,0.99
       sla:
         http.server.requests: 10ms,50ms,100ms,200ms,500ms
-  prometheus:
-    metrics:
-      export:
+    export:
+      prometheus:
         enabled: true
+        step: 1m
+        descriptions: true
+    tags:
+      application: ${spring.application.name}
+      region: default
 
 # OpenAPI配置
 springdoc:

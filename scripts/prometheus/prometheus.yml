@@ -1,6 +1,9 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    cluster: 'spring4demo-cluster'
+    environment: 'dev'
 
 rule_files:
   # - "first_rules.yml"
@@ -12,6 +15,9 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['app:8080']
+        labels:
+          service: 'spring4demo'
+          env: 'dev'
     scrape_interval: 30s
     scrape_timeout: 10s
 
@@ -19,31 +25,43 @@ scrape_configs:
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
 
   # 节点监控
   - job_name: 'node-exporter'
     static_configs:
       - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
 
   # MySQL监控
   - job_name: 'mysql-exporter'
     static_configs:
       - targets: ['mysql-exporter:9104']
+        labels:
+          service: 'mysql'
 
   # Redis监控
   - job_name: 'redis-exporter'
     static_configs:
       - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
 
   # RabbitMQ监控
   - job_name: 'rabbitmq-exporter'
     static_configs:
       - targets: ['rabbitmq:15692']
+        labels:
+          service: 'rabbitmq'
 
   # Elasticsearch监控
   - job_name: 'elasticsearch-exporter'
     static_configs:
       - targets: ['elasticsearch-exporter:9114']
+        labels:
+          service: 'elasticsearch'
 
 alerting:
   alertmanagers:
