@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class CustomMetrics {
 
     private final MeterRegistry meterRegistry;

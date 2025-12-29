@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @RequiredArgsConstructor
-public class SecurityConfig implements WebMvcConfigurer {
+public class SaTokenSecurityConfig implements WebMvcConfigurer {
 
     /**
      * 注册 Sa-Token 拦截器

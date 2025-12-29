@@ -146,7 +146,7 @@ spring:
 sa-token:
   token-name: Authorization
   timeout: 2592000  # 30天
-  activity-timeout: -1
+  active-timeout: -1
   token-style: uuid
   is-read-header: true
   token-prefix: Bearer
