@@ -1,0 +1,144 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
+{
+	"name": "Spring4demo Dev Container",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace/spring4demo",
+
+	"features": {
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "none",
+			"installMaven": "true",
+			"installGradle": "false",
+			"mavenVersion": "3.9.12"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "latest",
+			"moby": true,
+			"dockerDashComposeVersion": "v2"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts",
+			"nodeGypDependencies": true,
+			"nvmInstallPath": "/usr/local/share/nvm"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"version": "latest"
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		8080,  // Spring Boot Application
+		3306,  // MySQL
+		6379,  // Redis
+		5672,  // RabbitMQ AMQP
+		15672, // RabbitMQ Management
+		9092,  // Kafka
+		8081,  // Kafka UI
+		9200,  // Elasticsearch
+		9300,  // Elasticsearch Transport
+		5601,  // Kibana
+		7474,  // Neo4j HTTP
+		7687,  // Neo4j Bolt
+		8086,  // InfluxDB
+		9090,  // Prometheus
+		3000,  // Grafana
+		3100,  // Loki
+		9411,  // Zipkin
+		9100,  // Node Exporter
+		9104,  // MySQL Exporter
+		9121   // Redis Exporter
+	],
+
+	"portsAttributes": {
+		"8080": {
+			"label": "Spring Boot App",
+			"onAutoForward": "openBrowser"
+		},
+		"15672": {
+			"label": "RabbitMQ Management",
+			"onAutoForward": "openBrowser"
+		},
+		"8081": {
+			"label": "Kafka UI",
+			"onAutoForward": "openBrowser"
+		},
+		"5601": {
+			"label": "Kibana",
+			"onAutoForward": "openBrowser"
+		},
+		"7474": {
+			"label": "Neo4j Browser",
+			"onAutoForward": "openBrowser"
+		},
+		"8086": {
+			"label": "InfluxDB UI",
+			"onAutoForward": "openBrowser"
+		},
+		"9090": {
+			"label": "Prometheus",
+			"onAutoForward": "openBrowser"
+		},
+		"3000": {
+			"label": "Grafana",
+			"onAutoForward": "openBrowser"
+		},
+		"9411": {
+			"label": "Zipkin",
+			"onAutoForward": "openBrowser"
+		}
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "bash -c 'echo \"Dev container created successfully!\" && java -version && mvn -version'",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"vscjava.vscode-java-pack",
+				"vmware.vscode-boot-dev-pack",
+				"redhat.vscode-xml",
+				"ms-azuretools.vscode-docker",
+				"eamodio.gitlens",
+				"sonarsource.sonarlint-vscode",
+				"GitHub.copilot",
+				"ms-vscode.vscode-json",
+				"yzhang.markdown-all-in-one",
+				"streetsidesoftware.code-spell-checker",
+				"PKief.material-icon-theme",
+				"esbenp.prettier-vscode"
+			],
+			"settings": {
+				"java.server.launchMode": "Standard",
+				"java.configuration.maven.globalSettings": "${workspaceFolder}/.mvn/settings.xml",
+				"java.format.settings.url": "${workspaceFolder}/eclipse-format.xml",
+				"java.saveActions.organizeImports": true,
+				"editor.formatOnSave": true,
+				"files.trimTrailingWhitespace": true,
+				"files.insertFinalNewline": true,
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		},
+		"jetbrains": {
+			"backend": "IntelliJ"
+		}
+	},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	"remoteUser": "root",
+
+	// Mount local Maven repository
+	"mounts": [
+		"source=${localWorkspaceFolder}/../.m2,target=/root/.m2,type=bind,consistency=cached",
+		"source=${localWorkspaceFolder}/../.git,target=/workspace/.git,type=bind,consistency=cached"
+	],
+
+	// Container environment variables
+	"containerEnv": {
+		"SPRING_PROFILES_ACTIVE": "dev",
+		"MAVEN_OPTS": "-Xmx1024m"
+	}
+}
