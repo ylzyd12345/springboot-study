@@ -94,12 +94,59 @@ spring4demo/
 ## 🐳 Docker 部署
 
 ```bash
-# 启动所有服务
+# 启动所有服务（包括日志系统）
 docker-compose up -d
 
 # 查看服务状态
 docker-compose ps
+
+# 查看应用日志
+docker-compose logs -f app
 ```
+
+### 服务说明
+
+项目集成了完整的监控和日志系统：
+
+| 服务 | 地址 | 用途 |
+|------|------|------|
+| **应用服务** | | |
+| app | http://localhost:8080 | Spring Boot 应用 |
+| **数据库** | | |
+| mysql | localhost:3306 | MySQL 8.0 数据库 |
+| redis | localhost:6379 | Redis 7.0 缓存 |
+| elasticsearch | http://localhost:9200 | Elasticsearch 8.11（业务文档检索） |
+| neo4j | http://localhost:7474 | Neo4j 5.12 图数据库 |
+| influxdb | http://localhost:8086 | InfluxDB 2.7 时序数据库 |
+| **消息队列** | | |
+| rabbitmq | http://localhost:15672 | RabbitMQ 3.12 (admin/admin) |
+| kafka | localhost:9092 | Apache Kafka 7.4 |
+| kafka-ui | http://localhost:8081 | Kafka UI 管理界面 |
+| **监控运维** | | |
+| prometheus | http://localhost:9090 | Prometheus 监控 |
+| grafana | http://localhost:3000 | Grafana 可视化 (admin/admin) |
+| loki | http://localhost:3100 | Loki 日志存储（日志采集查看） |
+| promtail | http://localhost:9080 | Promtail 日志采集 |
+| **可视化** | | |
+| kibana | http://localhost:5601 | Kibana 日志分析（Elasticsearch） |
+| nginx | http://localhost | Nginx 负载均衡 |
+
+### 系统职责说明
+
+**Elasticsearch + Kibana**：
+- 📄 **用途**：业务文档检索和全文搜索
+- 🔍 **场景**：产品信息、用户数据、订单记录等业务数据的搜索
+- 💾 **特点**：强大的全文检索能力，适合结构化业务数据
+
+**Loki + Grafana**：
+- 📊 **用途**：应用日志采集和查看
+- 🔍 **场景**：应用运行日志、错误日志、调试日志
+- 💾 **特点**：轻量高效，与 Prometheus 技术栈统一
+
+**两者不冲突**：
+- Elasticsearch 处理业务数据的存储和检索
+- Loki 处理应用日志的采集和查询
+- 各司其职，互不干扰
 
 ## 🧪 测试
 

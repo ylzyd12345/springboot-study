@@ -227,17 +227,54 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: false
+      GF_INSTALL_PLUGINS: grafana-lokiexplore-app
     ports:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
       - ./scripts/grafana/provisioning:/etc/grafana/provisioning
       - ./scripts/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./scripts/grafana/loki-dashboards:/var/lib/grafana/dashboards/loki
     networks:
       - spring4demo-network
     restart: unless-stopped
     depends_on:
       - prometheus
+      - loki
+
+  # Loki 日志聚合系统（用于日志采集查看）
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: spring4demo-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+      - ./scripts/loki/loki-config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - spring4demo-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      timeout: 5s
+      retries: 5
+
+  # Promtail 日志采集代理（用于采集应用日志）
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: spring4demo-promtail
+    volumes:
+      - ./scripts/loki/promtail-config.yml:/etc/promtail/config.yml
+      - /var/log:/var/log:ro
+      - app_logs:/var/log/app:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - spring4demo-network
+    depends_on:
+      - loki
+    restart: unless-stopped
 
   # Node Exporter系统监控
   node-exporter:
@@ -326,25 +363,43 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    image: spring4demo:latest
     container_name: spring4demo-app
     ports:
       - "8080:8080"
     environment:
+      # Spring 配置
       SPRING_PROFILES_ACTIVE: docker
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_NAME: spring4demo
-      DB_USERNAME: spring4demo
-      DB_PASSWORD: spring4demo
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USERNAME: admin
-      RABBITMQ_PASSWORD: admin
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      ELASTICSEARCH_HOST: elasticsearch
-      ELASTICSEARCH_PORT: 9200
+      JAVA_OPTS: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+      
+      # 数据库配置
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/spring4demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: spring4demo
+      SPRING_DATASOURCE_PASSWORD: spring4demo
+      
+      # Redis 配置
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ""
+      
+      # RabbitMQ 配置
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+      SPRING_RABBITMQ_VIRTUAL_HOST: spring4demo
+      
+      # Kafka 配置
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      
+      # Elasticsearch 配置
+      SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
+      
+      # Prometheus 配置
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
     volumes:
       - app_logs:/app/logs
     networks:
@@ -366,6 +421,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+      interval: 30s
 
 volumes:
   mysql_data:
@@ -397,6 +453,8 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  loki_data:
     driver: local
   app_logs:
     driver: local
