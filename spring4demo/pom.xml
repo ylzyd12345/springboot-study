@@ -97,6 +97,9 @@
 
         <!-- api doc -->
         <knife4j-version>4.4.0</knife4j-version>
+
+        <!-- monitor -->
+        <micrometer-version>1.12.10</micrometer-version>
     </properties>
 
     <repositories>
@@ -362,6 +365,7 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
+                <version>${micrometer-version}</version>
             </dependency>
 
             <!-- Configuration Processor -->
