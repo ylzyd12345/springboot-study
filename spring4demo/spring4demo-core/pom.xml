@@ -81,6 +81,13 @@
             <artifactId>xxl-job-core</artifactId>
         </dependency>
 
+        <!-- Seata 分布式事务 -->
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+        </dependency>
+
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

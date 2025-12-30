@@ -49,7 +49,7 @@ public class SeataService {
      * @return 执行结果
      */
     @GlobalTransactional(name = "default-seata-transaction", timeoutMills = 60000, rollbackFor = Exception.class)
-    public <T> T executeInTransactionWithResult(String name, int timeout, Supplier<T> action) {
+    public <T> T executeInTransactionWithResult(String name, int timeout, Supplier<T> action) throws Exception {
         try {
             log.info("开始执行分布式事务，事务名称：{}，超时时间：{}秒", name, timeout);
             T result = action.get();
@@ -80,7 +80,7 @@ public class SeataService {
      * @return 执行结果
      */
     @GlobalTransactional(rollbackFor = Exception.class)
-    public <T> T executeInTransactionWithResult(Supplier<T> action) {
+    public <T> T executeInTransactionWithResult(Supplier<T> action) throws Exception {
         return executeInTransactionWithResult("default-seata-transaction", 60, action);
     }
 
