@@ -98,3 +98,23 @@ management:
     export:
       prometheus:
         enabled: true
+
+# RustFS 文件存储配置（开发环境）
+rustfs:
+  endpoint: http://localhost:9000
+  access-key: admin
+  secret-key: admin123
+  bucket-name: spring4demo-dev
+  region: us-east-1
+  path-style-access: true
+  max-file-size: 50
+  max-request-size: 100
+
+# KKFileView 文档预览配置（开发环境）
+kkfileview:
+  server-url: http://localhost:8012
+  preview-path: /onlinePreview
+  use-cache: false
+  cache-expire-time: 3600
+  current-server-url: http://localhost:8080
+  force-update-cache: true

@@ -106,6 +106,9 @@
 
         <!-- monitor -->
         <micrometer-version>1.12.10</micrometer-version>
+
+        <!-- AWS S3 SDK for RustFS -->
+        <aws-s3-sdk.version>2.29.29</aws-s3-sdk.version>
     </properties>
 
     <repositories>
@@ -372,6 +375,13 @@
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
                 <version>${micrometer-version}</version>
+            </dependency>
+
+            <!-- AWS S3 SDK for RustFS -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${aws-s3-sdk.version}</version>
             </dependency>
 
             <!-- Configuration Processor -->

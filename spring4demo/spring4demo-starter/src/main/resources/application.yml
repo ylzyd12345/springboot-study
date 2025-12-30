@@ -265,3 +265,37 @@ monitoring:
   health:
     enabled: true
     custom-checks: true
+
+# RustFS 文件存储配置
+rustfs:
+  # RustFS 服务端点地址
+  endpoint: http://localhost:9000
+  # 访问密钥
+  access-key: admin
+  # 秘密密钥
+  secret-key: admin123
+  # 存储桶名称
+  bucket-name: spring4demo
+  # 区域
+  region: us-east-1
+  # 是否启用路径风格访问
+  path-style-access: true
+  # 最大文件大小（MB）
+  max-file-size: 10
+  # 最大请求大小（MB）
+  max-request-size: 100
+
+# KKFileView 文档预览配置
+kkfileview:
+  # KKFileView 服务地址
+  server-url: http://localhost:8012
+  # 预览接口路径
+  preview-path: /onlinePreview
+  # 是否使用缓存
+  use-cache: false
+  # 缓存过期时间（秒）
+  cache-expire-time: 3600
+  # 当前服务地址（用于生成文件 URL）
+  current-server-url: http://localhost:8080
+  # 是否强制更新缓存
+  force-update-cache: true
