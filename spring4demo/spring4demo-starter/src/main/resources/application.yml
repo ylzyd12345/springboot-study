@@ -287,15 +287,33 @@ rustfs:
 
 # KKFileView 文档预览配置
 kkfileview:
-  # KKFileView 服务地址
   server-url: http://localhost:8012
-  # 预览接口路径
   preview-path: /onlinePreview
-  # 是否使用缓存
   use-cache: false
-  # 缓存过期时间（秒）
   cache-expire-time: 3600
-  # 当前服务地址（用于生成文件 URL）
   current-server-url: http://localhost:8080
-  # 是否强制更新缓存
   force-update-cache: true
+
+# XXL-Job 分布式任务调度配置
+xxl:
+  job:
+    admin:
+      # 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔
+      addresses: http://localhost:8080/xxl-job-admin
+      # 执行器通讯TOKEN [选填]：非空时启用
+      accessToken: default_token
+    executor:
+      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
+      appname: spring4demo-executor
+      # 执行器注册 [选填]：优先使用该配置作为注册地址
+      address:
+      # 执行器IP [选填]：默认为空表示自动获取IP
+      ip:
+      # 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999
+      port: 9999
+      # 执行器运行日志文件存储磁盘路径 [选填]
+      logpath: /data/applogs/xxl-job/jobhandler
+      # 执行器日志文件保存天数 [选填]
+      logretentiondays: 30
+
+# 监控配置

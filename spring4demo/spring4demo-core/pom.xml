@@ -64,6 +64,12 @@
             <artifactId>s3</artifactId>
         </dependency>
 
+        <!-- XXL-Job 分布式任务调度 -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+        </dependency>
+
         <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

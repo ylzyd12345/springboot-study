@@ -66,6 +66,12 @@
 - [x] **Sa-Token-OAuth2** - OAuth2/OpenID Connect 支持
 - [x] **Sa-Token-Redis** - Redis 持久化支持
 
+### 📅 任务调度技术栈
+
+- [x] **XXL-Job** - 分布式任务调度平台 2.4.0
+- [x] **Spring Task** - Spring 原生任务调度
+- [x] **Quartz** - 定时任务框架
+
 ### 📊 监控运维技术栈
 
 - [x] **spring-boot-starter-actuator** - 生产就绪监控和管理功能
@@ -357,6 +363,33 @@ kkfileview:
   force-update-cache: true
 ```
 
+### XXL-Job 配置
+
+XXL-Job 是一个分布式任务调度平台，支持动态任务管理、任务依赖、分片广播等功能。
+
+```yaml
+xxl:
+  job:
+    admin:
+      # 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔
+      addresses: http://localhost:8080/xxl-job-admin
+      # 执行器通讯TOKEN [选填]：非空时启用
+      accessToken: default_token
+    executor:
+      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
+      appname: spring4demo-executor
+      # 执行器注册 [选填]：优先使用该配置作为注册地址
+      address:
+      # 执行器IP [选填]：默认为空表示自动获取IP
+      ip:
+      # 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999
+      port: 9999
+      # 执行器运行日志文件存储磁盘路径 [选填]
+      logpath: /data/applogs/xxl-job/jobhandler
+      # 执行器日志文件保存天数 [选填]
+      logretentiondays: 30
+```
+
 ### Maven Profile配置
 
 ```bash
@@ -505,6 +538,7 @@ mvn spring-boot:run
 - **Zipkin**: http://localhost:9411
 - **RustFS**: http://localhost:9000
 - **KKFileView**: http://localhost:8012
+- **XXL-Job**: http://localhost:8080/xxl-job-admin (admin/123456)
 
 ## 文件存储与预览
 
@@ -613,6 +647,19 @@ docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
   - common 模块: RustFS 和 KKFileView 配置类
   - core 模块: 文件存储服务和文档预览服务
   - web 模块: 文件上传下载控制器和文档预览控制器
+
+### 任务调度架构
+
+- **XXL-Job**: 使用 XXL-Job 实现分布式任务调度
+- **功能特性**:
+  - 支持动态任务管理、任务依赖、分片广播
+  - 提供丰富的路由策略和阻塞处理策略
+  - 支持任务失败重试和超时控制
+- **集成方式**: 通过 XXL-Job Core SDK 集成执行器
+- **模块划分**:
+  - common 模块: XXL-Job 配置类
+  - core 模块: 任务处理器和任务调度服务
+  - web 模块: 任务管理 Controller
 
 ## 文档维护
 

@@ -80,6 +80,7 @@ mvn spring-boot:run
 # API文档: http://localhost:8080/swagger-ui.html
 # RustFS: http://localhost:9000
 # KKFileView: http://localhost:8012
+# XXL-Job: http://localhost:8080/xxl-job-admin (admin/123456)
 ```
 
 ### 🐳 Docker 部署
@@ -111,6 +112,19 @@ docker-compose up -d
 - 🔍 搜索引擎 (Elasticsearch)
 - 🕸️ 图数据库 (Neo4j)
 - ⏱️ 时间序列数据库 (InfluxDB)
+- 📁 文件存储 (RustFS)
+
+### 📅 任务调度
+- ⏰ 分布式任务调度 (XXL-Job)
+- 🔄 定时任务 (Spring Task)
+- 📋 任务依赖管理
+- 🎯 分片广播任务
+
+### 📄 文档预览
+- 📖 在线文件预览 (KKFileView)
+- 📊 Office 文档预览
+- 🖼️ 图片预览
+- 🎬 视频播放
 
 ### 🔐 安全认证
 - 🛡️ Sa-Token 轻量级权限认证框架
@@ -552,6 +566,11 @@ graph TB
 - [x] **AWS S3 SDK** - 2.29.29
 - [x] **KKFileView** - 在线文件预览服务
 
+### 📅 任务调度技术栈
+
+- [x] **XXL-Job** - 分布式任务调度平台 2.4.0
+- [x] **Spring Task** - Spring 原生任务调度
+
 ### 📨 消息中间件技术栈
 
 - [x] **spring-boot-starter-amqp** - Spring AMQP和RabbitMQ
@@ -736,6 +755,28 @@ kkfileview:
   current-server-url: http://localhost:8080
   # 是否强制更新缓存
   force-update-cache: true
+
+# XXL-Job 分布式任务调度配置
+xxl:
+  job:
+    admin:
+      # 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔
+      addresses: http://localhost:8080/xxl-job-admin
+      # 执行器通讯TOKEN [选填]：非空时启用
+      accessToken: default_token
+    executor:
+      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
+      appname: spring4demo-executor
+      # 执行器注册 [选填]：优先使用该配置作为注册地址
+      address:
+      # 执行器IP [选填]：默认为空表示自动获取IP
+      ip:
+      # 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999
+      port: 9999
+      # 执行器运行日志文件存储磁盘路径 [选填]
+      logpath: /data/applogs/xxl-job/jobhandler
+      # 执行器日志文件保存天数 [选填]
+      logretentiondays: 30
 ```
 
 ### 🧪 测试指南

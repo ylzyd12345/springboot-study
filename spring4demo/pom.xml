@@ -109,6 +109,9 @@
 
         <!-- AWS S3 SDK for RustFS -->
         <aws-s3-sdk.version>2.29.29</aws-s3-sdk.version>
+
+        <!-- XXL-Job 分布式任务调度 -->
+        <xxl-job.version>2.4.0</xxl-job.version>
     </properties>
 
     <repositories>
@@ -382,6 +385,13 @@
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>s3</artifactId>
                 <version>${aws-s3-sdk.version}</version>
+            </dependency>
+
+            <!-- XXL-Job 分布式任务调度 -->
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
             </dependency>
 
             <!-- Configuration Processor -->

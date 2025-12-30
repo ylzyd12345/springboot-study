@@ -118,3 +118,17 @@ kkfileview:
   cache-expire-time: 3600
   current-server-url: http://localhost:8080
   force-update-cache: true
+
+# XXL-Job 分布式任务调度配置
+xxl:
+  job:
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+      accessToken: default_token
+    executor:
+      appname: spring4demo-executor
+      address:
+      ip:
+      port: 9999
+      logpath: ./logs/xxl-job/jobhandler
+      logretentiondays: 30
