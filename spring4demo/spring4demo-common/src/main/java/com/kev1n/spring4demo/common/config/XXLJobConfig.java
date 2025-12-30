@@ -1,6 +1,5 @@
-package com.kev1n.spring4demo.core.config;
+package com.kev1n.spring4demo.common.config;
 
-import com.kev1n.spring4demo.common.config.XXLJobProperties;
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

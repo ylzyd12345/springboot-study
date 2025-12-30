@@ -12,26 +12,22 @@
     
     <artifactId>spring4demo-web</artifactId>
     <name>spring4demo-web</name>
-    <description>Web应用模块 - 控制器、配置、启动类</description>
+    <description>Web应用模块 - 控制器、配置、拦截器</description>
     
     <dependencies>
-        <!-- 依赖common模块 -->
-        <dependency>
-            <groupId>com.kev1n</groupId>
-            <artifactId>spring4demo-common</artifactId>
-        </dependency>
-        
-        <!-- 依赖core模块 -->
+        <!-- 依赖core模块（会传递 common 和 api） -->
         <dependency>
             <groupId>com.kev1n</groupId>
             <artifactId>spring4demo-core</artifactId>
         </dependency>
         
-        <!-- Spring Boot Starters -->
+        <!-- Spring Boot Web Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        
+        <!-- Spring Boot Actuator Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -66,13 +62,7 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Sa-Token -->
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-spring-boot3-starter</artifactId>
-        </dependency>
-
-        <!-- Test Dependencies -->
+        <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -106,8 +96,6 @@
     
     <build>
         <plugins>
-            
-            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

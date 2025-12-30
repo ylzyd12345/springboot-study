@@ -1,16 +1,16 @@
-package com.kev1n.spring4demo.web.service;
+package com.kev1n.spring4demo.core.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.kev1n.spring4demo.api.dto.AuthResult;
+import com.kev1n.spring4demo.api.dto.UserDTO;
 import com.kev1n.spring4demo.core.entity.User;
-import com.kev1n.spring4demo.core.service.UserService;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -256,34 +256,5 @@ public class AuthService {
             .deptId(user.getDeptId())
             .status(user.getStatus())
             .build();
-    }
-
-    /**
-     * 认证结果
-     */
-    @Builder
-    @Data
-    public static class AuthResult {
-        private boolean success;
-        private String token;
-        private String tokenType;
-        private Long expiresIn;
-        private UserDTO user;
-        private String message;
-    }
-
-    /**
-     * 用户DTO
-     */
-    @Builder
-    @Data
-    public static class UserDTO {
-        private String id;
-        private String username;
-        private String email;
-        private String realName;
-        private String avatar;
-        private String deptId;
-        private Integer status;
     }
 }

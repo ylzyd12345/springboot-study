@@ -32,9 +32,13 @@
 
         <!-- 构建优化配置 -->
         <maven.test.parallel>true</maven.test.parallel>
-        <maven.test.skip>true</maven.test.skip>
-        <skipTests>true</skipTests>
-        <jacoco.skip>true</jacoco.skip>
+        <maven.test.skip>false</maven.test.skip>
+        <skipTests>false</skipTests>
+        <jacoco.skip>false</jacoco.skip>
+
+        <!-- 测试覆盖率目标 -->
+        <jacoco.coverage.ratio>0.85</jacoco.coverage.ratio>
+        <jacoco.branch.ratio>0.75</jacoco.branch.ratio>
 
         <!-- Spring Boot -->
         <spring-boot.version>3.2.10</spring-boot.version>
@@ -89,10 +93,6 @@
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
-        
-        <!-- Maven Cache Configuration -->
-        <maven.repo.local>F:/code-software/apache-maven-3.9.12/repository</maven.repo.local>
-        <maven.clean.cache>true</maven.clean.cache>
 
         <!-- Code Quality -->
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
@@ -101,11 +101,8 @@
         <fmt-maven-plugin.version>2.21.1</fmt-maven-plugin.version>
         <dependency-check-maven.version>8.4.0</dependency-check-maven.version>
 
-        <!-- api doc -->
-        <knife4j-version>4.4.0</knife4j-version>
-
         <!-- monitor -->
-        <micrometer-version>1.12.10</micrometer-version>
+        <micrometer.version>1.12.10</micrometer.version>
 
         <!-- AWS S3 SDK for RustFS -->
         <aws-s3-sdk.version>2.29.29</aws-s3-sdk.version>
@@ -386,7 +383,7 @@
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-core</artifactId>
-                <version>${micrometer-version}</version>
+                <version>${micrometer.version}</version>
             </dependency>
 
             <!-- AWS S3 SDK for RustFS -->
@@ -568,6 +565,23 @@
                     <version>${jacoco.version}</version>
                     <configuration>
                         <skip>${jacoco.skip}</skip>
+                        <rules>
+                            <rule>
+                                <element>BUNDLE</element>
+                                <limits>
+                                    <limit>
+                                        <counter>INSTRUCTION</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>${jacoco.coverage.ratio}</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>BRANCH</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>${jacoco.branch.ratio}</minimum>
+                                    </limit>
+                                </limits>
+                            </rule>
+                        </rules>
                     </configuration>
                 </plugin>
 

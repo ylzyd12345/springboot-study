@@ -1,200 +1,18 @@
+# 主配置文件
 spring:
   application:
     name: spring4demo
   profiles:
     active: dev
-  
-  # 数据源配置
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    # 动态数据源配置
-    dynamic:
-      enabled: true
-      strict: false
-      primary: master
-      datasource:
-        master:
-          name: master
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://localhost:3306/spring4demo?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-          username: spring4demo
-          password: spring4demo
-          type: com.alibaba.druid.pool.DruidDataSource
-          primary: true
-          druid:
-            initial-size: 5
-            min-idle: 5
-            max-active: 20
-            max-wait: 60000
-            time-between-eviction-runs-millis: 60000
-            min-evictable-idle-time-millis: 300000
-            max-evictable-idle-time-millis: 900000
-            validation-query: SELECT 1
-            test-while-idle: true
-            test-on-borrow: false
-            test-on-return: false
-            pool-prepared-statements: true
-            max-pool-prepared-statement-per-connection-size: 20
-            filters: stat,wall
-            connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-            stat-view-servlet-enabled: true
-            stat-view-servlet-url-pattern: /druid/*
-            stat-view-servlet-login-username: admin
-            stat-view-servlet-login-password: admin
-            web-stat-filter-enabled: true
-            web-stat-filter-url-pattern: /*
-            web-stat-filter-exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
-        slave:
-          name: slave
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://localhost:3307/spring4demo?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
-          username: spring4demo
-          password: spring4demo
-          type: com.alibaba.druid.pool.DruidDataSource
-          readonly: true
-          druid:
-            initial-size: 5
-            min-idle: 5
-            max-active: 20
-            max-wait: 60000
-            time-between-eviction-runs-millis: 60000
-            min-evictable-idle-time-millis: 300000
-            max-evictable-idle-time-millis: 900000
-            validation-query: SELECT 1
-            test-while-idle: true
-            test-on-borrow: false
-            test-on-return: false
-            pool-prepared-statements: true
-            max-pool-prepared-statement-per-connection-size: 20
-            filters: stat,wall
-            connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-            stat-view-servlet-enabled: true
-            stat-view-servlet-url-pattern: /druid/*
-            stat-view-servlet-login-username: admin
-            stat-view-servlet-login-password: admin
-            web-stat-filter-enabled: true
-            web-stat-filter-url-pattern: /*
-            web-stat-filter-exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+    include: datasource,redis,mq,seata,monitoring
 
-
-
-  # MyBatis Plus配置
-  mybatis-plus:
-    configuration:
-      map-underscore-to-camel-case: true
-      cache-enabled: false
-      call-setters-on-nulls: true
-      jdbc-type-for-null: 'null'
-    global-config:
-      db-config:
-        id-type: assign_id
-        logic-delete-field: deleted
-        logic-delete-value: 1
-        logic-not-delete-value: 0
-        table-underline: true
-    mapper-locations: classpath*:mapper/*.xml
-    type-aliases-package: com.kev1n.spring4demo.core.entity
-  
-  # Redis配置
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password:
-      database: 0
-      timeout: 2000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-          max-wait: -1ms
-      # Redisson 配置
-      redisson:
-        address: redis://localhost:6379
-        database: 0
-        password:
-        timeout: 3000
-        connection-pool:
-          connection-pool-size: 64
-          connection-minimum-idle-size: 10
-          idle-connection-timeout: 10000
-          subscription-connection-pool-size: 50
-          subscription-connection-minimum-idle-size: 1
-        threads:
-          thread-pool-size: 16
-          netty-threads: 32
-        single-server-config:
-          connection-idle-timeout: 10000
-          subscription-connection-timeout: 5000
-          monitor-lock-expiration: 30000
-          subscription-connection-pool-size: 50
-          subscription-connection-minimum-idle-size: 1
-          connection-pool-size: 64
-          connection-minimum-idle-size: 10
-          keep-alive: true
-
-  # RabbitMQ配置
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    virtual-host: /
-    connection-timeout: 15000
-    publisher-confirm-type: correlated
-    publisher-returns: true
-    listener:
-      simple:
-        acknowledge-mode: manual
-        retry:
-          enabled: true
-          initial-interval: 1000
-          max-attempts: 3
-          max-interval: 10000
-          multiplier: 1.0
-  
-  # Kafka配置
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: all
-      retries: 3
-      batch-size: 16384
-      linger-ms: 1
-      buffer-memory: 33554432
-    consumer:
-      group-id: spring4demo-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-      max-poll-records: 500
-  
-  # Elasticsearch配置
-  elasticsearch:
-    uris: http://localhost:9200
-    username:
-    password:
-    connection-timeout: 5s
-    socket-timeout: 30s
-  
-  # 缓存配置
-  cache:
-    type: caffeine
-    caffeine:
-      spec: maximumSize=1000,expireAfterWrite=30m
-  
   # Jackson配置
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
     deserialization:
       fail-on-unknown-properties: false
-  
+
   # 文件上传配置
   servlet:
     multipart:
@@ -224,42 +42,22 @@ server:
     min-spare-threads: 30
     connection-timeout: 20000
 
-# 管理端点配置
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-      base-path: /actuator
-      cors:
-        allowed-origins: "*"
-        allowed-methods: GET,POST
-  endpoint:
-    health:
-      show-details: always
-      show-components: always
-    info:
-      enabled: true
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-  metrics:
-    distribution:
-      percentiles-histogram:
-        http.server.requests: true
-      percentiles:
-        http.server.requests: 0.5,0.9,0.95,0.99
-      sla:
-        http.server.requests: 10ms,50ms,100ms,200ms,500ms
-    export:
-      prometheus:
-        enabled: true
-        step: 1m
-        descriptions: true
-    tags:
-      application: ${spring.application.name}
-      region: default
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      table-underline: true
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.kev1n.spring4demo.core.entity
 
 # OpenAPI配置
 springdoc:
@@ -304,10 +102,8 @@ knife4j:
   production: false
   basic:
     enable: false
-    username: admin
-    password: 123456
-
-
+    username: ${KNIFE4J_USERNAME:admin}
+    password: ${KNIFE4J_PASSWORD:123456}
 
 # Sa-Token配置
 sa-token:
@@ -336,7 +132,7 @@ sa-token:
     database: 1
     host: localhost
     port: 6379
-    password:
+    password: ${SA_TOKEN_ALONE_REDIS_PASSWORD:}
     timeout: 10s
 
 # API版本配置
@@ -347,39 +143,20 @@ api:
     deprecated-warning: true
     max-versions: 5
 
-# 监控配置
-monitoring:
-  enabled: true
-  metrics:
-    enabled: true
-    jvm: true
-    system: true
-  health:
-    enabled: true
-    custom-checks: true
-
 # RustFS 文件存储配置
 rustfs:
-  # RustFS 服务端点地址
-  endpoint: http://localhost:9000
-  # 访问密钥
-  access-key: admin
-  # 秘密密钥
-  secret-key: admin123
-  # 存储桶名称
+  endpoint: ${RUSTFS_ENDPOINT:http://localhost:9000}
+  access-key: ${RUSTFS_ACCESS_KEY:admin}
+  secret-key: ${RUSTFS_SECRET_KEY:admin123}
   bucket-name: spring4demo
-  # 区域
   region: us-east-1
-  # 是否启用路径风格访问
   path-style-access: true
-  # 最大文件大小（MB）
   max-file-size: 10
-  # 最大请求大小（MB）
   max-request-size: 100
 
 # KKFileView 文档预览配置
 kkfileview:
-  server-url: http://localhost:8012
+  server-url: ${KKFILEVIEW_SERVER_URL:http://localhost:8012}
   preview-path: /onlinePreview
   use-cache: false
   cache-expire-time: 3600
@@ -390,67 +167,12 @@ kkfileview:
 xxl:
   job:
     admin:
-      # 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔
-      addresses: http://localhost:8080/xxl-job-admin
-      # 执行器通讯TOKEN [选填]：非空时启用
-      accessToken: default_token
+      addresses: ${XXL_JOB_ADMIN_ADDRESSES:http://localhost:8080/xxl-job-admin}
+      accessToken: ${XXL_JOB_ACCESS_TOKEN:default_token}
     executor:
-      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
       appname: spring4demo-executor
-      # 执行器注册 [选填]：优先使用该配置作为注册地址
       address:
-      # 执行器IP [选填]：默认为空表示自动获取IP
       ip:
-      # 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999
       port: 9999
-      # 执行器运行日志文件存储磁盘路径 [选填]
       logpath: /data/applogs/xxl-job/jobhandler
-      # 执行器日志文件保存天数 [选填]
       logretentiondays: 30
-
-# Seata 分布式事务配置
-seata:
-  enabled: true
-  application-id: ${spring.application.name}
-  tx-service-group: spring4demo-tx-group
-  service:
-    vgroup-mapping:
-      spring4demo-tx-group: default
-    grouplist:
-      default: localhost:8091
-    enable-degrade: false
-    disable-global-transaction: false
-  client:
-    rm:
-      async-commit-buffer-limit: 10000
-      lock-retry-interval: 10
-      lock-retry-times: 30
-      lock-retry-policy: backoff
-      query-timeout: 1000
-      commit-retry-count: 5
-      rollback-retry-count: 5
-      table-meta-check-enable: true
-    tm:
-      commit-retry-count: 5
-      rollback-retry-count: 5
-      global-lock-retry-interval: 10
-      global-lock-retry-times: 30
-    undo:
-      enable: true
-      data-validation: true
-      log-serialization: jackson
-      only-care-update-columns: true
-  transport:
-    type: TCP
-    server: NIO
-    heartbeat: true
-    serialization: seata
-    compressor: none
-  registry:
-    type: file
-  config:
-    type: file
-  log:
-    exception-rate: 100
-
-# 监控配置

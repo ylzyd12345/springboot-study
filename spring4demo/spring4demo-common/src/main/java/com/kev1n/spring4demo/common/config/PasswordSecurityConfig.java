@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.core.config;
+package com.kev1n.spring4demo.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -6,8 +6,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * 安全配置
+ * 密码安全配置
  * 
+ * <p>提供密码编码器 Bean，使用 BCrypt 算法进行密码加密。</p>
+ *
  * @author spring4demo
  * @version 1.0.0
  */

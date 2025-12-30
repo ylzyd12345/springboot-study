@@ -12,7 +12,7 @@
     
     <artifactId>spring4demo-common</artifactId>
     <name>spring4demo-common</name>
-    <description>通用模块 - 工具类、常量、异常、测试基类</description>
+    <description>通用模块 - 配置类、属性类、工具类、常量、异常</description>
     
     <dependencies>
         <!-- Configuration Processor - 配置处理 -->
@@ -47,7 +47,46 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Spring Security 密码加密（用于 PasswordSecurityConfig） -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
 
+        <!-- Redisson Redis 客户端（可选，用于 RedissonConfig） -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Dynamic Datasource 动态数据源（可选，用于 DynamicDataSourceConfig） -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Seata 分布式事务（可选，用于 SeataConfig） -->
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- XXL-Job 分布式任务调度（可选，用于 XXLJobConfig） -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- AWS S3 SDK（可选，用于 S3ClientConfig） -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
     
     <build>

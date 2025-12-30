@@ -1,6 +1,5 @@
-package com.kev1n.spring4demo.core.config;
+package com.kev1n.spring4demo.common.config;
 
-import com.kev1n.spring4demo.common.config.RedissonProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -52,9 +51,7 @@ public class RedissonConfig {
             config.useClusterServers()
                     .addNodeAddress(redissonProperties.getCluster().getNodes())
                     .setScanInterval(redissonProperties.getCluster().getScanInterval())
-                    .setPassword(redissonProperties.getCluster().getPassword())
-//                    .setMaxRedirects(redissonProperties.getCluster().getMaxRedirects())
-                    ;
+                    .setPassword(redissonProperties.getCluster().getPassword());
             log.info("Redisson 集群模式初始化完成，节点数：{}", redissonProperties.getCluster().getNodes().length);
         } else if (redissonProperties.getSentinel() != null && redissonProperties.getSentinel().getAddresses() != null) {
             // 哨兵模式

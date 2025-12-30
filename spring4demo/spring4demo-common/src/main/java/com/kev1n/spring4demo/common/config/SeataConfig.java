@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.core.config;
+package com.kev1n.spring4demo.common.config;
 
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import io.seata.rm.datasource.DataSourceProxy;

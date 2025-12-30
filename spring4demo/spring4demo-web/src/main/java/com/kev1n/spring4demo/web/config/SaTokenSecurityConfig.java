@@ -1,9 +1,8 @@
-package com.kev1n.spring4demo.core.config;
+package com.kev1n.spring4demo.web.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -11,11 +10,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Sa-Token 安全配置
  * 
+ * <p>配置 Sa-Token 拦截器，实现登录认证和权限校验。</p>
+ *
  * @author spring4demo
  * @version 1.0.0
  */
 @Configuration
-@RequiredArgsConstructor
 public class SaTokenSecurityConfig implements WebMvcConfigurer {
 
     /**

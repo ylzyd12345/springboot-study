@@ -1,8 +1,11 @@
 package com.kev1n.spring4demo.common.config;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Seata 分布式事务配置属性
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
+@Validated
 @ConfigurationProperties(prefix = "seata")
 public class SeataProperties {
 
@@ -25,6 +29,7 @@ public class SeataProperties {
     /**
      * 应用名称
      */
+    @NotBlank(message = "Seata 应用名称不能为空")
     private String applicationName = "spring4demo";
 
     /**

@@ -1,0 +1,39 @@
+# Redis 配置
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+    # Redisson 配置
+    redisson:
+      address: ${REDIS_ADDRESS:redis://localhost:6379}
+      database: 0
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000
+      connection-pool:
+        connection-pool-size: 64
+        connection-minimum-idle-size: 10
+        idle-connection-timeout: 10000
+        subscription-connection-pool-size: 50
+        subscription-connection-minimum-idle-size: 1
+      threads:
+        thread-pool-size: 16
+        netty-threads: 32
+      single-server-config:
+        connection-idle-timeout: 10000
+        subscription-connection-timeout: 5000
+        monitor-lock-expiration: 30000
+        subscription-connection-pool-size: 50
+        subscription-connection-minimum-idle-size: 1
+        connection-pool-size: 64
+        connection-minimum-idle-size: 10
+        keep-alive: true

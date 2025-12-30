@@ -12,25 +12,26 @@
 
     <artifactId>spring4demo-api</artifactId>
     <name>spring4demo-api</name>
-    <description>API接口模块 - API定义、DTO、OpenAPI配置</description>
+    <description>API接口模块 - DTO、枚举、常量</description>
 
     <dependencies>
-        <!-- 依赖common模块 -->
+        <!-- 依赖common模块（基础配置和工具） -->
         <dependency>
             <groupId>com.kev1n</groupId>
             <artifactId>spring4demo-common</artifactId>
         </dependency>
 
-        <!-- Spring Boot -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+        <!-- Validation（DTO 验证注解） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Jackson（JSON 序列化） -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
 
     </dependencies>
 </project>

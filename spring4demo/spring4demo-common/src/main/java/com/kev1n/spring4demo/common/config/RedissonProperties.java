@@ -1,7 +1,11 @@
 package com.kev1n.spring4demo.common.config;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * Redisson 配置属性
@@ -12,6 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @version 1.0.0
  */
 @Data
+@Validated
 @ConfigurationProperties(prefix = "spring.data.redis.redisson")
 public class RedissonProperties {
 
@@ -19,11 +24,13 @@ public class RedissonProperties {
      * Redis 服务器地址（单机模式）
      * <p>格式：redis://host:port 或 rediss://host:port（SSL）</p>
      */
+    @NotBlank(message = "Redisson 地址不能为空")
     private String address = "redis://localhost:6379";
 
     /**
      * Redis 数据库索引
      */
+    @Min(value = 0, message = "数据库索引不能小于0")
     private int database = 0;
 
     /**
@@ -137,11 +144,6 @@ public class RedissonProperties {
          * Redis 密码
          */
         private String password;
-
-        /**
-         * 最大重定向次数
-         */
-        private int maxRedirects = 3;
     }
 
     /**
