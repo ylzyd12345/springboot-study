@@ -69,11 +69,10 @@ management:
       show-details: when-authorized
     prometheus:
       enabled: true
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
-      
 # 测试环境特殊配置
 server:
   port: 8081

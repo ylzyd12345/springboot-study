@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.core.security;
+package com.kev1n.spring4demo.core.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;

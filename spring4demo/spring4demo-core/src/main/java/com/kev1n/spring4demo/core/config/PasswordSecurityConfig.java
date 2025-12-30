@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.core.security;
+package com.kev1n.spring4demo.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

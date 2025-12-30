@@ -1,5 +1,7 @@
-package com.kev1n.spring4demo.common.config;
+package com.kev1n.spring4demo.core.config;
 
+import com.kev1n.spring4demo.common.config.RustFSProperties;
+import com.kev1n.spring4demo.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +45,7 @@ public class S3ClientConfig {
                     .build();
         } catch (Exception e) {
             log.error("初始化 S3 客户端失败", e);
-            throw new RuntimeException("初始化 S3 客户端失败: " + e.getMessage());
+            throw new BusinessException("初始化 S3 客户端失败: " + e.getMessage());
         }
     }
 }

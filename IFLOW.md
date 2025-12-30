@@ -41,6 +41,13 @@
 - [x] **Neo4j** - Neo4j图数据库 5.12
 - [x] **InfluxDB** - InfluxDB时间序列数据库 2.7
 
+#### 文件存储
+- [x] **RustFS** - 高性能分布式对象存储（兼容 S3 协议）
+- [x] **AWS S3 SDK** - 2.29.29
+
+#### 文档预览
+- [x] **KKFileView** - 在线文件预览服务
+
 #### 缓存
 - [x] **Caffeine** - 本地缓存 3.1.6
 - [x] **Guava** - Google工具库 32.1.3
@@ -295,6 +302,59 @@ mvn -Pnative native:compile
 
 # Zipkin
 - 端口: 9411
+
+# RustFS
+- 端口: 9000
+- 访问密钥: admin
+- 秘密密钥: admin123
+
+# KKFileView
+- 端口: 8012
+- 预览接口: /onlinePreview
+```
+
+### RustFS 配置
+
+RustFS 是一款基于 Rust 语言开发的高性能分布式对象存储软件，完全兼容 AWS S3 协议。
+
+```yaml
+rustfs:
+  # RustFS 服务端点地址
+  endpoint: http://localhost:9000
+  # 访问密钥
+  access-key: admin
+  # 秘密密钥
+  secret-key: admin123
+  # 存储桶名称
+  bucket-name: spring4demo
+  # 区域
+  region: us-east-1
+  # 是否启用路径风格访问
+  path-style-access: true
+  # 最大文件大小（MB）
+  max-file-size: 10
+  # 最大请求大小（MB）
+  max-request-size: 100
+```
+
+### KKFileView 配置
+
+KKFileView 是一个文件文档在线预览解决方案，支持多种格式的文件预览。
+
+```yaml
+kkfileview:
+  # KKFileView 服务地址
+  server-url: http://localhost:8012
+  # 预览接口路径
+  preview-path: /onlinePreview
+  # 是否使用缓存
+  use-cache: false
+  # 缓存过期时间（秒）
+  cache-expire-time: 3600
+  # 当前服务地址（用于生成文件 URL）
+  current-server-url: http://localhost:8080
+  # 是否强制更新缓存
+  force-update-cache: true
 ```
 
 ### Maven Profile配置
@@ -443,6 +503,56 @@ mvn spring-boot:run
 - **Prometheus**: http://localhost:9090
 - **Grafana**: http://localhost:3000 (admin/admin)
 - **Zipkin**: http://localhost:9411
+- **RustFS**: http://localhost:9000
+- **KKFileView**: http://localhost:8012
+
+## 文件存储与预览
+
+### RustFS 文件存储
+
+RustFS 提供高性能的分布式对象存储服务，兼容 S3 协议。
+
+**API 接口：**
+- `POST /api/files/upload` - 上传文件
+- `GET /api/files/download/{fileName}` - 下载文件
+- `DELETE /api/files/{fileName}` - 删除文件
+- `DELETE /api/files/batch` - 批量删除文件
+- `GET /api/files` - 列出所有文件
+- `GET /api/files/{fileName}/url` - 获取文件访问 URL
+
+**Docker 启动：**
+```bash
+docker run -p 9000:9000 --name rustfs \
+  -e RUSTFS_ACCESS_KEY=admin \
+  -e RUSTFS_SECRET_KEY=admin123 \
+  -v /data/rustfs:/data \
+  -d rustfs/rustfs
+```
+
+### KKFileView 文档预览
+
+KKFileView 提供多种格式文件的在线预览功能。
+
+**支持的文件类型：**
+- Office 文档: .doc, .docx, .xls, .xlsx, .ppt, .pptx
+- PDF: .pdf
+- 文本文件: .txt, .xml, .html, .htm, .md, .json, .csv
+- 图片: .jpg, .jpeg, .png, .gif, .bmp, .svg, .webp
+- 压缩文件: .zip, .rar, .7z, .tar, .gz
+- 视频文件: .mp4, .avi, .mkv, .mov, .wmv, .flv
+- 音频文件: .mp3, .wav, .ogg, .flac, .aac
+
+**API 接口：**
+- `GET /api/preview/{fileName}` - 生成文件预览 URL
+- `GET /api/preview/{fileName}/watermark` - 生成带水印的预览 URL
+- `GET /api/preview/{fileName}/check` - 检查文件是否支持预览
+- `GET /api/preview/supported-types` - 获取支持的文件类型列表
+- `GET /api/preview/{fileName}/redirect` - 重定向到预览页面
+
+**Docker 启动：**
+```bash
+docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
+```
 
 ## 参考资源
 
@@ -493,6 +603,16 @@ mvn spring-boot:run
 - 选择社区活跃、文档完善的开源组件
 - 考虑性能、可维护性和社区支持
 - 定期更新依赖版本，修复安全漏洞
+
+### 文件存储与预览架构
+
+- **RustFS**: 使用兼容 S3 协议的高性能分布式对象存储
+- **KKFileView**: 使用 KKFileView 实现多种格式文件的在线预览
+- **集成方式**: 通过 AWS S3 SDK 访问 RustFS，通过 URL 参数调用 KKFileView 预览接口
+- **模块划分**:
+  - common 模块: RustFS 和 KKFileView 配置类
+  - core 模块: 文件存储服务和文档预览服务
+  - web 模块: 文件上传下载控制器和文档预览控制器
 
 ## 文档维护
 

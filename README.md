@@ -57,8 +57,18 @@ Spring4demo 是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级生态环�
 git clone https://github.com/your-username/spring4demo.git
 cd spring4demo
 
-# 2. 启动依赖服务 (MySQL, Redis, Elasticsearch, Neo4j)
+# 2. 启动依赖服务 (MySQL, Redis, Elasticsearch, Neo4j, RustFS, KKFileView)
 docker-compose up -d
+
+# 启动 RustFS 文件存储服务
+docker run -p 9000:9000 --name rustfs \
+  -e RUSTFS_ACCESS_KEY=admin \
+  -e RUSTFS_SECRET_KEY=admin123 \
+  -v /data/rustfs:/data \
+  -d rustfs/rustfs
+
+# 启动 KKFileView 文档预览服务
+docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
 
 # 3. 编译运行
 mvn clean compile
@@ -68,6 +78,8 @@ mvn spring-boot:run
 # 应用地址: http://localhost:8080
 # 健康检查: http://localhost:8080/actuator/health
 # API文档: http://localhost:8080/swagger-ui.html
+# RustFS: http://localhost:9000
+# KKFileView: http://localhost:8012
 ```
 
 ### 🐳 Docker 部署
@@ -111,6 +123,12 @@ docker-compose up -d
 - 🚀 Apache Kafka 流处理
 - 📮 Apache RocketMQ
 - 🔌 Spring Integration 企业集成模式
+
+### 💾 文件存储与预览
+- 🗄️ RustFS 分布式对象存储（兼容 S3 协议）
+- 📄 KKFileView 在线文件预览
+- 📁 文件上传下载管理
+- 🔍 多格式文档预览（Office、PDF、图片、视频等）
 
 ### 📊 监控运维
 - 📈 Actuator 应用监控
@@ -199,6 +217,8 @@ graph TB
     
     subgraph "业务层"
         N[业务服务] --> N1[业务逻辑组件]
+        N1 --> N2[文件存储服务]
+        N1 --> N3[文档预览服务]
         O[安全认证] --> O1[Spring Security]
         O1 --> O2[JWT认证]
         O1 --> O3[OAuth2/OIDC]
@@ -219,6 +239,8 @@ graph TB
         T1 --> T3[Elasticsearch]
         T1 --> T4[Neo4j]
         T1 --> T5[InfluxDB]
+        T6[文件存储] --> T7[RustFS]
+        T7 --> T8[AWS S3 SDK]
         U[数据访问] --> U1[JPA/Hibernate]
         U1 --> U2[MyBatis/MyBatis-Plus]
         U1 --> U3[R2DBC]
@@ -525,6 +547,11 @@ graph TB
 - [x] **Neo4j** - Neo4j图数据库
 - [x] **InfluxDB** - InfluxDB时间序列数据库
 
+#### 文件存储与预览
+- [x] **RustFS** - 高性能分布式对象存储（兼容 S3 协议）
+- [x] **AWS S3 SDK** - 2.29.29
+- [x] **KKFileView** - 在线文件预览服务
+
 ### 📨 消息中间件技术栈
 
 - [x] **spring-boot-starter-amqp** - Spring AMQP和RabbitMQ
@@ -569,6 +596,8 @@ spring4demo/
 │   │   │   ├── 📂 config/                        # 配置类
 │   │   │   ├── 📂 controller/                    # 控制器层
 │   │   │   ├── 📂 service/                       # 业务逻辑层
+│   │   │   │   ├── 📂 FileStorageService.java   # 文件存储服务
+│   │   │   │   └── 📂 DocumentPreviewService.java # 文档预览服务
 │   │   │   ├── 📂 repository/                    # 数据访问层
 │   │   │   ├── 📂 entity/                        # 实体类
 │   │   │   └── 📂 util/                          # 工具类
@@ -673,6 +702,40 @@ sa-token:
   is-log: false
   is-print: false
   jwt-secret-key: abcdefghijklmnopqrstuvwxyz
+
+# RustFS 文件存储配置
+rustfs:
+  # RustFS 服务端点地址
+  endpoint: http://localhost:9000
+  # 访问密钥
+  access-key: admin
+  # 秘密密钥
+  secret-key: admin123
+  # 存储桶名称
+  bucket-name: spring4demo
+  # 区域
+  region: us-east-1
+  # 是否启用路径风格访问
+  path-style-access: true
+  # 最大文件大小（MB）
+  max-file-size: 10
+  # 最大请求大小（MB）
+  max-request-size: 100
+
+# KKFileView 文档预览配置
+kkfileview:
+  # KKFileView 服务地址
+  server-url: http://localhost:8012
+  # 预览接口路径
+  preview-path: /onlinePreview
+  # 是否使用缓存
+  use-cache: false
+  # 缓存过期时间（秒）
+  cache-expire-time: 3600
+  # 当前服务地址（用于生成文件 URL）
+  current-server-url: http://localhost:8080
+  # 是否强制更新缓存
+  force-update-cache: true
 ```
 
 ### 🧪 测试指南
@@ -718,6 +781,8 @@ kubectl apply -f k8s/
 | [🔧 配置参考](docs/configuration.md) | 完整的配置参数说明 |
 | [❓ 常见问题](docs/faq.md) | 常见问题和解决方案 |
 | [📊 性能优化](docs/performance.md) | 性能调优和最佳实践 |
+| [💾 文件存储指南](docs/file-storage.md) | RustFS 文件存储使用指南 |
+| [📄 文档预览指南](docs/document-preview.md) | KKFileView 文档预览使用指南 |
 
 ## 🚀 微服务架构演进计划
 

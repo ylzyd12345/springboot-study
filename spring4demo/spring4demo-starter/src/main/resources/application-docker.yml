@@ -131,11 +131,10 @@ management:
   endpoint:
     health:
       show-details: always
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: ${MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED:true}
-        
 # Docker 环境特殊配置
 server:
   port: 8080
