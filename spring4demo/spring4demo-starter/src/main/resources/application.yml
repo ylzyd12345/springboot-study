@@ -408,4 +408,49 @@ xxl:
       # 执行器日志文件保存天数 [选填]
       logretentiondays: 30
 
+# Seata 分布式事务配置
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: spring4demo-tx-group
+  service:
+    vgroup-mapping:
+      spring4demo-tx-group: default
+    grouplist:
+      default: localhost:8091
+    enable-degrade: false
+    disable-global-transaction: false
+  client:
+    rm:
+      async-commit-buffer-limit: 10000
+      lock-retry-interval: 10
+      lock-retry-times: 30
+      lock-retry-policy: backoff
+      query-timeout: 1000
+      commit-retry-count: 5
+      rollback-retry-count: 5
+      table-meta-check-enable: true
+    tm:
+      commit-retry-count: 5
+      rollback-retry-count: 5
+      global-lock-retry-interval: 10
+      global-lock-retry-times: 30
+    undo:
+      enable: true
+      data-validation: true
+      log-serialization: jackson
+      only-care-update-columns: true
+  transport:
+    type: TCP
+    server: NIO
+    heartbeat: true
+    serialization: seata
+    compressor: none
+  registry:
+    type: file
+  config:
+    type: file
+  log:
+    exception-rate: 100
+
 # 监控配置
