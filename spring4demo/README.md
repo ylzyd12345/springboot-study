@@ -33,6 +33,8 @@ Spring4demo 是一个全面的企业级智能管理平台，采用前后端分�
 - **MyBatis-Plus** - 数据访问层框架
 - **MySQL 8.0** - 主数据库
 - **Redis 7.0** - 缓存和会话存储
+- **Redisson 3.31.0** - Redis 客户端，提供分布式锁、缓存等功能
+- **Dynamic Datasource 4.3.0** - 动态数据源，支持主从、多数据源、读写分离
 - **RabbitMQ 3.12** - 消息队列
 - **Elasticsearch 8.11** - 搜索引擎
 

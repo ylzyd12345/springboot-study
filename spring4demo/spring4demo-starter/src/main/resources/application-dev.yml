@@ -4,36 +4,77 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/spring4demo_dev?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: root
-    druid:
-      initial-size: 5
-      min-idle: 5
-      max-active: 20
-      max-wait: 60000
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      validation-query: SELECT 1
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 20
-      filters: stat,wall
-      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
-      web-stat-filter:
-        enabled: true
-        url-pattern: /*
-        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
-      stat-view-servlet:
-        enabled: true
-        url-pattern: /druid/*
-        reset-enable: false
-        login-username: admin
-        login-password: admin
-        allow: 127.0.0.1
-  
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 动态数据源配置（开发环境）
+    dynamic:
+      enabled: true
+      strict: false
+      primary: master
+      datasource:
+        master:
+          name: master
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/spring4demo_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          type: com.alibaba.druid.pool.DruidDataSource
+          primary: true
+          druid:
+            initial-size: 5
+            min-idle: 5
+            max-active: 20
+            max-wait: 60000
+            time-between-eviction-runs-millis: 60000
+            min-evictable-idle-time-millis: 300000
+            max-evictable-idle-time-millis: 900000
+            validation-query: SELECT 1
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            filters: stat,wall
+            connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+            stat-view-servlet-enabled: true
+            stat-view-servlet-url-pattern: /druid/*
+            stat-view-servlet-login-username: admin
+            stat-view-servlet-login-password: admin
+            web-stat-filter-enabled: true
+            web-stat-filter-url-pattern: /*
+            web-stat-filter-exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        slave:
+          name: slave
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3307/spring4demo_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          type: com.alibaba.druid.pool.DruidDataSource
+          readonly: true
+          druid:
+            initial-size: 5
+            min-idle: 5
+            max-active: 20
+            max-wait: 60000
+            time-between-eviction-runs-millis: 60000
+            min-evictable-idle-time-millis: 300000
+            max-evictable-idle-time-millis: 900000
+            validation-query: SELECT 1
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            filters: stat,wall
+            connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+            stat-view-servlet-enabled: true
+            stat-view-servlet-url-pattern: /druid/*
+            stat-view-servlet-login-username: admin
+            stat-view-servlet-login-password: admin
+            web-stat-filter-enabled: true
+            web-stat-filter-url-pattern: /*
+            web-stat-filter-exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+
   thymeleaf:
     cache: false
       
@@ -51,6 +92,30 @@ spring:
           max-idle: 8
           min-idle: 0
         timeout: 10000ms
+      # Redisson 配置（开发环境）
+      redisson:
+        address: redis://localhost:6379
+        database: 0
+        password:
+        timeout: 3000
+        connection-pool:
+          connection-pool-size: 64
+          connection-minimum-idle-size: 10
+          idle-connection-timeout: 10000
+          subscription-connection-pool-size: 50
+          subscription-connection-minimum-idle-size: 1
+        threads:
+          thread-pool-size: 16
+          netty-threads: 32
+        single-server-config:
+          connection-idle-timeout: 10000
+          subscription-connection-timeout: 5000
+          monitor-lock-expiration: 30000
+          subscription-connection-pool-size: 50
+          subscription-connection-minimum-idle-size: 1
+          connection-pool-size: 64
+          connection-minimum-idle-size: 10
+          keep-alive: true
         
 # 日志配置
 logging:

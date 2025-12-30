@@ -112,6 +112,12 @@
 
         <!-- XXL-Job 分布式任务调度 -->
         <xxl-job.version>2.4.0</xxl-job.version>
+
+        <!-- Redisson Redis 客户端 -->
+        <redisson.version>3.31.0</redisson.version>
+
+        <!-- Dynamic Datasource 动态数据源 -->
+        <dynamic-datasource.version>4.3.0</dynamic-datasource.version>
     </properties>
 
     <repositories>
@@ -392,6 +398,20 @@
                 <groupId>com.xuxueli</groupId>
                 <artifactId>xxl-job-core</artifactId>
                 <version>${xxl-job.version}</version>
+            </dependency>
+
+            <!-- Redisson Redis 客户端 -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+
+            <!-- Dynamic Datasource 动态数据源 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
             </dependency>
 
             <!-- Configuration Processor -->
