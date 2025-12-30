@@ -29,7 +29,7 @@ public class StpInterfaceImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         // TODO: 从数据库查询用户权限
         // 临时实现，返回基本权限
-        return List.of("user:list", "user:info", "user:update");
+        return List.of("user:list", "user:info", "user:update", "user:status");
     }
 
     /**

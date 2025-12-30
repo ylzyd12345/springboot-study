@@ -1,6 +1,5 @@
 package com.kev1n.spring4demo.common.config;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 @Component
 @Validated
 @ConfigurationProperties(prefix = "seata")
-public class SeataProperties {
+public class CustomSeataProperties {
 
     /**
      * 是否启用 Seata
