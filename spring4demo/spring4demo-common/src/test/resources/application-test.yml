@@ -1,0 +1,15 @@
+# Test Configuration for spring4demo-common module
+
+spring:
+  application:
+    name: spring4demo-common-test
+  
+  # Disable Seata auto-configuration in test environment
+  seata:
+    enabled: false
+
+# Logging configuration
+logging:
+  level:
+    com.kev1n.spring4demo: DEBUG
+    org.springframework.boot.autoconfigure: INFO

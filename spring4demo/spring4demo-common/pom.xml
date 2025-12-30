@@ -104,6 +104,15 @@
             <artifactId>s3</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- ==================== 测试依赖 ==================== -->
+        
+        <!-- Spring Boot Test Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- =========================================================== -->
