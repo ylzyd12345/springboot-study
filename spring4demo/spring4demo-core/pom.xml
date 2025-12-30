@@ -2,30 +2,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
+    <!-- =========================================================== -->
+    <!-- 父项目信息 -->
+    <!-- =========================================================== -->
     <parent>
         <groupId>com.kev1n</groupId>
         <artifactId>spring4demo</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
+    <!-- =========================================================== -->
+    <!-- 模块信息 -->
+    <!-- =========================================================== -->
     <artifactId>spring4demo-core</artifactId>
     <name>spring4demo-core</name>
     <description>核心业务模块 - 实体、Repository、Service</description>
-    
+
+    <!-- =========================================================== -->
+    <!-- 依赖配置 -->
+    <!-- =========================================================== -->
     <dependencies>
-        <!-- 依赖common模块（包含配置类和可选依赖） -->
+        <!-- ==================== 项目内部依赖 ==================== -->
+        
+        <!-- common 模块 - 配置类和可选依赖 -->
         <dependency>
             <groupId>com.kev1n</groupId>
             <artifactId>spring4demo-common</artifactId>
         </dependency>
 
-        <!-- 依赖api模块（DTO） -->
+        <!-- api 模块 - DTO 定义 -->
         <dependency>
             <groupId>com.kev1n</groupId>
             <artifactId>spring4demo-api</artifactId>
         </dependency>
+
+        <!-- ==================== 认证授权 ==================== -->
         
         <!-- Sa-Token 认证框架 -->
         <dependency>
@@ -33,6 +46,8 @@
             <artifactId>sa-token-spring-boot3-starter</artifactId>
         </dependency>
 
+        <!-- ==================== 数据库 ==================== -->
+        
         <!-- MySQL 驱动 -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -51,6 +66,8 @@
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
 
+        <!-- ==================== 缓存 ==================== -->
+        
         <!-- Spring Data Redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -63,48 +80,54 @@
             <artifactId>caffeine</artifactId>
         </dependency>
 
-        <!-- Redisson Redis 客户端（从 common 传递，显式声明以去除 optional） -->
+        <!-- ==================== 中间件（从 common 传递，显式声明去除 optional） ==================== -->
+        
+        <!-- Redisson Redis 客户端 -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Dynamic Datasource 动态数据源（从 common 传递，显式声明以去除 optional） -->
+        <!-- Dynamic Datasource 动态数据源 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
         </dependency>
 
-        <!-- AWS S3 SDK（从 common 传递，显式声明以去除 optional） -->
+        <!-- AWS S3 SDK -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
         </dependency>
 
-        <!-- XXL-Job 分布式任务调度（从 common 传递，显式声明以去除 optional） -->
+        <!-- XXL-Job 分布式任务调度 -->
         <dependency>
             <groupId>com.xuxueli</groupId>
             <artifactId>xxl-job-core</artifactId>
         </dependency>
 
-        <!-- Seata 分布式事务（从 common 传递，显式声明以去除 optional） -->
+        <!-- Seata 分布式事务 -->
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- 测试依赖 -->
+        <!-- ==================== 测试依赖 ==================== -->
+        
+        <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- H2 Database（测试用） -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <!-- Testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -117,9 +140,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
+    <!-- =========================================================== -->
+    <!-- 构建配置 -->
+    <!-- =========================================================== -->
     <build>
         <plugins>
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -133,6 +160,8 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Maven Surefire Plugin - 单元测试 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

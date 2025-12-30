@@ -2,29 +2,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
+    <!-- =========================================================== -->
+    <!-- 父项目信息 -->
+    <!-- =========================================================== -->
     <parent>
         <groupId>com.kev1n</groupId>
         <artifactId>spring4demo</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
+    <!-- =========================================================== -->
+    <!-- 模块信息 -->
+    <!-- =========================================================== -->
     <artifactId>spring4demo-admin</artifactId>
     <name>spring4demo-admin</name>
     <description>管理后台模块 - 管理后台专用功能</description>
-    
+
+    <!-- =========================================================== -->
+    <!-- 依赖配置 -->
+    <!-- =========================================================== -->
     <dependencies>
-        <!-- 依赖web模块 -->
+        <!-- ==================== 项目内部依赖 ==================== -->
+        
+        <!-- web 模块（会传递 core、common、api） -->
         <dependency>
             <groupId>com.kev1n</groupId>
             <artifactId>spring4demo-web</artifactId>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            
-        </plugins>
-    </build>
 </project>
