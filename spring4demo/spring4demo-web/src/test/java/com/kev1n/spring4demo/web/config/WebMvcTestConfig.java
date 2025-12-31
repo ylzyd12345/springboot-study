@@ -1,5 +1,6 @@
 package com.kev1n.spring4demo.web.config;
 
+import cn.dev33.satoken.dao.SaTokenDao;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration;
 import com.kev1n.spring4demo.web.handler.GlobalExceptionHandler;
 import com.kev1n.spring4demo.web.interceptor.ApiVersionInterceptor;
@@ -15,6 +16,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.mockito.Mockito.mock;
 
@@ -61,5 +66,80 @@ public class WebMvcTestConfig {
     @Primary
     public MetricsInterceptor metricsInterceptor() {
         return mock(MetricsInterceptor.class);
+    }
+
+    /**
+     * Sa-Token 内存存储配置（测试用）
+     */
+    @Bean
+    @Primary
+    public SaTokenDao saTokenDao() {
+        return new SaTokenDao() {
+            // 使用 ConcurrentHashMap 作为内存存储
+            private final Map<String, Object> dataMap = new ConcurrentHashMap<>();
+
+            @Override
+            public String get(String key) {
+                return (String) dataMap.get(key);
+            }
+
+            @Override
+            public void set(String key, String value, long timeout) {
+                dataMap.put(key, value);
+            }
+
+            @Override
+            public void update(String key, String value) {
+                dataMap.put(key, value);
+            }
+
+            @Override
+            public void delete(String key) {
+                dataMap.remove(key);
+            }
+
+            @Override
+            public long getTimeout(String key) {
+                return 0;
+            }
+
+            @Override
+            public void updateTimeout(String key, long timeout) {
+            }
+
+            @Override
+            public Object getObject(String key) {
+                return dataMap.get(key);
+            }
+
+            @Override
+            public long getObjectTimeout(String key) {
+                return 0;
+            }
+
+            @Override
+            public void setObject(String key, Object value, long timeout) {
+                dataMap.put(key, value);
+            }
+
+            @Override
+            public void updateObject(String key, Object value) {
+                dataMap.put(key, value);
+            }
+
+            @Override
+            public void updateObjectTimeout(String key, long timeout) {
+            }
+
+            @Override
+            public void deleteObject(String key) {
+                dataMap.remove(key);
+            }
+
+            @Override
+            public List<String> searchData(String prefix, String keyword, int start, int size, boolean sortType) {
+                return List.of();
+            }
+        };
     }
 }
