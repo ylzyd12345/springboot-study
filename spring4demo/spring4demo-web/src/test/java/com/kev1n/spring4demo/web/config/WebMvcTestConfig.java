@@ -1,9 +1,12 @@
 package com.kev1n.spring4demo.web.config;
 
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration;
+import com.kev1n.spring4demo.web.handler.GlobalExceptionHandler;
 import com.kev1n.spring4demo.web.interceptor.ApiVersionInterceptor;
 import com.kev1n.spring4demo.web.interceptor.MetricsInterceptor;
+import com.kev1n.spring4demo.web.interceptor.SaTokenInterceptor;
 import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
+import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
@@ -28,7 +31,8 @@ import static org.mockito.Mockito.mock;
         DynamicDataSourceAutoConfiguration.class,
         RedisAutoConfiguration.class,
         RedisReactiveAutoConfiguration.class,
-        SeataAutoConfiguration.class
+        SeataAutoConfiguration.class,
+        RedissonAutoConfigurationV2.class,
     }
 )
 @ComponentScan(
@@ -38,8 +42,10 @@ import static org.mockito.Mockito.mock;
         type = FilterType.ASSIGNABLE_TYPE,
         classes = {
             WebMvcConfig.class,
+            GlobalExceptionHandler.class,
+            SaTokenInterceptor.class,
             ApiVersionInterceptor.class,
-            MetricsInterceptor.class
+            MetricsInterceptor.class,
         }
     )
 )

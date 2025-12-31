@@ -2,6 +2,7 @@ package com.kev1n.spring4demo.web.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
+import com.kev1n.spring4demo.common.enums.ErrorCode;
 import com.kev1n.spring4demo.core.service.DocumentPreviewService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,7 +64,7 @@ public class DocumentPreviewController {
         try {
             // 检查文件是否支持预览
             if (!documentPreviewService.isSupportPreview(fileName)) {
-                return ResponseEntity.ok(ApiResponse.error(400, "该文件类型不支持预览"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getCode(), "该文件类型不支持预览"));
             }
 
             // 获取用户 Token
@@ -110,7 +111,7 @@ public class DocumentPreviewController {
         try {
             // 检查文件是否支持预览
             if (!documentPreviewService.isSupportPreview(fileName)) {
-                return ResponseEntity.ok(ApiResponse.error(400, "该文件类型不支持预览"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getCode(), "该文件类型不支持预览"));
             }
 
             // 获取用户 Token

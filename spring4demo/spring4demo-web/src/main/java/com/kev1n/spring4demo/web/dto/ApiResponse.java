@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kev1n.spring4demo.common.enums.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -126,6 +127,36 @@ public class ApiResponse<T> {
         return ApiResponse.<T>builder()
                 .code(code)
                 .message(message)
+                .data(data)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 失败响应（使用错误码枚举）
+     * 
+     * @param errorCode 错误码枚举
+     * @return 失败响应
+     */
+    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+        return ApiResponse.<T>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 失败响应（使用错误码枚举，带数据）
+     * 
+     * @param errorCode 错误码枚举
+     * @param data 响应数据
+     * @return 失败响应
+     */
+    public static <T> ApiResponse<T> error(ErrorCode errorCode, T data) {
+        return ApiResponse.<T>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();

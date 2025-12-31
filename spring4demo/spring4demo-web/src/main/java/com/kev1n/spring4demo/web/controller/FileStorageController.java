@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.web.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.kev1n.spring4demo.common.enums.ErrorCode;
 import com.kev1n.spring4demo.core.service.FileStorageService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -73,7 +74,7 @@ public class FileStorageController {
 
         try {
             if (file.isEmpty()) {
-                return ResponseEntity.ok(ApiResponse.error(400, "文件不能为空"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.BAD_REQUEST.getCode(), "文件不能为空"));
             }
 
             String fileName = fileStorageService.uploadFile(
@@ -174,7 +175,7 @@ public class FileStorageController {
         try {
             Map<String, Object> fileInfo = fileStorageService.getFileInfo(fileName);
             if (fileInfo == null) {
-                return ResponseEntity.ok(ApiResponse.error(404, "文件不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.RESOURCE_NOT_FOUND.getCode(), "文件不存在"));
             }
 
             return ResponseEntity.ok(ApiResponse.success(fileInfo));
@@ -202,7 +203,7 @@ public class FileStorageController {
 
         try {
             if (!fileStorageService.fileExists(fileName)) {
-                return ResponseEntity.ok(ApiResponse.error(404, "文件不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.RESOURCE_NOT_FOUND.getCode(), "文件不存在"));
             }
 
             fileStorageService.deleteFile(fileName);
@@ -232,7 +233,7 @@ public class FileStorageController {
         log.info("批量删除文件请求: count={}", fileNames != null ? fileNames.size() : 0);
 
         if (fileNames == null || fileNames.isEmpty()) {
-            return ResponseEntity.ok(ApiResponse.error(400, "文件名列表不能为空"));
+            return ResponseEntity.ok(ApiResponse.error(ErrorCode.BAD_REQUEST.getCode(), "文件名列表不能为空"));
         }
 
         try {
@@ -287,7 +288,7 @@ public class FileStorageController {
 
         try {
             if (!fileStorageService.fileExists(fileName)) {
-                return ResponseEntity.ok(ApiResponse.error(404, "文件不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.RESOURCE_NOT_FOUND.getCode(), "文件不存在"));
             }
 
             String fileUrl = fileStorageService.getFileUrl(fileName);
@@ -323,7 +324,7 @@ public class FileStorageController {
 
         try {
             if (!fileStorageService.fileExists(sourceFileName)) {
-                return ResponseEntity.ok(ApiResponse.error(404, "源文件不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.RESOURCE_NOT_FOUND.getCode(), "源文件不存在"));
             }
 
             fileStorageService.copyFile(sourceFileName, targetFileName);
@@ -356,7 +357,7 @@ public class FileStorageController {
 
         try {
             if (!fileStorageService.fileExists(sourceFileName)) {
-                return ResponseEntity.ok(ApiResponse.error(404, "源文件不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.RESOURCE_NOT_FOUND.getCode(), "源文件不存在"));
             }
 
             fileStorageService.moveFile(sourceFileName, targetFileName);

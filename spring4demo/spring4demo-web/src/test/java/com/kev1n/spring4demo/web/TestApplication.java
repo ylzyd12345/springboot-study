@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.web;
 
 import com.kev1n.spring4demo.common.config.RedissonConfig;
+import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
 import org.redisson.api.RedissonClient;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.mock;
         RedisAutoConfiguration.class,
         RedisReactiveAutoConfiguration.class,
         RedissonAutoConfigurationV2.class,
-        io.seata.spring.boot.autoconfigure.SeataAutoConfiguration.class
+        SeataAutoConfiguration.class
     }
 )
 @ComponentScan(

@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author spring4demo
  * @version 1.0.0
  */
-@SpringBootTest(classes = WebMvcTestConfig.class)
+@SpringBootTest(classes = {WebMvcTestConfig.class})
 @AutoConfigureMockMvc
 @DisplayName("Web MVC 配置测试")
 class WebMvcConfigTest {

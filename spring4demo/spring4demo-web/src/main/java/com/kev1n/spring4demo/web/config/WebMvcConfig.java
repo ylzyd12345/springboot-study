@@ -1,10 +1,8 @@
 package com.kev1n.spring4demo.web.config;
 
-import cn.dev33.satoken.interceptor.SaInterceptor;
-import cn.dev33.satoken.router.SaRouter;
-import cn.dev33.satoken.stp.StpUtil;
 import com.kev1n.spring4demo.web.interceptor.ApiVersionInterceptor;
 import com.kev1n.spring4demo.web.interceptor.MetricsInterceptor;
+import com.kev1n.spring4demo.web.interceptor.SaTokenInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -23,23 +21,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private final MetricsInterceptor metricsInterceptor;
     private final ApiVersionInterceptor apiVersionInterceptor;
+    private final SaTokenInterceptor saTokenInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 1. Sa-Token认证拦截器 - 最高优先级
-        registry.addInterceptor(new SaInterceptor(handle -> {
-            SaRouter
-                .match("/**")
-                .notMatch("/auth/login")
-                .notMatch("/auth/register")
-                .notMatch("/doc.html")
-                .notMatch("/v3/api-docs/**")
-                .notMatch("/webjars/**")
-                .notMatch("/img.icons/**")
-                .notMatch("/actuator/**")
-                .notMatch("/error")
-                .check(r -> StpUtil.checkLogin());
-        })).addPathPatterns("/**").order(1);
+        registry.addInterceptor(saTokenInterceptor)
+                .addPathPatterns("/**")
+                .order(1);
 
         // 2. API版本拦截器 - 第二优先级
         registry.addInterceptor(apiVersionInterceptor)

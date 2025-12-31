@@ -5,6 +5,7 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kev1n.spring4demo.common.enums.ErrorCode;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.service.UserService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
@@ -75,12 +76,12 @@ public class UserController {
         try {
             // 检查用户名是否已存在
             if (userService.existsByUsername(request.getUsername())) {
-                return ResponseEntity.ok(ApiResponse.error(400, "用户名已存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_ALREADY_EXISTS.getCode(), "用户名已存在"));
             }
             
             // 检查邮箱是否已存在
             if (StringUtils.hasText(request.getEmail()) && userService.existsByEmail(request.getEmail())) {
-                return ResponseEntity.ok(ApiResponse.error(400, "邮箱已存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_ALREADY_EXISTS.getCode(), "邮箱已存在"));
             }
             
             // 创建用户
@@ -184,7 +185,7 @@ public class UserController {
             if (userOpt.isPresent()) {
                 return ResponseEntity.ok(ApiResponse.success(userOpt.get()));
             } else {
-                return ResponseEntity.ok(ApiResponse.error(404, "用户不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_NOT_FOUND.getCode(), "用户不存在"));
             }
         } catch (Exception e) {
             log.error("获取用户详情失败: id={}", id, e);
@@ -213,7 +214,7 @@ public class UserController {
         try {
             Optional<User> userOpt = userService.getOptById(id);
             if (userOpt.isEmpty()) {
-                return ResponseEntity.ok(ApiResponse.error(404, "用户不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_NOT_FOUND.getCode(), "用户不存在"));
             }
             
             User user = userOpt.get();
@@ -222,7 +223,7 @@ public class UserController {
             if (StringUtils.hasText(request.getEmail()) && 
                 !Objects.equals(user.getEmail(), request.getEmail())) {
                 if (userService.existsByEmail(request.getEmail())) {
-                    return ResponseEntity.ok(ApiResponse.error(400, "邮箱已存在"));
+                    return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_ALREADY_EXISTS.getCode(), "邮箱已存在"));
                 }
                 user.setEmail(request.getEmail());
             }
@@ -271,7 +272,7 @@ public class UserController {
         try {
             Optional<User> userOpt = userService.getOptById(id);
             if (userOpt.isEmpty()) {
-                return ResponseEntity.ok(ApiResponse.error(404, "用户不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_NOT_FOUND.getCode(), "用户不存在"));
             }
             
             // 软删除
@@ -306,7 +307,7 @@ public class UserController {
         log.info("批量删除用户: ids={}", ids);
         
         if (ids == null || ids.isEmpty()) {
-            return ResponseEntity.ok(ApiResponse.error(400, "用户ID列表不能为空"));
+            return ResponseEntity.ok(ApiResponse.error(ErrorCode.BAD_REQUEST.getCode(), "用户ID列表不能为空"));
         }
         
         try {
@@ -346,7 +347,7 @@ public class UserController {
         try {
             Optional<User> userOpt = userService.getOptById(id);
             if (userOpt.isEmpty()) {
-                return ResponseEntity.ok(ApiResponse.error(404, "用户不存在"));
+                return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_NOT_FOUND.getCode(), "用户不存在"));
             }
             
             User user = userOpt.get();
