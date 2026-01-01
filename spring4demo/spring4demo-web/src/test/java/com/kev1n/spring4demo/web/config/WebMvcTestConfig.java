@@ -7,7 +7,9 @@ import com.kev1n.spring4demo.web.interceptor.ApiVersionInterceptor;
 import com.kev1n.spring4demo.web.interceptor.MetricsInterceptor;
 import com.kev1n.spring4demo.web.interceptor.SaTokenInterceptor;
 import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
+import io.seata.spring.boot.autoconfigure.SeataDataSourceAutoConfiguration;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
+import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
@@ -17,6 +19,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +42,9 @@ import static org.mockito.Mockito.mock;
         RedisAutoConfiguration.class,
         RedisReactiveAutoConfiguration.class,
         SeataAutoConfiguration.class,
+        SeataDataSourceAutoConfiguration.class,
         RedissonAutoConfigurationV2.class,
+        DataSourceHealthContributorAutoConfiguration.class,
     }
 )
 @ComponentScan(
@@ -66,6 +73,15 @@ public class WebMvcTestConfig {
     @Primary
     public MetricsInterceptor metricsInterceptor() {
         return mock(MetricsInterceptor.class);
+    }
+
+    /**
+     * Mock DataSource 用于测试
+     */
+    @Bean
+    @Primary
+    public DataSource dataSource() {
+        return mock(DataSource.class);
     }
 
     /**
