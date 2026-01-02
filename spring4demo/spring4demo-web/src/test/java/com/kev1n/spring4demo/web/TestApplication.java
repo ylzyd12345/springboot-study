@@ -1,12 +1,12 @@
 package com.kev1n.spring4demo.web;
 
 import com.kev1n.spring4demo.common.config.RedissonConfig;
-import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
+import org.apache.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
 import org.redisson.api.RedissonClient;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.mock;
  */
 @SpringBootApplication(
     exclude = {
-        RedisAutoConfiguration.class,
-        RedisReactiveAutoConfiguration.class,
+        DataRedisAutoConfiguration.class,
+        DataRedisReactiveAutoConfiguration.class,
         RedissonAutoConfigurationV2.class,
         SeataAutoConfiguration.class
     }

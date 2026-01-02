@@ -5,14 +5,13 @@ import com.alibaba.fastjson2.JSON;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest(classes = com.kev1n.spring4demo.web.TestApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Transactional
 @TestPropertySource(locations = "classpath:application-test.yml")
 public abstract class BaseWebTest {
 

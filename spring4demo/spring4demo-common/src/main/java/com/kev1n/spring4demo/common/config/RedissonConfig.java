@@ -25,6 +25,7 @@ public class RedissonConfig {
 
     private final RedissonProperties redissonProperties;
 
+    @SuppressWarnings("EI_EXPOSE_REP2")
     public RedissonConfig(RedissonProperties redissonProperties) {
         this.redissonProperties = redissonProperties;
     }
@@ -36,6 +37,7 @@ public class RedissonConfig {
      *
      * @return RedissonClient 实例
      */
+    @SuppressWarnings("unchecked")
     @Bean(destroyMethod = "shutdown")
     @ConditionalOnMissingBean
     public RedissonClient redissonClient() {

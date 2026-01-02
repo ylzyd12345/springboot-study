@@ -65,25 +65,25 @@ public class UserController {
      */
     @PostMapping
     @SaCheckRole("ADMIN")
-    @Operation(summary = "创建用户", 
+    @Operation(summary = "创建用户",
                description = "创建新用户，需要管理员权限。会验证用户名和邮箱唯一性")
     public ResponseEntity<ApiResponse<User>> createUser(
-            @Parameter(description = "用户创建信息") 
+            @Parameter(description = "用户创建信息")
             @Valid @RequestBody UserCreateRequest request) {
-        
+
         log.info("创建用户请求: username={}, email={}", request.getUsername(), request.getEmail());
-        
+
         try {
             // 检查用户名是否已存在
             if (userService.existsByUsername(request.getUsername())) {
                 return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_ALREADY_EXISTS.getCode(), "用户名已存在"));
             }
-            
+
             // 检查邮箱是否已存在
             if (StringUtils.hasText(request.getEmail()) && userService.existsByEmail(request.getEmail())) {
                 return ResponseEntity.ok(ApiResponse.error(ErrorCode.USER_ALREADY_EXISTS.getCode(), "邮箱已存在"));
             }
-            
+
             // 创建用户
             User user = new User();
             user.setUsername(request.getUsername());
@@ -91,9 +91,9 @@ public class UserController {
             user.setPhone(request.getPhone());
             user.setRealName(request.getRealName());
             user.setStatus(request.getStatus() != null ? request.getStatus() : 1);
-            
+
             boolean result = userService.save(user);
-            
+
             if (result) {
                 log.info("用户创建成功: id={}, username={}", user.getId(), user.getUsername());
                 return ResponseEntity.status(HttpStatus.CREATED)
@@ -101,7 +101,7 @@ public class UserController {
             } else {
                 return ResponseEntity.ok(ApiResponse.error("用户创建失败"));
             }
-            
+
         } catch (Exception e) {
             log.error("创建用户失败: username={}", request.getUsername(), e);
             return ResponseEntity.ok(ApiResponse.error("系统异常，用户创建失败"));

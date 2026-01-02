@@ -1,27 +1,26 @@
 package com.kev1n.spring4demo.web.config;
 
 import cn.dev33.satoken.dao.SaTokenDao;
+import cn.dev33.satoken.session.SaSession;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration;
 import com.kev1n.spring4demo.web.handler.GlobalExceptionHandler;
 import com.kev1n.spring4demo.web.interceptor.ApiVersionInterceptor;
 import com.kev1n.spring4demo.web.interceptor.MetricsInterceptor;
 import com.kev1n.spring4demo.web.interceptor.SaTokenInterceptor;
-import io.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
-import io.seata.spring.boot.autoconfigure.SeataDataSourceAutoConfiguration;
+import org.apache.seata.spring.boot.autoconfigure.SeataAutoConfiguration;
+import org.apache.seata.spring.boot.autoconfigure.SeataDataSourceAutoConfiguration;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
-import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.health.DataSourceHealthContributorAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,8 +38,8 @@ import static org.mockito.Mockito.mock;
     exclude = {
         DataSourceAutoConfiguration.class,
         DynamicDataSourceAutoConfiguration.class,
-        RedisAutoConfiguration.class,
-        RedisReactiveAutoConfiguration.class,
+        DataRedisAutoConfiguration.class,
+        DataRedisReactiveAutoConfiguration.class,
         SeataAutoConfiguration.class,
         SeataDataSourceAutoConfiguration.class,
         RedissonAutoConfigurationV2.class,
@@ -129,6 +128,11 @@ public class WebMvcTestConfig {
             }
 
             @Override
+            public <T> T getObject(String key, Class<T> classType) {
+                return null;
+            }
+
+            @Override
             public long getObjectTimeout(String key) {
                 return 0;
             }
@@ -145,6 +149,36 @@ public class WebMvcTestConfig {
 
             @Override
             public void updateObjectTimeout(String key, long timeout) {
+            }
+
+            @Override
+            public SaSession getSession(String sessionId) {
+                return null;
+            }
+
+            @Override
+            public void setSession(SaSession session, long timeout) {
+
+            }
+
+            @Override
+            public void updateSession(SaSession session) {
+
+            }
+
+            @Override
+            public void deleteSession(String sessionId) {
+
+            }
+
+            @Override
+            public long getSessionTimeout(String sessionId) {
+                return 0;
+            }
+
+            @Override
+            public void updateSessionTimeout(String sessionId, long timeout) {
+
             }
 
             @Override

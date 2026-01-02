@@ -1,12 +1,12 @@
 # Spring4demo 企业级智能管理平台
 
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.10-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.java.net/)
 [![Vue.js](https://img.shields.io/badge/Vue.js-3.3.8-4FC08D.svg)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-3178C6.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> 🚀 基于 Spring Boot 3.2.10 + Vue 3 + TypeScript 的企业级生态环境集成项目
+> 🚀 基于 Spring Boot 4.0.1 + Vue 3 + TypeScript 的企业级生态环境集成项目
 
 ## 📋 项目概述
 
@@ -27,13 +27,13 @@ Spring4demo 是一个全面的企业级智能管理平台，采用前后端分�
 ## 🏗️ 技术栈
 
 ### 后端技术
-- **Spring Boot 3.2.10** - 应用框架核心
-- **Java 21** - 编程语言
+- **Spring Boot 4.0.1** - 应用框架核心
+- **Java 25** - 编程语言
 - **Sa-Token** - 轻量级权限认证框架
 - **MyBatis-Plus** - 数据访问层框架
 - **MySQL 8.0** - 主数据库
 - **Redis 7.0** - 缓存和会话存储
-- **Redisson 3.31.0** - Redis 客户端，提供分布式锁、缓存等功能
+- **Redisson 3.35.0** - Redis 客户端，提供分布式锁、缓存等功能
 - **Dynamic Datasource 4.3.0** - 动态数据源，支持主从、多数据源、读写分离
 - **Seata 2.0.0** - 分布式事务解决方案，支持 AT、TCC、SAGA、XA 等事务模式
 - **RabbitMQ 3.12** - 消息队列
@@ -48,7 +48,7 @@ Spring4demo 是一个全面的企业级智能管理平台，采用前后端分�
 ## 🚀 快速开始
 
 ### 环境要求
-- **Java**: JDK 21+
+- **Java**: JDK 25+
 - **Node.js**: 18.0.0+
 - **Maven**: 3.9.0+
 - **Docker**: 20.0+

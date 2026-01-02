@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-这是一个基于 Spring Boot 3.2.10 和 Java 21 的企业级生态环境集成项目，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，包括 Web 开发、数据存储、消息中间件、安全认证、监控运维等多个领域。项目旨在为开发者提供一个全面、实用的 Spring Boot 生态系统参考实现。
+这是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级生态环境集成项目，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，包括 Web 开发、数据存储、消息中间件、安全认证、监控运维等多个领域。项目旨在为开发者提供一个全面、实用的 Spring Boot 生态系统参考实现。
 
 ## 技术栈
 
@@ -10,9 +10,9 @@
 
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| Spring Boot | 3.2.10 | 应用框架核心 |
-| Spring Framework | 3.x | 依赖注入、AOP等核心功能 |
-| Java | 21 | 编程语言 |
+| Spring Boot | 4.0.1 | 应用框架核心 |
+| Spring Framework | 4.x | 依赖注入、AOP等核心功能 |
+| Java | 25 | 编程语言 |
 | Maven | 3.9.12 | 构建工具 |
 
 ### 🌐 Web技术栈
@@ -29,8 +29,8 @@
 #### 关系型数据库
 - [x] **MySQL** - MySQL Connector 9.5.0
 - [x] **H2** - H2 Database 2.4.240（测试环境）
-- [x] **MyBatis-Plus** - MyBatis 增强工具 3.5.7
-- [x] **PageHelper** - 分页插件 1.4.7
+- [x] **MyBatis-Plus** - MyBatis 增强工具 3.5.9
+- [x] **PageHelper** - 分页插件 2.1.0
 - [x] **Druid** - 高性能数据库连接池 1.2.20
 - [x] **HikariCP** - Spring Boot 默认连接池
 
@@ -62,7 +62,7 @@
 
 ### 🔐 安全认证技术栈
 
-- [x] **Sa-Token** - 轻量级 Java 权限认证框架 1.37.0
+- [x] **Sa-Token** - 轻量级 Java 权限认证框架 1.39.0
 - [x] **Sa-Token-OAuth2** - OAuth2/OpenID Connect 支持
 - [x] **Sa-Token-Redis** - Redis 持久化支持
 
@@ -75,7 +75,7 @@
 ### 📊 监控运维技术栈
 
 - [x] **spring-boot-starter-actuator** - 生产就绪监控和管理功能
-- [x] **Micrometer** - 指标收集 1.12.10
+- [x] **Micrometer** - 指标收集 1.14.0
 - [x] **Prometheus** - 指标收集 2.47.0
 - [x] **Grafana** - 监控面板 10.1.0
 - [x] **Zipkin** - 链路追踪 2.24
@@ -85,19 +85,19 @@
 
 ### 📝 API文档
 
-- [x] **SpringDoc OpenAPI** - OpenAPI 3 规范 2.3.0
-- [x] **Knife4j** - 增强版Swagger UI 4.4.0
+- [x] **SpringDoc OpenAPI** - OpenAPI 3 规范 2.7.0
+- [x] **Knife4j** - 增强版Swagger UI 4.5.0
 
 ### 🛠️ 开发工具和测试
 
 - [x] **Spring Boot DevTools** - 热重载开发工具
 - [x] **Spring Boot Configuration Processor** - 配置元数据生成
-- [x] **Lombok** - 减少样板代码 1.18.42
-- [x] **MapStruct** - Bean映射框架 1.5.5
+- [x] **Lombok** - 减少样板代码 1.18.34
+- [x] **MapStruct** - Bean映射框架 1.6.0
 - [x] **Hutool** - Java工具类库 5.8.40
 - [x] **Fastjson2** - JSON处理 2.0.57
-- [x] **Testcontainers** - 集成测试容器支持 1.19.6
-- [x] **WireMock** - HTTP服务模拟 3.0.1
+- [x] **Testcontainers** - 集成测试容器支持 1.20.0
+- [x] **WireMock** - HTTP服务模拟 3.9.0
 - [x] **JaCoCo** - 代码覆盖率 0.8.11
 
 ### 🎨 前端技术栈

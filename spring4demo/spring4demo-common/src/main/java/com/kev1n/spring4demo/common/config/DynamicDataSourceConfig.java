@@ -22,6 +22,7 @@ public class DynamicDataSourceConfig {
 
     private final DataSource dataSource;
 
+    @SuppressWarnings("EI_EXPOSE_REP2")
     public DynamicDataSourceConfig(DataSource dataSource) {
         this.dataSource = dataSource;
     }

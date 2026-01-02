@@ -22,14 +22,14 @@
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
 
-    <!-- Whitespace -->
-    <module name="FileTabCharacter">
-        <property name="eachLine" value="true"/>
+    <!-- Whitespace - Check for tabs -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\t"/>
+        <property name="message" value="Line contains tab character(s)."/>
     </module>
 
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
-        <module name="IllegalTokenText"/>
         <module name="AvoidEscapedUnicodeCharacters">
             <property name="allowEscapesForControlCharacters" value="true"/>
             <property name="allowByTailComment" value="true"/>
@@ -60,7 +60,6 @@
         <module name="UpperEll"/>
         <module name="ModifierOrder"/>
         <module name="EmptyLineSeparator">
-            <property name="allowNoEmptyLineBetweenBlocks" value="false"/>
             <property name="allowMultipleEmptyLines" value="false"/>
             <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
         </module>
@@ -93,7 +92,6 @@
                      value="Parameter name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="LocalVariableName">
-            <property name="tokens" value="VARIABLE_DEF,TYPE_DEF"/>
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
             <message key="name.invalidPattern"
                      value="Local variable name ''{0}'' must match pattern ''{1}''."/>
@@ -118,7 +116,7 @@
             <message key="genericWhitespace"
                      value="Generic whitespace ''{0}'' is incorrect."/>
             <property name="tokens"
-                      value="GENERIC_START, GENERIC_END, TYPE_EXTENDS, TYPE_UPPER_BOUNDS, TYPE_LOWER_BOUNDS, WILDCARD_TYPE_BOUNDS"/>
+                      value="GENERIC_START, GENERIC_END"/>
         </module>
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
@@ -146,7 +144,7 @@
         <module name="ParenPad"/>
         <module name="OperatorWrap">
             <property name="tokens"
-                      value="ASSIGN, DIV_ASSIGN, PLUS_ASSIGN, MINUS_ASSIGN, STAR_ASSIGN, MOD_ASSIGN, SR_ASSIGN, BSR_ASSIGN, SL_ASSIGN, BSR_ASSIGN, BAND_ASSIGN, BXOR_ASSIGN, BOR_ASSIGN"/>
+                      value="ASSIGN, DIV_ASSIGN, PLUS_ASSIGN, MINUS_ASSIGN, STAR_ASSIGN, MOD_ASSIGN, SR_ASSIGN, BSR_ASSIGN, SL_ASSIGN, BAND_ASSIGN, BXOR_ASSIGN, BOR_ASSIGN"/>
             <property name="option" value="nl"/>
         </module>
         <module name="AnnotationLocation">
@@ -157,14 +155,9 @@
         <module name="NonEmptyAtclauseDescription"/>
         <module name="JavadocMethod">
             <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="scope" value="public"/>
         </module>
-        <module name="JavadocType">
-            <property name="scope" value="public"/>
-        </module>
-        <module name="JavadocVariable">
-            <property name="scope" value="protected"/>
-        </module>
+        <module name="JavadocType"/>
+        <module name="JavadocVariable"/>
         <module name="JavadocStyle"/>
     </module>
 </module>
