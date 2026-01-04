@@ -100,8 +100,6 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <!-- 启用可执行 jar -->
-                    <executable>true</executable>
                 </configuration>
                 <executions>
                     <execution>

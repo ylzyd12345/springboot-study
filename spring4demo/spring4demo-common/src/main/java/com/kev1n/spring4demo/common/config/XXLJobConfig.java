@@ -65,12 +65,13 @@ public class XXLJobConfig {
         
         // 设置日志保留天数
         xxlJobSpringExecutor.setLogRetentionDays(xxlJobProperties.getExecutor().getLogretentiondays());
-        
-        log.info(">>>>>>>>>>> xxl-job config success. adminAddresses={}, appname={}, port={}", 
-                xxlJobProperties.getAdmin().getAddresses(), 
-                xxlJobProperties.getExecutor().getAppname(), 
-                xxlJobProperties.getExecutor().getPort());
-        
+        if (log.isInfoEnabled()) {
+            log.info(">>>>>>>>>>> xxl-job config success. adminAddresses={}, appname={}, port={}",
+                    xxlJobProperties.getAdmin().getAddresses(),
+                    xxlJobProperties.getExecutor().getAppname(),
+                    xxlJobProperties.getExecutor().getPort());
+        }
+
         return xxlJobSpringExecutor;
     }
 }

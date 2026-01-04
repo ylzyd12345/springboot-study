@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author spring4demo
  * @version 1.0.0
  */
+@SuppressWarnings({"PMD.UseUtilityClass","PMD.ClassWithOnlyPrivateConstructorsShouldBeFinal"})
 @SpringBootApplication
 public class GeneratorApplication {
     public static void main(String[] args) {

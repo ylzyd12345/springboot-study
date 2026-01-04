@@ -18,9 +18,14 @@ import java.util.Collections;
  * @author spring4demo
  * @version 1.0.0
  */
+@SuppressWarnings("PMD.UseUtilityClass")
 @Slf4j
 @SpringBootApplication
 public class CodeGenerator {
+
+    private CodeGenerator() {
+        // Prevent instantiation
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(CodeGenerator.class, args);

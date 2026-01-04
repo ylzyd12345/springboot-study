@@ -18,11 +18,11 @@ import javax.sql.DataSource;
  */
 @Slf4j
 @Configuration
+@SuppressWarnings("EI_EXPOSE_REP2")
 public class DynamicDataSourceConfig {
 
     private final DataSource dataSource;
 
-    @SuppressWarnings("EI_EXPOSE_REP2")
     public DynamicDataSourceConfig(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -34,11 +34,14 @@ public class DynamicDataSourceConfig {
      */
     @PostConstruct
     public void init() {
-        if (dataSource instanceof DynamicRoutingDataSource) {
-            DynamicRoutingDataSource dynamicRoutingDataSource = (DynamicRoutingDataSource) dataSource;
-            log.info("动态数据源初始化成功，数据源：{}", dynamicRoutingDataSource.getDataSources());
+        if (dataSource instanceof DynamicRoutingDataSource dynamicRoutingDataSource) {
+            if (log.isInfoEnabled()) {
+                log.info("动态数据源初始化成功，数据源：{}", dynamicRoutingDataSource.getDataSources());
+            }
         } else {
-            log.info("使用默认数据源，未启用动态数据源");
+            if (log.isInfoEnabled()) {
+                log.info("使用默认数据源，未启用动态数据源");
+            }
         }
     }
 }

@@ -21,11 +21,11 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 @EnableConfigurationProperties(RedissonProperties.class)
+@SuppressWarnings({"EI_EXPOSE_REP2", "BC_UNCONFIRMED_CAST_OF_RETURN_VALUE"})
 public class RedissonConfig {
 
     private final RedissonProperties redissonProperties;
 
-    @SuppressWarnings("EI_EXPOSE_REP2")
     public RedissonConfig(RedissonProperties redissonProperties) {
         this.redissonProperties = redissonProperties;
     }
@@ -54,7 +54,9 @@ public class RedissonConfig {
                     .addNodeAddress(redissonProperties.getCluster().getNodes())
                     .setScanInterval(redissonProperties.getCluster().getScanInterval())
                     .setPassword(redissonProperties.getCluster().getPassword());
-            log.info("Redisson 集群模式初始化完成，节点数：{}", redissonProperties.getCluster().getNodes().length);
+            if (log.isInfoEnabled()) {
+                log.info("Redisson 集群模式初始化完成，节点数：{}", redissonProperties.getCluster().getNodes().length);
+            }
         } else if (redissonProperties.getSentinel() != null && redissonProperties.getSentinel().getAddresses() != null) {
             // 哨兵模式
             config.useSentinelServers()
@@ -62,7 +64,9 @@ public class RedissonConfig {
                     .addSentinelAddress(redissonProperties.getSentinel().getAddresses())
                     .setPassword(redissonProperties.getSentinel().getPassword())
                     .setDatabase(redissonProperties.getSentinel().getDatabase());
-            log.info("Redisson 哨兵模式初始化完成，主节点：{}", redissonProperties.getSentinel().getMasterName());
+            if (log.isInfoEnabled()) {
+                log.info("Redisson 哨兵模式初始化完成，主节点：{}", redissonProperties.getSentinel().getMasterName());
+            }
         } else {
             // 单机模式
             SingleServerConfig singleServerConfig = config.useSingleServer()
@@ -80,7 +84,9 @@ public class RedissonConfig {
                 singleServerConfig.setPassword(redissonProperties.getPassword());
             }
 
-            log.info("Redisson 单机模式初始化完成，地址：{}", redissonProperties.getAddress());
+            if (log.isInfoEnabled()) {
+                log.info("Redisson 单机模式初始化完成，地址：{}", redissonProperties.getAddress());
+            }
         }
 
         return Redisson.create(config);

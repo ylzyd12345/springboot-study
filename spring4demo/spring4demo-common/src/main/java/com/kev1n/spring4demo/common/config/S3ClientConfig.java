@@ -1,6 +1,5 @@
 package com.kev1n.spring4demo.common.config;
 
-import com.kev1n.spring4demo.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,6 @@ public class S3ClientConfig {
 
     @Bean
     public S3Client s3Client() {
-        try {
             return S3Client.builder()
                     .endpointOverride(URI.create(rustFSProperties.getEndpoint()))
                     .region(Region.of(rustFSProperties.getRegion()))
@@ -42,9 +40,5 @@ public class S3ClientConfig {
                     )
                     .forcePathStyle(rustFSProperties.getPathStyleAccess())
                     .build();
-        } catch (Exception e) {
-            log.error("初始化 S3 客户端失败", e);
-            throw new BusinessException("初始化 S3 客户端失败: " + e.getMessage());
-        }
     }
 }
