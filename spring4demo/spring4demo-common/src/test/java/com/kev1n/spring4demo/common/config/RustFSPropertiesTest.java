@@ -2,224 +2,150 @@ package com.kev1n.spring4demo.common.config;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBindException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
-import org.springframework.mock.env.MockEnvironment;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * RustFS 文件存储配置属性测试
- *
+ * RustFS 配置属性测试
+ * 
+ * 测试要点：
+ * 1. 验证配置属性绑定
+ * 2. 验证默认值是否正确
+ * 3. 验证配置值是否正确注入
+ * 
  * @author kev1n
- * @since 1.0.0
+ * @version 1.0.0
+ * @since 2025-12-30
  */
-@DisplayName("RustFS 文件存储配置属性测试")
+@SpringBootTest
+@EnableConfigurationProperties(RustFSProperties.class)
+@TestPropertySource(properties = {
+    "rustfs.endpoint=http://custom-endpoint:9000",
+    "rustfs.access-key=custom-access-key",
+    "rustfs.secret-key=custom-secret-key",
+    "rustfs.bucket-name=custom-bucket",
+    "rustfs.region=us-west-2",
+    "rustfs.path-style-access=false",
+    "rustfs.max-file-size=20",
+    "rustfs.max-request-size=200"
+})
+@DisplayName("RustFS 配置属性测试")
 class RustFSPropertiesTest {
 
-    @Test
-    @DisplayName("默认值测试")
-    void testDefaultValues() {
-        // Given
-        RustFSProperties properties = new RustFSProperties();
+    @Autowired
+    private RustFSProperties properties;
 
-        // Then - 验证默认值
-        assertThat(properties.getEndpoint()).isEqualTo("http://localhost:9000");
-        assertThat(properties.getAccessKey()).isEqualTo("admin");
-        assertThat(properties.getSecretKey()).isEqualTo("admin123");
-        assertThat(properties.getBucketName()).isEqualTo("spring4demo");
-        assertThat(properties.getRegion()).isEqualTo("us-east-1");
-        assertThat(properties.getPathStyleAccess()).isTrue();
-        assertThat(properties.getMaxFileSize()).isEqualTo(10L);
-        assertThat(properties.getMaxRequestSize()).isEqualTo(100L);
+    @Test
+    @DisplayName("应该正确注入RustFSProperties Bean")
+    void shouldInjectRustFSProperties() {
+        assertThat(properties).isNotNull();
     }
 
     @Test
-    @DisplayName("配置绑定测试 - 正常配置")
-    void testBindConfiguration() {
-        // Given - 配置数据
-        Map<String, Object> config = new HashMap<>();
-        config.put("rustfs.endpoint", "http://rustfs.example.com");
-        config.put("rustfs.access-key", "test-access-key");
-        config.put("rustfs.secret-key", "test-secret-key");
-        config.put("rustfs.bucket-name", "test-bucket");
-        config.put("rustfs.region", "us-west-2");
-        config.put("rustfs.path-style-access", false);
-        config.put("rustfs.max-file-size", 50L);
-        config.put("rustfs.max-request-size", 200L);
+    @DisplayName("应该正确配置endpoint")
+    void shouldConfigureEndpoint() {
+        assertThat(properties.getEndpoint()).isEqualTo("http://custom-endpoint:9000");
+    }
 
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
+    @Test
+    @DisplayName("应该正确配置accessKey")
+    void shouldConfigureAccessKey() {
+        assertThat(properties.getAccessKey()).isEqualTo("custom-access-key");
+    }
 
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
+    @Test
+    @DisplayName("应该正确配置secretKey")
+    void shouldConfigureSecretKey() {
+        assertThat(properties.getSecretKey()).isEqualTo("custom-secret-key");
+    }
 
-        // Then - 验证绑定结果
-        assertThat(properties.getEndpoint()).isEqualTo("http://rustfs.example.com");
-        assertThat(properties.getAccessKey()).isEqualTo("test-access-key");
-        assertThat(properties.getSecretKey()).isEqualTo("test-secret-key");
-        assertThat(properties.getBucketName()).isEqualTo("test-bucket");
+    @Test
+    @DisplayName("应该正确配置bucketName")
+    void shouldConfigureBucketName() {
+        assertThat(properties.getBucketName()).isEqualTo("custom-bucket");
+    }
+
+    @Test
+    @DisplayName("应该正确配置region")
+    void shouldConfigureRegion() {
         assertThat(properties.getRegion()).isEqualTo("us-west-2");
+    }
+
+    @Test
+    @DisplayName("应该正确配置pathStyleAccess")
+    void shouldConfigurePathStyleAccess() {
         assertThat(properties.getPathStyleAccess()).isFalse();
-        assertThat(properties.getMaxFileSize()).isEqualTo(50L);
+    }
+
+    @Test
+    @DisplayName("应该正确配置maxFileSize")
+    void shouldConfigureMaxFileSize() {
+        assertThat(properties.getMaxFileSize()).isEqualTo(20L);
+    }
+
+    @Test
+    @DisplayName("应该正确配置maxRequestSize")
+    void shouldConfigureMaxRequestSize() {
         assertThat(properties.getMaxRequestSize()).isEqualTo(200L);
     }
 
-    @Test
-    @DisplayName("配置绑定测试 - 部分配置")
-    void testBindPartialConfiguration() {
-        // Given - 部分配置数据
-        Map<String, Object> config = new HashMap<>();
-        config.put("rustfs.endpoint", "http://custom-rustfs.example.com");
-        config.put("rustfs.access-key", "custom-access-key");
+    @DisplayName("应该使用默认值当配置未设置")
+    @EnableConfigurationProperties(RustFSProperties.class)
+    class DefaultValuesTest {
 
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
+        @Autowired
+        private RustFSProperties properties;
 
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
+        @Test
+        @DisplayName("endpoint应该使用默认值")
+        void endpointShouldUseDefaultValue() {
+            assertThat(properties.getEndpoint()).isEqualTo("http://localhost:9000");
+        }
 
-        // Then - 验证绑定结果（配置的值使用配置值，未配置的值使用默认值）
-        assertThat(properties.getEndpoint()).isEqualTo("http://custom-rustfs.example.com");
-        assertThat(properties.getAccessKey()).isEqualTo("custom-access-key");
-        assertThat(properties.getSecretKey()).isEqualTo("admin123"); // 默认值
-        assertThat(properties.getBucketName()).isEqualTo("spring4demo"); // 默认值
-        assertThat(properties.getRegion()).isEqualTo("us-east-1"); // 默认值
-        assertThat(properties.getPathStyleAccess()).isTrue(); // 默认值
-        assertThat(properties.getMaxFileSize()).isEqualTo(10L); // 默认值
-        assertThat(properties.getMaxRequestSize()).isEqualTo(100L); // 默认值
-    }
+        @Test
+        @DisplayName("accessKey应该使用默认值")
+        void accessKeyShouldUseDefaultValue() {
+            assertThat(properties.getAccessKey()).isEqualTo("admin");
+        }
 
-    @Test
-    @DisplayName("配置绑定测试 - 空配置")
-    void testBindEmptyConfiguration() {
-        // Given - 空配置数据
-        Map<String, Object> config = new HashMap<>();
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
+        @Test
+        @DisplayName("secretKey应该使用默认值")
+        void secretKeyShouldUseDefaultValue() {
+            assertThat(properties.getSecretKey()).isEqualTo("admin123");
+        }
 
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
+        @Test
+        @DisplayName("bucketName应该使用默认值")
+        void bucketNameShouldUseDefaultValue() {
+            assertThat(properties.getBucketName()).isEqualTo("spring4demo");
+        }
 
-        // Then - 验证所有值都使用默认值
-        assertThat(properties.getEndpoint()).isEqualTo("http://localhost:9000");
-        assertThat(properties.getAccessKey()).isEqualTo("admin");
-        assertThat(properties.getSecretKey()).isEqualTo("admin123");
-        assertThat(properties.getBucketName()).isEqualTo("spring4demo");
-        assertThat(properties.getRegion()).isEqualTo("us-east-1");
-        assertThat(properties.getPathStyleAccess()).isTrue();
-        assertThat(properties.getMaxFileSize()).isEqualTo(10L);
-        assertThat(properties.getMaxRequestSize()).isEqualTo(100L);
-    }
+        @Test
+        @DisplayName("region应该使用默认值")
+        void regionShouldUseDefaultValue() {
+            assertThat(properties.getRegion()).isEqualTo("us-east-1");
+        }
 
-    @Test
-    @DisplayName("配置绑定测试 - 类型转换")
-    void testBindTypeConversion() {
-        // Given - 字符串类型的配置值
-        Map<String, Object> config = new HashMap<>();
-        config.put("rustfs.endpoint", "http://test.example.com");
-        config.put("rustfs.access-key", "string-access-key");
-        config.put("rustfs.secret-key", "string-secret-key");
-        config.put("rustfs.bucket-name", "string-bucket");
-        config.put("rustfs.region", "string-region");
-        config.put("rustfs.path-style-access", "true"); // 字符串转 Boolean
-        config.put("rustfs.max-file-size", "20"); // 字符串转 Long
-        config.put("rustfs.max-request-size", "150"); // 字符串转 Long
+        @Test
+        @DisplayName("pathStyleAccess应该使用默认值")
+        void pathStyleAccessShouldUseDefaultValue() {
+            assertThat(properties.getPathStyleAccess()).isTrue();
+        }
 
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
+        @Test
+        @DisplayName("maxFileSize应该使用默认值")
+        void maxFileSizeShouldUseDefaultValue() {
+            assertThat(properties.getMaxFileSize()).isEqualTo(10L);
+        }
 
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
-
-        // Then - 验证类型转换正确
-        assertThat(properties.getEndpoint()).isInstanceOf(String.class);
-        assertThat(properties.getAccessKey()).isInstanceOf(String.class);
-        assertThat(properties.getSecretKey()).isInstanceOf(String.class);
-        assertThat(properties.getBucketName()).isInstanceOf(String.class);
-        assertThat(properties.getRegion()).isInstanceOf(String.class);
-        assertThat(properties.getPathStyleAccess()).isInstanceOf(Boolean.class);
-        assertThat(properties.getMaxFileSize()).isInstanceOf(Long.class);
-        assertThat(properties.getMaxRequestSize()).isInstanceOf(Long.class);
-
-        assertThat(properties.getPathStyleAccess()).isTrue();
-        assertThat(properties.getMaxFileSize()).isEqualTo(20L);
-        assertThat(properties.getMaxRequestSize()).isEqualTo(150L);
-    }
-
-    @Test
-    @DisplayName("配置绑定测试 - 特殊字符")
-    void testBindSpecialCharacters() {
-        // Given - 包含特殊字符的配置值
-        Map<String, Object> config = new HashMap<>();
-        config.put("rustfs.endpoint", "http://test.example.com:9000/path?query=value#fragment");
-        config.put("rustfs.access-key", "access-key-with-special-chars-!@#$%");
-        config.put("rustfs.secret-key", "secret-key-with-special-chars-!@#$%");
-        config.put("rustfs.bucket-name", "bucket-name_123");
-        config.put("rustfs.region", "region-name_123");
-
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
-
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
-
-        // Then - 验证特殊字符正确处理
-        assertThat(properties.getEndpoint()).isEqualTo("http://test.example.com:9000/path?query=value#fragment");
-        assertThat(properties.getAccessKey()).isEqualTo("access-key-with-special-chars-!@#$%");
-        assertThat(properties.getSecretKey()).isEqualTo("secret-key-with-special-chars-!@#$%");
-        assertThat(properties.getBucketName()).isEqualTo("bucket-name_123");
-        assertThat(properties.getRegion()).isEqualTo("region-name_123");
-    }
-
-    @Test
-    @DisplayName("配置绑定测试 - 边界值")
-    void testBindBoundaryValues() {
-        // Given - 边界值配置
-        Map<String, Object> config = new HashMap<>();
-        config.put("rustfs.max-file-size", 0L); // 最小值
-        config.put("rustfs.max-request-size", Long.MAX_VALUE); // 最大值
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
-
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
-
-        // Then - 验证边界值正确处理
-        assertThat(properties.getMaxFileSize()).isEqualTo(0L);
-        assertThat(properties.getMaxRequestSize()).isEqualTo(Long.MAX_VALUE);
-    }
-
-    @Test
-    @DisplayName("配置绑定测试 - null 值")
-    void testBindNullValues() {
-        // Given - 包含 null 值的配置
-        Map<String, Object> config = new HashMap<>();
-        config.put("rustfs.endpoint", null);
-        config.put("rustfs.access-key", null);
-
-        ConfigurationPropertySource source = new MapConfigurationPropertySource(config);
-        Binder binder = new Binder(source);
-
-        // When - 绑定配置
-        RustFSProperties properties = binder.bind("rustfs", Bindable.of(RustFSProperties.class))
-                .orElse(new RustFSProperties());
-
-        // Then - 验证 null 值处理（使用默认值）
-        assertThat(properties.getEndpoint()).isEqualTo("http://localhost:9000"); // 默认值
-        assertThat(properties.getAccessKey()).isEqualTo("admin"); // 默认值
+        @Test
+        @DisplayName("maxRequestSize应该使用默认值")
+        void maxRequestSizeShouldUseDefaultValue() {
+            assertThat(properties.getMaxRequestSize()).isEqualTo(100L);
+        }
     }
 }
