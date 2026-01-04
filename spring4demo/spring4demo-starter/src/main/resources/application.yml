@@ -163,16 +163,35 @@ kkfileview:
   current-server-url: http://localhost:8080
   force-update-cache: true
 
-# XXL-Job 分布式任务调度配置
-xxl:
-  job:
-    admin:
-      addresses: ${XXL_JOB_ADMIN_ADDRESSES:http://localhost:8080/xxl-job-admin}
-      accessToken: ${XXL_JOB_ACCESS_TOKEN:default_token}
-    executor:
-      appname: spring4demo-executor
-      address:
-      ip:
-      port: 9999
-      logpath: /data/applogs/xxl-job/jobhandler
-      logretentiondays: 30
+# Quartz 任务调度配置
+quartz:
+  # 是否启用Quartz调度器
+  enabled: true
+  # 调度器实例名称
+  instance-name: QuartzScheduler
+  # 调度器实例ID（AUTO表示自动生成）
+  instance-id: AUTO
+  # 任务存储配置
+  job-store:
+    # 任务存储类（JobStoreTX用于事务环境，RAMJobStore用于内存存储）
+    job-store-class: org.quartz.simpl.RAMJobStore
+    # 数据库驱动代理类（使用JDBC持久化时需要配置）
+    driver-delegate-class: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+    # 数据库表前缀
+    table-prefix: QRTZ_
+    # 是否启用集群模式
+    is-clustered: false
+    # 集群检查间隔（毫秒）
+    cluster-checkin-interval: 20000
+    # 是否使用属性
+    use-properties: false
+  # 线程池配置
+  thread-pool:
+    # 线程池实现类
+    thread-pool-class: org.quartz.simpl.SimpleThreadPool
+    # 线程数量
+    thread-count: 5
+    # 线程优先级（1-10，1最低，10最高）
+    thread-priority: 5
+    # 是否继承加载上下文类加载器
+    inherit-context-class-loader-of-initializing-thread: true

@@ -80,7 +80,6 @@ mvn spring-boot:run
 # API文档: http://localhost:8080/swagger-ui.html
 # RustFS: http://localhost:9000
 # KKFileView: http://localhost:8012
-# XXL-Job: http://localhost:8080/xxl-job-admin (admin/123456)
 ```
 
 ### 🐳 Docker 部署
@@ -115,10 +114,10 @@ docker-compose up -d
 - 📁 文件存储 (RustFS)
 
 ### 📅 任务调度
-- ⏰ 分布式任务调度 (XXL-Job)
-- 🔄 定时任务 (Spring Task)
+- ⏰ 简单定时任务 (Spring Task)
+- 🔄 复杂调度任务 (Quartz)
 - 📋 任务依赖管理
-- 🎯 分片广播任务
+- 🎯 动态任务管理
 
 ### 📄 文档预览
 - 📖 在线文件预览 (KKFileView)
@@ -568,8 +567,9 @@ graph TB
 
 ### 📅 任务调度技术栈
 
-- [x] **XXL-Job** - 分布式任务调度平台 2.4.0
-- [x] **Spring Task** - Spring 原生任务调度
+- [x] **Spring Task** - Spring 原生任务调度（简单定时任务）
+- [x] **Quartz** - 定时任务框架（复杂调度需求）
+- [x] **Spring Batch** - 批量任务处理（可选）
 
 ### 📨 消息中间件技术栈
 
@@ -756,23 +756,32 @@ kkfileview:
   # 是否强制更新缓存
   force-update-cache: true
 
-# XXL-Job 分布式任务调度配置
-xxl:
-  job:
-    admin:
-      # 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔
-      addresses: http://localhost:8080/xxl-job-admin
-      # 执行器通讯TOKEN [选填]：非空时启用
-      accessToken: default_token
-    executor:
-      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
-      appname: spring4demo-executor
-      # 执行器注册 [选填]：优先使用该配置作为注册地址
-      address:
-      # 执行器IP [选填]：默认为空表示自动获取IP
-      ip:
-      # 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999
-      port: 9999
+# Quartz 任务调度配置
+quartz:
+  # 是否启用Quartz调度器
+  enabled: true
+  # 调度器实例名称
+  instance-name: QuartzScheduler
+  # 调度器实例ID（AUTO表示自动生成）
+  instance-id: AUTO
+  # 任务存储配置
+  job-store:
+    # 任务存储类（RAMJobStore用于内存存储，JobStoreTX用于JDBC持久化）
+    job-store-class: org.quartz.simpl.RAMJobStore
+    # 数据库驱动代理类（使用JDBC持久化时需要配置）
+    driver-delegate-class: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+    # 数据库表前缀
+    table-prefix: QRTZ_
+    # 是否启用集群模式
+    is-clustered: false
+  # 线程池配置
+  thread-pool:
+    # 线程池实现类
+    thread-pool-class: org.quartz.simpl.SimpleThreadPool
+    # 线程数量
+    thread-count: 5
+    # 线程优先级
+    thread-priority: 5
       # 执行器运行日志文件存储磁盘路径 [选填]
       logpath: /data/applogs/xxl-job/jobhandler
       # 执行器日志文件保存天数 [选填]

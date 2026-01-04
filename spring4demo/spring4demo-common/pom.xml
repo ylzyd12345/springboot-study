@@ -91,10 +91,19 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- XXL-Job 分布式任务调度（可选，用于 XXLJobConfig） -->
+        <!-- ==================== 任务调度 ==================== -->
+
+        <!-- Quartz 任务调度（可选，用于 QuartzConfig） -->
         <dependency>
-            <groupId>com.xuxueli</groupId>
-            <artifactId>xxl-job-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Batch 批量处理（可选，用于 BatchConfig） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
             <optional>true</optional>
         </dependency>
 

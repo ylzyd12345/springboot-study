@@ -68,9 +68,9 @@
 
 ### 📅 任务调度技术栈
 
-- [x] **XXL-Job** - 分布式任务调度平台 2.4.0
-- [x] **Spring Task** - Spring 原生任务调度
-- [x] **Quartz** - 定时任务框架
+- [x] **Spring Task** - Spring 原生任务调度（简单定时任务）
+- [x] **Quartz** - 定时任务框架（复杂调度需求）
+- [x] **Spring Batch** - 批量任务处理（可选）
 
 ### 📊 监控运维技术栈
 
@@ -363,31 +363,37 @@ kkfileview:
   force-update-cache: true
 ```
 
-### XXL-Job 配置
+### Quartz 任务调度配置
 
-XXL-Job 是一个分布式任务调度平台，支持动态任务管理、任务依赖、分片广播等功能。
+Quartz 是一个强大的定时任务调度框架，支持复杂的调度需求。
 
 ```yaml
-xxl:
-  job:
-    admin:
-      # 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔
-      addresses: http://localhost:8080/xxl-job-admin
-      # 执行器通讯TOKEN [选填]：非空时启用
-      accessToken: default_token
-    executor:
-      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
-      appname: spring4demo-executor
-      # 执行器注册 [选填]：优先使用该配置作为注册地址
-      address:
-      # 执行器IP [选填]：默认为空表示自动获取IP
-      ip:
-      # 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999
-      port: 9999
-      # 执行器运行日志文件存储磁盘路径 [选填]
-      logpath: /data/applogs/xxl-job/jobhandler
-      # 执行器日志文件保存天数 [选填]
-      logretentiondays: 30
+# Quartz 配置
+quartz:
+  # 是否启用Quartz调度器
+  enabled: true
+  # 调度器实例名称
+  instance-name: QuartzScheduler
+  # 调度器实例ID（AUTO表示自动生成）
+  instance-id: AUTO
+  # 任务存储配置
+  job-store:
+    # 任务存储类（RAMJobStore用于内存存储，JobStoreTX用于JDBC持久化）
+    job-store-class: org.quartz.simpl.RAMJobStore
+    # 数据库驱动代理类（使用JDBC持久化时需要配置）
+    driver-delegate-class: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+    # 数据库表前缀
+    table-prefix: QRTZ_
+    # 是否启用集群模式
+    is-clustered: false
+  # 线程池配置
+  thread-pool:
+    # 线程池实现类
+    thread-pool-class: org.quartz.simpl.SimpleThreadPool
+    # 线程数量
+    thread-count: 5
+    # 线程优先级
+    thread-priority: 5
 ```
 
 ### Maven Profile配置
@@ -650,14 +656,11 @@ docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
 
 ### 任务调度架构
 
-- **XXL-Job**: 使用 XXL-Job 实现分布式任务调度
-- **功能特性**:
-  - 支持动态任务管理、任务依赖、分片广播
-  - 提供丰富的路由策略和阻塞处理策略
-  - 支持任务失败重试和超时控制
-- **集成方式**: 通过 XXL-Job Core SDK 集成执行器
+- **Spring Task**: 用于简单定时任务，如数据清理、缓存刷新等
+- **Quartz**: 用于复杂调度需求，如多任务依赖、动态调度等
+- **集成方式**: 通过注解和配置类集成，支持任务持久化和集群模式
 - **模块划分**:
-  - common 模块: XXL-Job 配置类
+  - common 模块: Spring Task 和 Quartz 配置类
   - core 模块: 任务处理器和任务调度服务
   - web 模块: 任务管理 Controller
 
