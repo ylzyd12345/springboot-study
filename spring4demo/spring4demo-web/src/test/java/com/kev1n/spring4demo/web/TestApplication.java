@@ -7,10 +7,13 @@ import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
+
+import javax.sql.DataSource;
 
 import static org.mockito.Mockito.mock;
 
@@ -27,7 +30,8 @@ import static org.mockito.Mockito.mock;
         DataRedisAutoConfiguration.class,
         DataRedisReactiveAutoConfiguration.class,
         RedissonAutoConfigurationV2.class,
-        SeataAutoConfiguration.class
+        SeataAutoConfiguration.class,
+        DataSourceAutoConfiguration.class
     }
 )
 @ComponentScan(
@@ -38,6 +42,17 @@ import static org.mockito.Mockito.mock;
     )
 )
 public class TestApplication {
+
+    /**
+     * 创建 Mock 的 DataSource
+     *
+     * @return Mock 的 DataSource
+     */
+    @Bean
+    @Primary
+    public DataSource mockDataSource() {
+        return mock(DataSource.class);
+    }
 
     /**
      * 创建 Mock 的 RedissonClient
