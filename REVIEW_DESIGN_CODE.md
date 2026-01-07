@@ -1,1026 +1,1684 @@
-# Spring4demo 项目设计文档与代码实现差异对比报告
+# Spring4demo 项目架构设计参考文档
 
-## 📋 报告信息
+## 📋 文档信息
 
 | 项目 | 内容 |
 |------|------|
-| **报告名称** | 设计文档与代码实现差异对比分析报告 |
-| **版本号** | v2.0.0 |
+| **文档名称** | Spring4demo 项目架构设计参考文档 |
+| **版本号** | v3.1.0 |
 | **生成日期** | 2026-01-07 |
 | **更新日期** | 2026-01-07 |
-| **分析人员** | AI Business Analyst (Mary) |
-| **报告类型** | 工程框架搭建阶段技术架构对比分析 |
+| **文档类型** | 架构师视角技术架构参考 |
 | **项目阶段** | 工程框架搭建阶段 |
 
 ---
 
-## 🎯 执行摘要
+## 🎯 文档说明
 
-### 核心发现
+本文档作为架构师视角的技术架构参考文档，为研发团队提供技术实现的最佳实践和代码示例。当前项目处于**工程框架搭建阶段**，重点在于技术架构的完善和最佳实践的落地。
 
-Spring4demo项目是一个基于Spring Boot 4.0.1和Java 25的企业级生态环境集成项目，当前处于**工程框架搭建阶段**。通过对比设计文档与实际代码实现，发现**存在技术架构选型差异**。设计文档描述了基于DDD架构的技术方案，而实际代码实现采用了更实用的三层架构，并在关键技术选型上做出了调整。
+**重要说明**:
+- 当前代码框架只有user模型
+- 示例代码中只引用user模型相关的service和mapper
+- 其他相关对象模型（如订单、短信、邮件等）已用TODO注释标注，待后续实现
+- 研发人员可根据实际业务需求，参考示例代码实现相应功能
 
-### 关键指标
+### 已确认的技术决策
 
-| 维度 | 设计承诺 | 实际实现 | 一致性 | 差异等级 |
-|------|----------|----------|--------|----------|
-| **架构分层** | DDD 7层架构 | 三层架构 | 0% | 🔴 已决策调整 |
-| **认证框架** | Spring Security + JWT | Sa-Token | 0% | 🔴 已决策调整 |
-| **数据访问** | Spring Data JPA | MyBatis-Plus | 0% | 🔴 已决策调整 |
-| **主键策略** | BIGINT AUTO_INCREMENT | UUID → 雪花算法 | 0% | 🔴 已决策调整 |
-| **技术栈完整性** | 企业级完整技术栈 | 框架搭建阶段 | 60% | 🟡 框架搭建中 |
+| 技术领域 | 选型方案 | 状态 |
+|---------|---------|------|
+| **架构分层** | 三层架构（Web层、Service层、Mapper层） | ✅ 已确认 |
+| **认证框架** | Sa-Token | ✅ 已确认 |
+| **数据访问** | MyBatis-Plus | ✅ 已确认 |
+| **主键策略** | 雪花算法 | ✅ 已确认 |
 
-### 决策结果
+### 待实现的技术特性
 
-根据项目实际需求和工程框架搭建阶段的定位，已做出以下技术决策：
-
-1. ✅ **采用三层架构**：简化开发，提高效率，适合当前项目规模
-2. ✅ **采用Sa-Token**：配置简单，上手容易，适合快速开发
-3. ✅ **采用MyBatis-Plus**：SQL控制灵活，性能优化空间大
-4. ✅ **采用雪花算法**：兼顾性能和分布式扩展性
-
-### 主要影响
-
-1. **架构影响**：需要更新所有架构设计文档，使其与实际实现一致
-2. **开发影响**：需要调整开发规范和代码结构
-3. **文档影响**：需要同步更新技术文档、API文档、部署文档
-4. **测试影响**：需要调整测试策略和测试用例
-
----
-
-## 🏗️ 1. 架构师视角分析
-
-### 1.1 架构设计一致性评估
-
-#### 架构分层对比
-
-| 架构层次 | 设计文档描述 | 实际代码实现 | 一致性 | 差异说明 | 决策 |
-|----------|--------------|--------------|--------|----------|------|
-| **Web层** | Web MVC、WebFlux、WebSocket、GraphQL | ✅ Web MVC | 100% | 仅实现Web MVC | 保持现状 |
-| **业务层** | 应用服务、领域服务、事件处理、工作流 | ✅ Service层 | 100% | 采用传统Service层 | 已决策 |
-| **数据访问层** | Repository、JPA、MyBatis | ✅ Mapper层 | 100% | 采用MyBatis-Plus | 已决策 |
-| **领域层** | 聚合根、实体、值对象、领域事件 | ❌ 未实现 | - | 不采用DDD | 已决策 |
-| **基础设施层** | 数据访问、消息中间件、缓存、搜索 | ✅ 集成中 | 80% | 逐步集成 | 持续集成 |
-
-**总体架构一致性**: 100% (已决策调整后)
-
-#### 已决策的架构方案
-
-**三层架构** (已采用)
-```
-┌─────────────────────────────────────┐
-│        Web层                         │
-│  (Controller)                       │
-│  - 请求接收                          │
-│  - 参数验证                          │
-│  - 响应封装                          │
-└─────────────────────────────────────┘
-              ↓
-┌─────────────────────────────────────┐
-│        Service层                     │
-│  (Business Logic)                   │
-│  - 业务逻辑处理                      │
-│  - 事务管理                          │
-│  - 业务规则                          │
-└─────────────────────────────────────┘
-              ↓
-┌─────────────────────────────────────┐
-│        Mapper层                      │
-│  (Data Access)                      │
-│  - 数据访问                          │
-│  - SQL执行                          │
-│  - 结果映射                          │
-└─────────────────────────────────────┘
-```
-
-### 1.2 技术选型变更分析
-
-#### 核心技术栈对比
-
-| 技术组件 | 设计文档 | 实际实现 | 变更原因 | 决策状态 |
-|----------|----------|----------|----------|----------|
-| **认证框架** | Spring Security + JWT | Sa-Token | 配置简单、上手容易 | ✅ 已决策 |
-| **数据访问** | Spring Data JPA | MyBatis-Plus | SQL控制灵活、性能优化空间大 | ✅ 已决策 |
-| **主键策略** | BIGINT AUTO_INCREMENT | UUID → 雪花算法 | 兼顾性能和分布式扩展性 | ✅ 已决策 |
-| **ORM框架** | Hibernate | MyBatis-Plus | 国内社区活跃、文档完善 | ✅ 已决策 |
-
-#### 技术选型决策说明
-
-**Sa-Token替代Spring Security**
-- **决策原因**:
-  - 配置简单，上手容易，开发效率高
-  - 文档完善，社区活跃，国内支持好
-  - 功能完善，满足当前项目需求
-  - 适合快速开发和迭代
-- **优势**:
-  - 集成简单，几行代码即可完成认证授权
-  - 支持多种登录方式（账号密码、手机号、第三方）
-  - 支持权限认证、角色认证、二级认证
-  - 支持分布式会话、单点登录、OAuth2
-- **限制**:
-  - 功能相对简单，扩展性不如Spring Security
-  - 生态不如Spring Security完善
-- **应对措施**:
-  - 当前项目规模下，Sa-Token完全够用
-  - 如果未来需要更复杂的权限控制，可以考虑迁移到Spring Security
-
-**MyBatis-Plus替代Spring Data JPA**
-- **决策原因**:
-  - SQL控制灵活，性能优化空间大
-  - 国内社区活跃，文档完善
-  - 支持代码生成，提高开发效率
-  - 适合复杂查询场景
-- **优势**:
-  - 内置通用Mapper，减少重复代码
-  - 支持分页插件、性能分析插件
-  - 支持代码生成器，快速生成CRUD代码
-  - SQL控制灵活，性能优化空间大
-- **限制**:
-  - 需要手写SQL，开发效率略低于JPA
-  - 与DDD理念不太契合
-- **应对措施**:
-  - 建立代码规范，避免过度使用XML
-  - 使用MyBatis-Plus的LambdaQueryWrapper，避免SQL注入
-  - 复杂查询使用XML，简单查询使用Wrapper
-
-**雪花算法替代BIGINT和UUID**
-- **决策原因**:
-  - 兼顾性能和分布式扩展性
-  - 生成有序ID，避免UUID的性能问题
-  - 支持分布式，避免BIGINT的分布式问题
-  - 雪花算法成熟，社区支持好
-- **优势**:
-  - 性能好，生成ID速度快
-  - 分布式友好，支持多实例
-  - ID有序，索引效率高
-  - 存储小，占用空间少
-- **限制**:
-  - 依赖系统时间，时间回拨可能产生重复ID
-  - 需要配置机器ID，增加部署复杂度
-- **应对措施**:
-  - 使用成熟的雪花算法实现（如Hutool的IdUtil）
-  - 配置机器ID时注意唯一性
-  - 监控时间同步，避免时间回拨
-
-### 1.3 系统可扩展性评估
-
-#### 水平扩展能力
-
-| 扩展维度 | 设计能力 | 实际能力 | 差距 | 状态 |
-|----------|----------|----------|------|------|
-| **服务拆分** | 支持微服务拆分 | ⚠️ 架构支持 | 20% | 框架搭建中 |
-| **数据库分库分表** | 设计支持 | ⚠️ 雪花算法支持 | 60% | 已支持 |
-| **缓存集群** | 设计支持 | ✅ 已实现 | 0% | 已实现 |
-| **消息队列** | 设计支持 | ⚠️ 部分实现 | 40% | 框架搭建中 |
-| **负载均衡** | 设计支持 | ❌ 未实现 | 100% | 待实现 |
-
-**总体扩展能力**: 60% (框架搭建阶段)
-
-#### 垂直扩展能力
-
-| 扩展维度 | 设计能力 | 实际能力 | 差距 | 状态 |
-|----------|----------|----------|------|------|
-| **连接池优化** | 设计支持 | ✅ 已实现 | 0% | 已实现 |
-| **异步处理** | 设计支持 | ⚠️ 部分实现 | 40% | 框架搭建中 |
-| **缓存优化** | 设计支持 | ✅ 已实现 | 0% | 已实现 |
-| **数据库索引** | 设计支持 | ⚠️ 部分实现 | 30% | 框架搭建中 |
-
-**总体垂直扩展能力**: 80% (框架搭建阶段)
-
-### 1.4 系统可维护性评估
-
-#### 代码组织结构
-
-| 维度 | 设计标准 | 实际情况 | 评分 (1-10) | 状态 |
-|------|----------|----------|-------------|------|
-| **模块划分清晰度** | 按业务领域划分 | 按技术层次划分 | 8/10 | ✅ 良好 |
-| **包结构合理性** | 三层架构标准包结构 | 三层架构标准包结构 | 9/10 | ✅ 优秀 |
-| **命名规范性** | 统一规范 | 统一规范 | 9/10 | ✅ 优秀 |
-| **依赖关系清晰度** | 单向依赖 | 单向依赖 | 9/10 | ✅ 优秀 |
-| **配置管理** | 环境隔离 | 环境隔离 | 9/10 | ✅ 优秀 |
-
-**总体代码组织评分**: 8.8/10
-
-#### 技术债务评估
-
-| 债务类型 | 债务量 | 严重程度 | 偿还建议 | 状态 |
-|----------|--------|----------|----------|------|
-| **架构不一致** | 已解决 | ✅ 已解决 | 无需偿还 | ✅ 已解决 |
-| **文档滞后** | 中 | 🟡 中等 | 定期更新 | 🔄 进行中 |
-| **代码重复** | 低 | 🟢 较低 | 逐步优化 | 🔄 进行中 |
-
-**总体技术债务**: 🟢 较低
-
-### 1.5 架构优化建议
-
-#### 短期优化 (1-3个月)
-
-1. **文档同步**
-   - 更新架构设计文档，反映三层架构
-   - 更新技术选型文档，反映已决策的技术栈
-   - 更新API文档，反映实际实现
-
-2. **框架完善**
-   - 完善三层架构的代码规范
-   - 完善异常处理机制
-   - 完善日志记录规范
-
-#### 中期优化 (3-6个月)
-
-1. **性能优化**
-   - 数据库索引优化
-   - SQL查询优化
-   - 缓存策略优化
-
-2. **代码质量**
-   - 引入代码规范检查工具
-   - 建立代码审查机制
-   - 补充单元测试
-
-#### 长期优化 (6-12个月)
-
-1. **微服务准备**
-   - 模块解耦
-   - 服务接口标准化
-   - 配置中心建设
-
-2. **云原生改造**
-   - 容器化
-   - Kubernetes部署
-   - DevOps流水线
+| 技术特性 | 优先级 | 状态 |
+|---------|--------|------|
+| **WebFlux** | P1 | 🔄 待实现 |
+| **WebSocket** | P1 | 🔄 待实现 |
+| **GraphQL** | P2 | 🔄 待实现 |
+| **数据库分库分表** | P1 | 🔄 待实现 |
+| **Caffeine+Redis双缓存** | P1 | 🔄 待实现 |
+| **MQ消息队列** | P1 | 🔄 待实现 |
+| **异步处理** | P1 | 🔄 待实现 |
+| **分布式事务** | P1 | 🔄 待实现 |
+| **定时任务** | P1 | 🔄 待实现 |
 
 ---
 
-## 👨‍💻 2. 研发工程师视角分析
+## 📚 技术架构最佳实践
 
-### 2.1 代码质量评估
+### 1. Web层技术实现
 
-#### 代码规范性
+#### 1.1 WebFlux 响应式编程
 
-| 规范维度 | 评分 | 说明 | 状态 |
-|----------|------|------|------|
-| **命名规范** | 9/10 | 遵循Java命名规范 | ✅ 优秀 |
-| **注释规范** | 7/10 | 注释较完善，部分复杂逻辑需补充 | 🟡 良好 |
-| **代码格式** | 9/10 | 统一使用Checkstyle | ✅ 优秀 |
-| **异常处理** | 8/10 | 有全局异常处理 | ✅ 良好 |
-| **日志规范** | 8/10 | 日志较完善，级别使用规范 | ✅ 良好 |
+**技术选型**: Spring WebFlux + Reactor
 
-**总体代码规范性**: 8.2/10
+**适用场景**:
+- 高并发、低延迟的API接口
+- 流式数据处理
+- 实时数据推送
 
-#### 代码复杂度分析
+**最佳实践**:
 
-| 指标 | 目标值 | 实际值 | 评估 | 状态 |
-|------|--------|--------|------|------|
-| **圈复杂度** | ≤ 10 | 平均8.5 | ✅ 良好 | ✅ 符合 |
-| **方法行数** | ≤ 50 | 平均45 | ✅ 良好 | ✅ 符合 |
-| **类行数** | ≤ 500 | 平均300 | ✅ 良好 | ✅ 符合 |
-| **参数个数** | ≤ 5 | 平均3 | ✅ 良好 | ✅ 符合 |
-| **嵌套层级** | ≤ 4 | 平均3 | ✅ 良好 | ✅ 符合 |
+```java
+/**
+ * 用户响应式控制器
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@RestController
+@RequestMapping("/api/reactive/users")
+@RequiredArgsConstructor
+@Slf4j
+public class UserReactiveController {
 
-**总体代码复杂度**: ✅ 优秀
+    private final UserService userService;
 
-#### 设计模式使用
+    /**
+     * 响应式查询用户列表
+     * 
+     * 使用Flux处理多个用户数据，支持背压
+     */
+    @GetMapping
+    public Flux<UserVO> listUsers() {
+        log.info("响应式查询用户列表");
+        return userService.listUsersReactive()
+                .map(this::convertToVO)
+                .doOnComplete(() -> log.info("用户列表查询完成"));
+    }
 
-| 设计模式 | 设计承诺 | 实际使用 | 差距 | 状态 |
-|----------|----------|----------|------|------|
-| **单例模式** | ✅ 设计 | ✅ 使用 | 0% | ✅ 已实现 |
-| **工厂模式** | ✅ 设计 | ⚠️ 部分实现 | 20% | 🔄 框架搭建中 |
-| **策略模式** | ✅ 设计 | ⚠️ 部分实现 | 20% | 🔄 框架搭建中 |
-| **模板方法** | ✅ 设计 | ⚠️ 部分实现 | 20% | 🔄 框架搭建中 |
+    /**
+     * 响应式查询单个用户
+     * 
+     * 使用Mono处理单个用户数据
+     */
+    @GetMapping("/{id}")
+    public Mono<UserVO> getUser(@PathVariable Long id) {
+        log.info("响应式查询用户: {}", id);
+        return userService.getUserByIdReactive(id)
+                .map(this::convertToVO)
+                .switchIfEmpty(Mono.error(new UserNotFoundException(id)));
+    }
 
-**设计模式使用度**: 60% (框架搭建阶段)
+    /**
+     * 响应式创建用户
+     * 
+     * 使用Mono处理异步创建操作
+     */
+    @PostMapping
+    public Mono<UserVO> createUser(@Valid @RequestBody UserCreateDTO dto) {
+        log.info("响应式创建用户: {}", dto.getUsername());
+        return userService.createUserReactive(dto)
+                .map(this::convertToVO);
+    }
 
-### 2.2 技术债务分析
+    /**
+     * 响应式批量操作
+     * 
+     * 使用Flux处理批量数据
+     */
+    @PostMapping("/batch")
+    public Flux<UserVO> batchCreate(@Valid @RequestBody List<UserCreateDTO> dtos) {
+        log.info("响应式批量创建用户: {}", dtos.size());
+        return Flux.fromIterable(dtos)
+                .flatMap(userService::createUserReactive)
+                .map(this::convertToVO);
+    }
 
-#### 代码层面技术债务
+    /**
+     * 响应式流式数据
+     * 
+     * 使用ServerSentEvent实现实时数据推送
+     */
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<UserVO>> streamUsers() {
+        log.info("响应式流式推送用户数据");
+        return userService.streamUsersReactive()
+                .map(user -> ServerSentEvent.<UserVO>builder()
+                        .data(convertToVO(user))
+                        .id(String.valueOf(user.getId()))
+                        .build())
+                .delayElements(Duration.ofSeconds(1));
+    }
 
-| 债务类型 | 位置 | 严重程度 | 影响 | 偿还成本 | 状态 |
-|----------|------|----------|------|----------|------|
-| **文档滞后** | 全局 | 🟡 中等 | 团队协作 | 低 | 🔄 进行中 |
-| **单元测试不足** | 全局 | 🟡 中等 | 质量风险 | 中 | 🔄 进行中 |
-| **硬编码配置** | 部分类 | 🟡 中等 | 灵活性差 | 低 | 🔄 进行中 |
-
-**总体技术债务**: 🟢 较低
-
-#### 技术债务偿还计划
-
-**第一阶段 (1-2个月)**
-- ✅ 统一架构设计（已完成）
-- ✅ 建立代码规范（已完成）
-- 🔄 补充核心功能测试（进行中）
-
-**第二阶段 (3-4个月)**
-- 🔄 完善框架代码（进行中）
-- 🔄 引入设计模式（进行中）
-- 🔄 提高测试覆盖率（进行中）
-
-**第三阶段 (5-6个月)**
-- 🔄 完善文档（进行中）
-- 🔄 优化性能（进行中）
-- 🔄 建立持续集成（进行中）
-
-### 2.3 开发效率和协作流程评估
-
-#### 开发效率指标
-
-| 指标 | 目标值 | 实际值 | 差距 | 状态 |
-|------|--------|--------|------|------|
-| **新功能开发速度** | 5天/功能 | 5天/功能 | 0% | ✅ 符合 |
-| **Bug修复速度** | 1天/Bug | 1天/Bug | 0% | ✅ 符合 |
-| **代码审查时间** | 2小时/PR | 2小时/PR | 0% | ✅ 符合 |
-| **部署频率** | 1次/天 | 1次/天 | 0% | ✅ 符合 |
-
-**开发效率**: ✅ 优秀
-
-#### 协作流程评估
-
-| 流程环节 | 完善度 | 问题 | 改进建议 | 状态 |
-|----------|--------|------|----------|------|
-| **代码评审** | ✅ 完善 | 无 | 无 | ✅ 优秀 |
-| **测试流程** | 🟡 中等 | 测试覆盖不足 | 增加测试资源 | 🔄 进行中 |
-| **部署流程** | ✅ 完善 | 无 | 无 | ✅ 优秀 |
-| **文档维护** | 🟡 中等 | 文档滞后 | 建立文档同步机制 | 🔄 进行中 |
-
-### 2.4 技术改进建议
-
-#### 短期改进 (1-3个月)
-
-1. **代码质量提升**
-   - ✅ 引入代码规范检查工具 (Checkstyle, SpotBugs) - 已完成
-   - ✅ 建立代码审查机制 - 已完成
-   - 🔄 补充单元测试 - 进行中
-
-2. **开发效率提升**
-   - ✅ 引入代码生成器 - 已完成
-   - ✅ 建立脚手架工具 - 已完成
-   - ✅ 优化开发环境 - 已完成
-
-#### 中期改进 (3-6个月)
-
-1. **框架完善**
-   - 🔄 完善三层架构规范 - 进行中
-   - 🔄 引入设计模式 - 进行中
-   - 🔄 接口标准化 - 进行中
-
-2. **工程实践**
-   - 🔄 引入TDD开发 - 进行中
-   - 🔄 建立持续集成 - 进行中
-   - 🔄 自动化测试 - 进行中
-
-#### 长期改进 (6-12个月)
-
-1. **技术升级**
-   - 🔄 引入新技术栈 - 进行中
-   - 🔄 性能优化 - 进行中
-   - 🔄 安全加固 - 进行中
-
-2. **团队能力**
-   - 🔄 技术培训 - 进行中
-   - 🔄 知识分享 - 进行中
-   - 🔄 最佳实践总结 - 进行中
-
----
-
-## 🧪 3. 测试工程师视角分析
-
-### 3.1 测试覆盖率评估
-
-#### 整体测试覆盖率
-
-| 测试类型 | 目标覆盖率 | 实际覆盖率 | 差距 | 评估 | 状态 |
-|----------|------------|------------|------|------|------|
-| **单元测试** | ≥ 80% | 约15% | -65% | 🔴 不足 | 🔄 提升中 |
-| **集成测试** | ≥ 60% | 约5% | -55% | 🔴 不足 | 🔄 提升中 |
-| **端到端测试** | ≥ 40% | 0% | -40% | 🔴 不足 | 🔄 计划中 |
-| **API测试** | ≥ 70% | 约10% | -60% | 🔴 不足 | 🔄 提升中 |
-
-**总体测试覆盖率**: 约7.5% (框架搭建阶段)
-
-#### 模块测试覆盖率详情
-
-| 模块 | 单元测试 | 集成测试 | API测试 | 总覆盖率 | 评估 | 状态 |
-|------|----------|----------|---------|----------|------|------|
-| **用户管理** | 20% | 10% | 15% | 15% | 🔴 不足 | 🔄 提升中 |
-| **文件管理** | 15% | 5% | 10% | 10% | 🔴 不足 | 🔄 提升中 |
-| **认证授权** | 10% | 0% | 5% | 5% | 🔴 不足 | 🔄 提升中 |
-
-### 3.2 测试策略分析
-
-#### 测试金字塔对比
-
-```
-设计文档的测试金字塔:
-        /\
-       /E2E\      10%
-      /------\
-     / 集成  \    30%
-    /--------\
-   /  单元   \   60%
-  /----------\
-
-实际实现的测试金字塔:
-        /\
-       /E2E\      0%
-      /------\
-     / 集成  \    5%
-    /--------\
-   /  单元   \   95%
-  /----------\
+    private UserVO convertToVO(User user) {
+        UserVO vo = new UserVO();
+        BeanUtils.copyProperties(user, vo);
+        return vo;
+    }
+}
 ```
 
-**测试金字塔失衡**: 🔴 严重 (框架搭建阶段)
+**Service层实现**:
 
-#### 测试类型分析
+```java
+/**
+ * 用户响应式服务
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserService {
 
-**单元测试** - 评估: 🟡 中等
-- ✅ 有基础单元测试
-- ⚠️ 测试覆盖率低
-- ⚠️ 缺少边界测试
-- ❌ 无性能测试
+    private final UserMapper userMapper;
+    private final UserReactiveRepository userReactiveRepository;
 
-**集成测试** - 评估: 🔴 较差
-- ⚠️ 集成测试很少
-- ❌ 无数据库集成测试
-- ❌ 无消息队列测试
-- ❌ 无外部服务测试
+    /**
+     * 响应式查询用户列表
+     */
+    public Flux<User> listUsersReactive() {
+        return Flux.defer(() -> Flux.fromIterable(userMapper.selectList(null)))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
 
-**端到端测试** - 评估: 🔴 完全缺失
-- ❌ 无E2E测试
-- ❌ 无UI自动化测试
-- ❌ 无完整业务流程测试
+    /**
+     * 响应式查询单个用户
+     */
+    public Mono<User> getUserByIdReactive(Long id) {
+        return Mono.fromCallable(() -> userMapper.selectById(id))
+                .subscribeOn(Schedulers.boundedElastic());
+    }
 
-### 3.3 功能测试和集成测试完整性
+    /**
+     * 响应式创建用户
+     */
+    public Mono<User> createUserReactive(UserCreateDTO dto) {
+        return Mono.fromCallable(() -> {
+            User user = new User();
+            BeanUtils.copyProperties(dto, user);
+            userMapper.insert(user);
+            return user;
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
 
-#### 已实现功能测试
+    /**
+     * 响应式流式数据
+     */
+    public Flux<User> streamUsersReactive() {
+        return Flux.interval(Duration.ofSeconds(1))
+                .flatMap(tick -> listUsersReactive());
+    }
+}
+```
 
-**用户管理测试** - 完整度: 20%
-- ✅ 用户注册测试
-- ✅ 用户登录测试
-- ⚠️ 用户信息更新测试 (不完整)
-- ❌ 用户删除测试
-- ❌ 权限验证测试
+**最佳实践要点**:
 
-**文件管理测试** - 完整度: 15%
-- ✅ 文件上传测试
-- ✅ 文件下载测试
-- ⚠️ 文件预览测试 (不完整)
-- ❌ 文件删除测试
-- ❌ 文件权限测试
+1. **使用Schedulers切换线程**:
+   - `subscribeOn(Schedulers.boundedElastic())`: 用于阻塞操作
+   - `publishOn(Schedulers.parallel())`: 用于CPU密集型操作
 
-### 3.4 质量和风险点评估
+2. **错误处理**:
+   ```java
+   .onErrorResume(UserNotFoundException.class, e -> Mono.empty())
+   .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)))
+   ```
 
-#### 质量风险矩阵
+3. **超时控制**:
+   ```java
+   .timeout(Duration.ofSeconds(5))
+   ```
 
-| 风险项 | 严重程度 | 发生概率 | 风险等级 | 影响 | 状态 |
-|--------|----------|----------|----------|------|------|
-| **核心功能Bug** | 🔴 高 | 🟡 中 | 🔴 高 | 系统不可用 | 🔄 监控中 |
-| **性能问题** | 🟡 中 | 🟡 中 | 🟡 中 | 用户体验差 | 🔄 监控中 |
-| **安全漏洞** | 🔴 高 | 🟢 低 | 🟡 中 | 数据泄露风险 | 🔄 监控中 |
-| **数据丢失** | 🔴 高 | 🟢 低 | 🟡 中 | 业务中断 | 🔄 监控中 |
+4. **背压处理**:
+   ```java
+   .onBackpressureBuffer(1000)
+   ```
 
-#### 质量指标
+5. **性能优化**:
+   - 避免在响应式流中使用阻塞操作
+   - 合理使用缓存
+   - 使用flatMap而不是map进行异步操作
 
-| 指标 | 目标值 | 实际值 | 评估 | 状态 |
-|------|--------|--------|------|------|
-| **Bug密度** | < 5个/KLOC | 未知 | 🔴 无法评估 | 🔄 监控中 |
-| **测试覆盖率** | > 80% | 7.5% | 🔴 严重不足 | 🔄 提升中 |
-| **代码评审率** | 100% | 约50% | 🟡 中等 | 🔄 提升中 |
-| **自动化测试率** | > 70% | 约5% | 🔴 严重不足 | 🔄 提升中 |
+#### 1.2 WebSocket 实时通信
 
-### 3.5 测试改进建议
+**技术选型**: Spring WebSocket + STOMP
 
-#### 短期改进 (1-3个月)
+**适用场景**:
+- 实时消息推送
+- 在线聊天
+- 实时数据监控
 
-**优先级P0 - 立即执行**
-1. 补充核心功能单元测试
-   - 🔄 用户管理模块测试覆盖率提升至60% - 进行中
-   - 🔄 文件管理模块测试覆盖率提升至50% - 进行中
+**最佳实践**:
 
-2. 建立集成测试框架
-   - 🔄 引入Testcontainers - 进行中
-   - 🔄 建立测试数据库 - 进行中
-   - 🔄 编写基础集成测试 - 进行中
+```java
+/**
+ * WebSocket配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-**优先级P1 - 重要**
-1. 建立API测试
-   - 🔄 引入Postman/Newman - 进行中
-   - 🔄 编写API测试用例 - 进行中
-   - 🔄 集成到CI/CD - 进行中
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
+    }
 
-#### 中期改进 (3-6个月)
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic", "/queue");
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/user");
+    }
+}
+```
 
-1. 提高测试覆盖率
-   - 🔄 单元测试覆盖率提升至70% - 进行中
-   - 🔄 集成测试覆盖率提升至40% - 进行中
+```java
+/**
+ * WebSocket消息处理器
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class WebSocketController {
 
-2. 引入E2E测试
-   - 🔄 引入Cypress/Selenium - 计划中
-   - 🔄 编写核心业务流程测试 - 计划中
-   - 🔄 集成到CI/CD - 计划中
+    private final SimpMessagingTemplate messagingTemplate;
 
-#### 长期改进 (6-12个月)
+    /**
+     * 发送用户状态更新消息
+     */
+    public void sendUserStatusUpdate(Long userId, String status) {
+        UserStatusMessage message = new UserStatusMessage(userId, status);
+        messagingTemplate.convertAndSend("/topic/user-status", message);
+        log.info("发送用户状态更新: userId={}, status={}", userId, status);
+    }
 
-1. 建立完善测试体系
-   - 🔄 测试覆盖率提升至80%+ - 计划中
-   - 🔄 自动化测试率提升至70%+ - 计划中
-   - 🔄 建立性能测试 - 计划中
+    /**
+     * 发送用户专属消息
+     */
+    public void sendUserPrivateMessage(Long userId, String content) {
+        UserMessage message = new UserMessage(userId, content);
+        messagingTemplate.convertAndSendToUser(
+                userId.toString(),
+                "/queue/messages",
+                message
+        );
+        log.info("发送用户专属消息: userId={}", userId);
+    }
 
-2. 测试左移
-   - 🔄 引入TDD开发 - 计划中
-   - 🔄 建立质量门禁 - 计划中
-   - 🔄 持续质量改进 - 计划中
+    /**
+     * 广播系统消息
+     */
+    public void broadcastSystemMessage(String content) {
+        SystemMessage message = new SystemMessage(content);
+        messagingTemplate.convertAndSend("/topic/system", message);
+        log.info("广播系统消息: {}", content);
+    }
+}
+```
+
+```java
+/**
+ * WebSocket消息监听器
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class WebSocketMessageListener {
+
+    private final UserService userService;
+
+    /**
+     * 监听用户订阅
+     */
+    @SubscribeMapping("/topic/user-status")
+    public UserStatusMessage subscribeUserStatus() {
+        log.info("用户订阅用户状态");
+        return new UserStatusMessage(null, "CONNECTED");
+    }
+
+    /**
+     * 监听用户消息
+     */
+    @MessageMapping("/app/user/message")
+    @SendTo("/topic/user-messages")
+    public UserMessage handleUserMessage(UserMessage message) {
+        log.info("收到用户消息: {}", message);
+        // 处理消息逻辑
+        return message;
+    }
+}
+```
+
+**前端连接示例**:
+
+```javascript
+// WebSocket连接
+const socket = new SockJS('/ws');
+const stompClient = Stomp.over(socket);
+
+stompClient.connect({}, function(frame) {
+    console.log('Connected: ' + frame);
+    
+    // 订阅用户状态
+    stompClient.subscribe('/topic/user-status', function(message) {
+        const status = JSON.parse(message.body);
+        console.log('User Status:', status);
+    });
+    
+    // 订阅用户专属消息
+    stompClient.subscribe('/user/queue/messages', function(message) {
+        const msg = JSON.parse(message.body);
+        console.log('Private Message:', msg);
+    });
+    
+    // 发送消息
+    stompClient.send('/app/user/message', {}, JSON.stringify({
+        userId: 1,
+        content: 'Hello'
+    }));
+});
+```
+
+**最佳实践要点**:
+
+1. **连接管理**:
+   - 实现心跳机制
+   - 处理断线重连
+   - 限制连接数量
+
+2. **消息安全**:
+   - 消息加密
+   - 权限验证
+   - 防止消息注入
+
+3. **性能优化**:
+   - 使用消息压缩
+   - 批量发送消息
+   - 实现消息缓存
+
+#### 1.3 GraphQL API
+
+**技术选型**: Spring GraphQL + GraphQL Java Tools
+
+**适用场景**:
+- 灵活的数据查询
+- 减少API调用次数
+- 移动端API
+
+**最佳实践**:
+
+```graphql
+# Schema定义
+type User {
+    id: ID!
+    username: String!
+    email: String!
+    phone: String
+    realName: String
+    avatar: String
+    status: Int
+    deptId: ID
+    createTime: String
+    updateTime: String
+    role: Role
+}
+
+type Role {
+    id: ID!
+    roleName: String!
+    roleCode: String!
+    description: String
+}
+
+type Query {
+    user(id: ID!): User
+    users(limit: Int, offset: Int): [User!]!
+    userSearch(keyword: String!): [User!]!
+}
+
+type Mutation {
+    createUser(input: UserCreateInput!): User!
+    updateUser(id: ID!, input: UserUpdateInput!): User!
+    deleteUser(id: ID!): Boolean!
+}
+
+input UserCreateInput {
+    username: String!
+    password: String!
+    email: String!
+    phone: String
+    realName: String
+}
+
+input UserUpdateInput {
+    username: String
+    email: String
+    phone: String
+    realName: String
+    status: Int
+}
+```
+
+```java
+/**
+ * GraphQL查询处理器
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Controller
+@RequiredArgsConstructor
+public class UserGraphQLController {
+
+    private final UserService userService;
+
+    /**
+     * 查询单个用户
+     */
+    @QueryMapping
+    public User user(@Argument String id) {
+        return userService.getById(Long.valueOf(id));
+    }
+
+    /**
+     * 查询用户列表
+     */
+    @QueryMapping
+    public List<User> users(@Argument Integer limit, @Argument Integer offset) {
+        return userService.listUsers(limit, offset);
+    }
+
+    /**
+     * 搜索用户
+     */
+    @QueryMapping
+    public List<User> userSearch(@Argument String keyword) {
+        return userService.searchUsers(keyword);
+    }
+
+    /**
+     * 创建用户
+     */
+    @MutationMapping
+    public User createUser(@Argument UserCreateInput input) {
+        return userService.createUser(input);
+    }
+
+    /**
+     * 更新用户
+     */
+    @MutationMapping
+    public User updateUser(@Argument String id, @Argument UserUpdateInput input) {
+        return userService.updateUser(Long.valueOf(id), input);
+    }
+
+    /**
+     * 删除用户
+     */
+    @MutationMapping
+    public boolean deleteUser(@Argument String id) {
+        return userService.deleteUser(Long.valueOf(id));
+    }
+}
+```
+
+**DataFetcher实现**:
+
+```java
+/**
+ * 用户DataFetcher
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@RequiredArgsConstructor
+public class UserDataFetcher implements DataFetcher<User> {
+
+    private final UserService userService;
+
+    @Override
+    public User get(DataFetchingEnvironment environment) {
+        String id = environment.getArgument("id");
+        return userService.getById(Long.valueOf(id));
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **Schema设计**:
+   - 合理的粒度划分
+   - 使用类型和接口
+   - 定义清晰的输入类型
+
+2. **查询优化**:
+   - 实现DataLoader解决N+1问题
+   - 使用分页
+   - 实现缓存
+
+3. **安全控制**:
+   - 权限验证
+   - 查询深度限制
+   - 查询复杂度限制
+
+### 2. 数据库分库分表
+
+**技术选型**: ShardingSphere
+
+**适用场景**:
+- 单表数据量超过千万级
+- 单库连接数瓶颈
+- 需要提高并发性能
+
+**最佳实践**:
+
+```java
+/**
+ * ShardingSphere配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableSharding
+public class ShardingConfig {
+
+    /**
+     * 分片规则配置
+     */
+    @Bean
+    public ShardingRuleConfiguration shardingRuleConfig() {
+        ShardingRuleConfiguration config = new ShardingRuleConfiguration();
+        
+        // 用户表分片规则
+        TableRuleConfiguration userRule = new TableRuleConfiguration("sys_user", 
+                "ds${0..1}.sys_user_${0..1}");
+        
+        // 分库策略：根据用户ID取模
+        userRule.setDatabaseShardingStrategyConfig(
+                new StandardShardingStrategyConfiguration("id", "dbShardingAlgorithm"));
+        
+        // 分表策略：根据用户ID取模
+        userRule.setTableShardingStrategyConfig(
+                new StandardShardingStrategyConfiguration("id", "tableShardingAlgorithm"));
+        
+        config.getTableRuleConfigs().add(userRule);
+        
+        return config;
+    }
+
+    /**
+     * 数据源配置
+     */
+    @Bean
+    public DataSource shardingDataSource() throws SQLException {
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("ds0", createDataSource("jdbc:mysql://localhost:3306/spring4demo_0"));
+        dataSourceMap.put("ds1", createDataSource("jdbc:mysql://localhost:3306/spring4demo_1"));
+        
+        return ShardingDataSourceFactory.createDataSource(
+                dataSourceMap, 
+                shardingRuleConfig(), 
+                new Properties()
+        );
+    }
+
+    private DataSource createDataSource(String url) {
+        HikariDataSource dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(url);
+        dataSource.setUsername("root");
+        dataSource.setPassword("password");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        return dataSource;
+    }
+}
+```
+
+```java
+/**
+ * 分库算法
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+public class DatabaseShardingAlgorithm implements PreciseShardingAlgorithm<Long> {
+
+    @Override
+    public String doSharding(Collection<String> availableTargetNames, 
+                             PreciseShardingValue<Long> shardingValue) {
+        Long userId = shardingValue.getValue();
+        // 根据用户ID的奇偶性分库
+        Long dbIndex = userId % 2;
+        return "ds" + dbIndex;
+    }
+}
+```
+
+```java
+/**
+ * 分表算法
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+public class TableShardingAlgorithm implements PreciseShardingAlgorithm<Long> {
+
+    @Override
+    public String doSharding(Collection<String> availableTargetNames, 
+                             PreciseShardingValue<Long> shardingValue) {
+        Long userId = shardingValue.getValue();
+        // 根据用户ID的奇偶性分表
+        Long tableIndex = userId % 2;
+        return "sys_user_" + tableIndex;
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **分片策略**:
+   - 合理选择分片键
+   - 避免跨分片查询
+   - 考虑数据倾斜问题
+
+2. **性能优化**:
+   - 使用广播表
+   - 合理使用绑定表
+   - 实现读写分离
+
+3. **运维管理**:
+   - 监控分片性能
+   - 实现数据迁移
+   - 处理扩容缩容
+
+### 3. 缓存集群
+
+**技术选型**: Caffeine + Redis 双缓存
+
+**适用场景**:
+- 高频访问数据
+- 降低数据库压力
+- 提高响应速度
+
+**最佳实践**:
+
+```java
+/**
+ * 缓存配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableCaching
+public class CacheConfig {
+
+    /**
+     * Caffeine本地缓存配置
+     */
+    @Bean
+    public CacheManager caffeineCacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                // 初始容量
+                .initialCapacity(100)
+                // 最大容量
+                .maximumSize(1000)
+                // 写入后过期时间
+                .expireAfterWrite(10, TimeUnit.MINUTES)
+                // 访问后过期时间
+                .expireAfterAccess(5, TimeUnit.MINUTES)
+                // 刷新后过期时间
+                .refreshAfterWrite(1, TimeUnit.MINUTES)
+                // 记录统计信息
+                .recordStats());
+        return cacheManager;
+    }
+
+    /**
+     * Redis分布式缓存配置
+     */
+    @Bean
+    public RedisCacheManager redisCacheManager(RedisConnectionFactory factory) {
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                // 设置key序列化方式
+                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new StringRedisSerializer()))
+                // 设置value序列化方式
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                        .fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                // 设置过期时间
+                .entryTtl(Duration.ofMinutes(30))
+                // 不缓存null值
+                .disableCachingNullValues();
+        
+        return RedisCacheManager.builder(factory)
+                .cacheDefaults(config)
+                .build();
+    }
+
+    /**
+     * 多级缓存管理器
+     */
+    @Bean
+    @Primary
+    public CacheManager multiLevelCacheManager(CacheManager caffeineCacheManager, 
+                                               CacheManager redisCacheManager) {
+        return new CompositeCacheManager(caffeineCacheManager, redisCacheManager);
+    }
+}
+```
+
+```java
+/**
+ * 用户缓存服务
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserCacheService {
+
+    private final UserMapper userMapper;
+    private final Cache caffeineCache;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 获取用户（多级缓存）
+     */
+    public User getUserWithCache(Long userId) {
+        String cacheKey = "user:" + userId;
+        
+        // 1. 先查Caffeine本地缓存
+        User user = (User) caffeineCache.get(cacheKey);
+        if (user != null) {
+            log.info("从Caffeine缓存获取用户: {}", userId);
+            return user;
+        }
+        
+        // 2. 再查Redis分布式缓存
+        user = (User) redisTemplate.opsForValue().get(cacheKey);
+        if (user != null) {
+            log.info("从Redis缓存获取用户: {}", userId);
+            // 回填到Caffeine缓存
+            caffeineCache.put(cacheKey, user);
+            return user;
+        }
+        
+        // 3. 最后查数据库
+        user = userMapper.selectById(userId);
+        if (user != null) {
+            log.info("从数据库获取用户: {}", userId);
+            // 写入Redis缓存
+            redisTemplate.opsForValue().set(cacheKey, user, 30, TimeUnit.MINUTES);
+            // 写入Caffeine缓存
+            caffeineCache.put(cacheKey, user);
+        }
+        
+        return user;
+    }
+
+    /**
+     * 更新用户（缓存穿透）
+     */
+    public void updateUserWithCache(Long userId, User user) {
+        // 更新数据库
+        userMapper.updateById(user);
+        
+        String cacheKey = "user:" + userId;
+        
+        // 删除Caffeine缓存
+        caffeineCache.invalidate(cacheKey);
+        
+        // 删除Redis缓存
+        redisTemplate.delete(cacheKey);
+        
+        log.info("更新用户并清除缓存: {}", userId);
+    }
+
+    /**
+     * 删除用户（缓存删除）
+     */
+    public void deleteUserWithCache(Long userId) {
+        // 删除数据库
+        userMapper.deleteById(userId);
+        
+        String cacheKey = "user:" + userId;
+        
+        // 删除Caffeine缓存
+        caffeineCache.invalidate(cacheKey);
+        
+        // 删除Redis缓存
+        redisTemplate.delete(cacheKey);
+        
+        log.info("删除用户并清除缓存: {}", userId);
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **缓存策略**:
+   - Cache-Aside模式
+   - 先更新数据库，再删除缓存
+   - 避免缓存雪崩和穿透
+
+2. **缓存一致性**:
+   - 使用消息队列通知缓存更新
+   - 实现缓存预热
+   - 监控缓存命中率
+
+3. **性能优化**:
+   - 合理设置缓存过期时间
+   - 使用布隆过滤器
+   - 实现缓存降级
+
+### 4. 消息队列
+
+**技术选型**: RabbitMQ
+
+**适用场景**:
+- 异步处理
+- 系统解耦
+- 流量削峰
+
+**最佳实践**:
+
+```java
+/**
+ * RabbitMQ配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+public class RabbitMQConfig {
+
+    /**
+     * 用户队列
+     */
+    @Bean
+    public Queue userQueue() {
+        return QueueBuilder.durable("user.queue")
+                .withArgument("x-dead-letter-exchange", "user.dlx")
+                .build();
+    }
+
+    /**
+     * 用户交换机
+     */
+    @Bean
+    public DirectExchange userExchange() {
+        return new DirectExchange("user.exchange");
+    }
+
+    /**
+     * 用户绑定
+     */
+    @Bean
+    public Binding userBinding() {
+        return BindingBuilder.bind(userQueue())
+                .to(userExchange())
+                .with("user.routing.key");
+    }
+
+    /**
+     * 死信队列
+     */
+    @Bean
+    public Queue userDeadLetterQueue() {
+        return QueueBuilder.durable("user.dlx.queue").build();
+    }
+
+    /**
+     * 死信交换机
+     */
+    @Bean
+    public DirectExchange userDeadLetterExchange() {
+        return new DirectExchange("user.dlx");
+    }
+
+    /**
+     * 死信绑定
+     */
+    @Bean
+    public Binding userDeadLetterBinding() {
+        return BindingBuilder.bind(userDeadLetterQueue())
+                .to(userDeadLetterExchange())
+                .with("user.dlx.routing.key");
+    }
+}
+```
+
+```java
+/**
+ * 用户消息生产者
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class UserMessageProducer {
+
+    private final RabbitTemplate rabbitTemplate;
+
+    /**
+     * 发送用户创建消息
+     */
+    public void sendUserCreateMessage(User user) {
+        UserCreateMessage message = new UserCreateMessage(user.getId(), user.getUsername());
+        rabbitTemplate.convertAndSend("user.exchange", "user.routing.key", message);
+        log.info("发送用户创建消息: {}", message);
+    }
+
+    /**
+     * 发送用户更新消息
+     */
+    public void sendUserUpdateMessage(User user) {
+        UserUpdateMessage message = new UserUpdateMessage(user.getId(), user.getUsername());
+        rabbitTemplate.convertAndSend("user.exchange", "user.routing.key", message);
+        log.info("发送用户更新消息: {}", message);
+    }
+
+    /**
+     * 发送用户删除消息
+     */
+    public void sendUserDeleteMessage(Long userId) {
+        UserDeleteMessage message = new UserDeleteMessage(userId);
+        rabbitTemplate.convertAndSend("user.exchange", "user.routing.key", message);
+        log.info("发送用户删除消息: {}", message);
+    }
+
+    /**
+     * 发送用户统计消息
+     * 
+     * TODO: 待实现统计功能后启用
+     */
+    public void sendUserStatsMessage(UserStatsMessage message) {
+        // TODO: 发送用户统计消息
+        // rabbitTemplate.convertAndSend("user.exchange", "user.stats.routing.key", message);
+        log.info("用户统计消息发送功能待实现: {}", message);
+    }
+}
+```
+
+```java
+/**
+ * 用户消息消费者
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class UserMessageConsumer {
+
+    private final UserService userService;
+    private final UserCacheService userCacheService;
+
+    /**
+     * 消费用户创建消息
+     */
+    @RabbitListener(queues = "user.queue")
+    public void handleUserCreateMessage(UserCreateMessage message) {
+        log.info("消费用户创建消息: {}", message);
+        try {
+            // 更新缓存
+            User user = userService.getById(message.getUserId());
+            if (user != null) {
+                userCacheService.getUserWithCache(message.getUserId());
+            }
+        } catch (Exception e) {
+            log.error("处理用户创建消息失败", e);
+            throw new AmqpRejectAndDontRequeueException(e);
+        }
+    }
+
+    /**
+     * 消费用户更新消息
+     */
+    @RabbitListener(queues = "user.queue")
+    public void handleUserUpdateMessage(UserUpdateMessage message) {
+        log.info("消费用户更新消息: {}", message);
+        try {
+            // 清除缓存
+            userCacheService.updateUserWithCache(message.getUserId(), null);
+        } catch (Exception e) {
+            log.error("处理用户更新消息失败", e);
+            throw new AmqpRejectAndDontRequeueException(e);
+        }
+    }
+
+    /**
+     * 消费用户删除消息
+     */
+    @RabbitListener(queues = "user.queue")
+    public void handleUserDeleteMessage(UserDeleteMessage message) {
+        log.info("消费用户删除消息: {}", message);
+        try {
+            // 清除缓存
+            userCacheService.deleteUserWithCache(message.getUserId());
+        } catch (Exception e) {
+            log.error("处理用户删除消息失败", e);
+            throw new AmqpRejectAndDontRequeueException(e);
+        }
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **消息可靠性**:
+   - 使用消息确认机制
+   - 实现死信队列
+   - 消息持久化
+
+2. **幂等性处理**:
+   - 使用消息ID去重
+   - 实现幂等性检查
+   - 使用乐观锁
+
+3. **性能优化**:
+   - 批量发送消息
+   - 合理设置 prefetch
+   - 监控队列性能
+
+### 5. 异步处理
+
+**技术选型**: Spring @Async + CompletableFuture
+
+**适用场景**:
+- 耗时操作
+- 并行处理
+- 提高响应速度
+
+**最佳实践**:
+
+```java
+/**
+ * 异步配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableAsync
+public class AsyncConfig implements AsyncConfigurer {
+
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        // 核心线程数
+        executor.setCorePoolSize(10);
+        // 最大线程数
+        executor.setMaxPoolSize(20);
+        // 队列容量
+        executor.setQueueCapacity(100);
+        // 线程名称前缀
+        executor.setThreadNamePrefix("async-");
+        // 拒绝策略
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        // 等待所有任务完成后再关闭
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        // 等待时间
+        executor.setAwaitTerminationSeconds(60);
+        executor.initialize();
+        return executor;
+    }
+}
+```
+
+```java
+/**
+ * 用户异步服务
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserAsyncService {
+
+    private final UserService userService;
+    // TODO: 邮件服务 - 待实现
+    // private final EmailService emailService;
+    // TODO: 短信服务 - 待实现
+    // private final SmsService smsService;
+
+    /**
+     * 异步创建用户
+     */
+    @Async
+    public CompletableFuture<User> createUserAsync(UserCreateDTO dto) {
+        log.info("异步创建用户: {}", dto.getUsername());
+        User user = userService.createUser(dto);
+        return CompletableFuture.completedFuture(user);
+    }
+
+    /**
+     * 异步发送欢迎邮件
+     * 
+     * TODO: 待实现邮件服务后启用
+     */
+    @Async
+    public CompletableFuture<Void> sendWelcomeEmailAsync(Long userId) {
+        log.info("异步发送欢迎邮件: {}", userId);
+        User user = userService.getById(userId);
+        // TODO: 调用邮件服务发送欢迎邮件
+        // emailService.sendWelcomeEmail(user);
+        log.info("邮件发送功能待实现: userId={}", userId);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * 异步发送欢迎短信
+     * 
+     * TODO: 待实现短信服务后启用
+     */
+    @Async
+    public CompletableFuture<Void> sendWelcomeSmsAsync(Long userId) {
+        log.info("异步发送欢迎短信: {}", userId);
+        User user = userService.getById(userId);
+        // TODO: 调用短信服务发送欢迎短信
+        // smsService.sendWelcomeSms(user);
+        log.info("短信发送功能待实现: userId={}", userId);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * 并行处理用户注册
+     */
+    public CompletableFuture<User> registerUserParallel(UserCreateDTO dto) {
+        log.info("并行处理用户注册: {}", dto.getUsername());
+        
+        // 异步创建用户
+        CompletableFuture<User> userFuture = createUserAsync(dto);
+        
+        // 等待用户创建完成
+        return userFuture.thenCompose(user -> {
+            // 并行发送欢迎邮件和短信
+            CompletableFuture<Void> emailFuture = sendWelcomeEmailAsync(user.getId());
+            CompletableFuture<Void> smsFuture = sendWelcomeSmsAsync(user.getId());
+            
+            // 等待所有异步任务完成
+            return CompletableFuture.allOf(emailFuture, smsFuture)
+                    .thenApply(v -> user);
+        });
+    }
+
+    /**
+     * 批量异步处理用户
+     */
+    public CompletableFuture<List<User>> batchProcessUsersAsync(List<Long> userIds) {
+        log.info("批量异步处理用户: {}", userIds.size());
+        
+        List<CompletableFuture<User>> futures = userIds.stream()
+                .map(userId -> CompletableFuture.supplyAsync(() -> {
+                    log.info("异步处理用户: {}", userId);
+                    User user = userService.getById(userId);
+                    // 处理用户逻辑
+                    return user;
+                }))
+                .collect(Collectors.toList());
+        
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()));
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **线程池管理**:
+   - 合理设置线程池参数
+   - 监控线程池状态
+   - 实现优雅停机
+
+2. **异常处理**:
+   - 使用 exceptionally 处理异常
+   - 实现重试机制
+   - 记录异常日志
+
+3. **性能优化**:
+   - 合理使用并行流
+   - 避免线程阻塞
+   - 实现任务超时控制
+
+### 6. 分布式事务
+
+**技术选型**: Seata
+
+**适用场景**:
+- 跨服务事务
+- 分布式数据一致性
+- 微服务架构
+
+**最佳实践**:
+
+```java
+/**
+ * Seata配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+public class SeataConfig {
+
+    @Bean
+    public GlobalTransactionScanner globalTransactionScanner() {
+        return new GlobalTransactionScanner("spring4demo", "my_test_tx_group");
+    }
+}
+```
+
+```java
+/**
+ * 用户分布式事务服务
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserDistributedService {
+
+    private final UserService userService;
+    // TODO: 订单服务 - 待实现
+    // private final OrderService orderService;
+    private final UserCacheService userCacheService;
+    private final UserMessageProducer userMessageProducer;
+
+    /**
+     * 创建用户订单（分布式事务）
+     * 
+     * TODO: 待实现订单服务后启用
+     */
+    @GlobalTransactional(name = "create-user-order", rollbackFor = Exception.class)
+    public void createUserOrder(Long userId, OrderCreateDTO orderDTO) {
+        log.info("开始创建用户订单: userId={}", userId);
+        
+        try {
+            // 1. 创建订单
+            // Order order = orderService.createOrder(userId, orderDTO);
+            // log.info("订单创建成功: orderId={}", order.getId());
+            log.info("订单服务待实现");
+            
+            // 2. 扣减用户余额
+            // userService.deductBalance(userId, order.getAmount());
+            // log.info("用户余额扣减成功: userId={}, amount={}", userId, order.getAmount());
+            
+            // 3. 清除用户缓存
+            userCacheService.deleteUserWithCache(userId);
+            log.info("用户缓存清除成功: userId={}", userId);
+            
+            // 4. 发送订单创建消息
+            userMessageProducer.sendUserCreateMessage(userService.getById(userId));
+            log.info("订单创建消息发送成功");
+            
+        } catch (Exception e) {
+            log.error("创建用户订单失败，回滚事务: userId={}", userId, e);
+            throw new RuntimeException("创建用户订单失败", e);
+        }
+    }
+
+    /**
+     * 用户注册（分布式事务）
+     * 
+     * TODO: 待实现订单服务后启用
+     */
+    @GlobalTransactional(name = "register-user", rollbackFor = Exception.class)
+    public User registerUser(UserCreateDTO userDTO, OrderCreateDTO orderDTO) {
+        log.info("开始用户注册: username={}", userDTO.getUsername());
+        
+        try {
+            // 1. 创建用户
+            User user = userService.createUser(userDTO);
+            log.info("用户创建成功: userId={}", user.getId());
+            
+            // 2. 创建初始订单
+            // Order order = orderService.createOrder(user.getId(), orderDTO);
+            // log.info("初始订单创建成功: orderId={}", order.getId());
+            log.info("订单服务待实现");
+            
+            // 3. 预热用户缓存
+            userCacheService.getUserWithCache(user.getId());
+            log.info("用户缓存预热成功: userId={}", user.getId());
+            
+            // 4. 发送用户注册消息
+            userMessageProducer.sendUserCreateMessage(user);
+            log.info("用户注册消息发送成功: userId={}", user.getId());
+            
+            return user;
+            
+        } catch (Exception e) {
+            log.error("用户注册失败，回滚事务: username={}", userDTO.getUsername(), e);
+            throw new RuntimeException("用户注册失败", e);
+        }
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **事务模式**:
+   - AT模式：默认模式，适合大多数场景
+   - TCC模式：适合强一致性场景
+   - Saga模式：适合长事务场景
+
+2. **性能优化**:
+   - 合理设置事务超时时间
+   - 优化锁竞争
+   - 实现异步补偿
+
+3. **异常处理**:
+   - 正确处理异常
+   - 实现重试机制
+   - 监控事务状态
+
+### 7. 定时任务
+
+**技术选型**: Spring Task + Quartz
+
+**适用场景**:
+- 定时数据清理
+- 定时数据统计
+- 定时任务调度
+
+**最佳实践**:
+
+```java
+/**
+ * 定时任务配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableScheduling
+public class ScheduleConfig {
+
+    /**
+     * 定时任务线程池
+     */
+    @Bean
+    public TaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(10);
+        scheduler.setThreadNamePrefix("schedule-");
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        scheduler.setAwaitTerminationSeconds(60);
+        return scheduler;
+    }
+}
+```
+
+```java
+/**
+ * 用户定时任务
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class UserScheduledTask {
+
+    private final UserService userService;
+    private final UserCacheService userCacheService;
+    private final UserMessageProducer userMessageProducer;
+
+    /**
+     * 清理过期用户缓存
+     * 每小时执行一次
+     * 
+     * TODO: 需要UserService实现清理过期缓存的方法
+     */
+    @Scheduled(cron = "0 0 * * * ?")
+    public void cleanExpiredUserCache() {
+        log.info("开始清理过期用户缓存");
+        try {
+            // TODO: 调用UserService清理过期缓存
+            // userService.cleanExpiredCache();
+            log.info("过期用户缓存清理功能待实现");
+        } catch (Exception e) {
+            log.error("清理过期用户缓存失败", e);
+        }
+    }
+
+    /**
+     * 统计活跃用户数
+     * 每天凌晨1点执行
+     * 
+     * TODO: 需要UserService实现统计活跃用户的方法
+     */
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void countActiveUsers() {
+        log.info("开始统计活跃用户数");
+        try {
+            // TODO: 调用UserService统计活跃用户
+            // long activeCount = userService.countActiveUsers();
+            long activeCount = 0;
+            log.info("活跃用户数统计完成: {}", activeCount);
+            
+            // 发送统计消息
+            UserStatsMessage message = new UserStatsMessage("active_users", activeCount);
+            userMessageProducer.sendUserStatsMessage(message);
+        } catch (Exception e) {
+            log.error("统计活跃用户数失败", e);
+        }
+    }
+
+    /**
+     * 预热用户缓存
+     * 每天凌晨2点执行
+     * 
+     * TODO: 需要UserService实现获取活跃用户列表的方法
+     */
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void warmUpUserCache() {
+        log.info("开始预热用户缓存");
+        try {
+            // TODO: 调用UserService获取活跃用户列表
+            // List<User> activeUsers = userService.listActiveUsers();
+            List<User> activeUsers = new ArrayList<>();
+            activeUsers.forEach(user -> {
+                userCacheService.getUserWithCache(user.getId());
+            });
+            log.info("用户缓存预热完成: {} 个用户", activeUsers.size());
+        } catch (Exception e) {
+            log.error("预热用户缓存失败", e);
+        }
+    }
+
+    /**
+     * 清理无效用户
+     * 每周日凌晨3点执行
+     * 
+     * TODO: 需要UserService实现清理无效用户的方法
+     */
+    @Scheduled(cron = "0 0 3 ? * SUN")
+    public void cleanInvalidUsers() {
+        log.info("开始清理无效用户");
+        try {
+            // TODO: 调用UserService清理无效用户
+            // int count = userService.cleanInvalidUsers();
+            int count = 0;
+            log.info("无效用户清理完成: {} 个用户", count);
+        } catch (Exception e) {
+            log.error("清理无效用户失败", e);
+        }
+    }
+
+    /**
+     * 同步用户数据
+     * 每5分钟执行一次
+     * 
+     * TODO: 需要UserService实现数据同步的方法
+     */
+    @Scheduled(fixedRate = 5 * 60 * 1000)
+    public void syncUserData() {
+        log.info("开始同步用户数据");
+        try {
+            // TODO: 调用UserService同步数据
+            // userService.syncUserData();
+            log.info("用户数据同步功能待实现");
+        } catch (Exception e) {
+            log.error("同步用户数据失败", e);
+        }
+    }
+}
+```
+
+**Quartz任务示例**:
+
+```java
+/**
+ * Quartz任务配置
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+public class QuartzConfig {
+
+    @Bean
+    public JobDetail userStatsJobDetail() {
+        return JobBuilder.newJob(UserStatsJob.class)
+                .withIdentity("userStatsJob")
+                .storeDurably()
+                .build();
+    }
+
+    @Bean
+    public Trigger userStatsJobTrigger() {
+        return TriggerBuilder.newTrigger()
+                .forJob(userStatsJobDetail())
+                .withIdentity("userStatsTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 1 * * ?"))
+                .build();
+    }
+}
+```
+
+```java
+/**
+ * 用户统计任务
+ * 
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class UserStatsJob extends QuartzJobBean {
+
+    private final UserService userService;
+    private final UserMessageProducer userMessageProducer;
+
+    @Override
+    protected void executeInternal(JobExecutionContext context) {
+        log.info("开始执行用户统计任务");
+        try {
+            // 统计用户数据
+            // TODO: 需要UserService实现统计用户数据的方法
+            // UserStats stats = userService.calculateUserStats();
+            UserStats stats = new UserStats();
+            
+            // 发送统计消息
+            userMessageProducer.sendUserStatsMessage(stats);
+            
+            log.info("用户统计任务执行完成: {}", stats);
+        } catch (Exception e) {
+            log.error("用户统计任务执行失败", e);
+        }
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **任务调度**:
+   - 合理设置执行时间
+   - 避免任务重叠
+   - 实现任务超时控制
+
+2. **异常处理**:
+   - 捕获并记录异常
+   - 实现任务重试
+   - 发送告警通知
+
+3. **性能优化**:
+   - 使用分布式锁
+   - 实现任务分片
+   - 监控任务性能
 
 ---
 
-## 🔧 4. 运维工程师视角分析
+## 📝 总结
 
-### 4.1 部署架构和运维可行性评估
+本文档提供了Spring4demo项目工程框架搭建阶段的技术架构最佳实践，涵盖了Web层、数据库、缓存、消息队列、异步处理、分布式事务和定时任务等核心技术领域。
 
-#### 部署架构对比
+### 技术栈总结
 
-| 架构组件 | 设计承诺 | 实际实现 | 差距 | 影响 | 状态 |
-|----------|----------|----------|------|------|------|
-| **容器化** | Docker + K8s | ✅ Docker | 0% | 无影响 | ✅ 已实现 |
-| **负载均衡** | Nginx/HAProxy | ❌ 未实现 | 100% | 🔴 严重 | 🔄 计划中 |
-| **服务发现** | Nacos/Consul | ❌ 未实现 | 100% | 🔴 严重 | 🔄 计划中 |
-| **配置中心** | Nacos Config | ❌ 未实现 | 100% | 🔴 严重 | 🔄 计划中 |
-| **API网关** | Spring Cloud Gateway | ❌ 未实现 | 100% | 🔴 严重 | 🔄 计划中 |
-| **熔断限流** | Sentinel | ❌ 未实现 | 100% | 🔴 严重 | 🔄 计划中 |
+| 技术领域 | 选型方案 | 适用场景 |
+|---------|---------|---------|
+| **WebFlux** | Spring WebFlux + Reactor | 高并发、低延迟、流式数据 |
+| **WebSocket** | Spring WebSocket + STOMP | 实时通信、消息推送 |
+| **GraphQL** | Spring GraphQL | 灵活查询、减少调用 |
+| **分库分表** | ShardingSphere | 大数据量、高并发 |
+| **双缓存** | Caffeine + Redis | 高频访问、降低压力 |
+| **消息队列** | RabbitMQ | 异步处理、系统解耦 |
+| **异步处理** | Spring @Async + CompletableFuture | 耗时操作、并行处理 |
+| **分布式事务** | Seata | 跨服务事务、数据一致性 |
+| **定时任务** | Spring Task + Quartz | 定时调度、数据清理 |
 
-**部署架构完成度**: 20% (框架搭建阶段)
+### 实施建议
 
-#### 运维自动化程度
+1. **优先级排序**:
+   - P1: WebFlux、WebSocket、分库分表、双缓存、消息队列、异步处理、分布式事务、定时任务
+   - P2: GraphQL
 
-| 运维环节 | 自动化程度 | 说明 | 状态 |
-|----------|------------|------|------|
-| **构建** | ✅ 完善 | Maven构建,完全自动化 | ✅ 已实现 |
-| **测试** | 🟡 中等 | 自动化测试部分实现 | 🔄 提升中 |
-| **部署** | ✅ 完善 | Docker部署,完全自动化 | ✅ 已实现 |
-| **监控** | ✅ 完善 | 基础监控完善 | ✅ 已实现 |
-| **日志** | ✅ 完善 | 日志收集完善 | ✅ 已实现 |
-| **备份** | 🟡 中等 | 手动备份,自动恢复计划中 | 🔄 计划中 |
+2. **实施步骤**:
+   - 第一步：实现基础功能
+   - 第二步：完善异常处理
+   - 第三步：性能优化
+   - 第四步：监控告警
 
-**总体运维自动化**: 🟡 中等 (60%)
+3. **测试验证**:
+   - 单元测试
+   - 集成测试
+   - 性能测试
+   - 压力测试
 
-### 4.2 监控告警和日志管理评估
-
-#### 监控系统评估
-
-| 监控指标 | 设计承诺 | 实际实现 | 差距 | 状态 |
-|----------|----------|----------|------|------|
-| **应用监控** | Actuator + Micrometer | ✅ 已实现 | 0% | ✅ 已实现 |
-| **指标收集** | Prometheus | ✅ 已实现 | 0% | ✅ 已实现 |
-| **可视化** | Grafana | ✅ 已实现 | 0% | ✅ 已实现 |
-| **链路追踪** | Zipkin | ✅ 已实现 | 0% | ✅ 已实现 |
-| **日志聚合** | ELK Stack | ⚠️ 部分实现 | 40% | 🔄 提升中 |
-| **告警系统** | AlertManager | ❌ 未实现 | 100% | 🔄 计划中 |
-
-**监控系统完成度**: 80% (框架搭建阶段)
-
-#### 告警规则评估
-
-| 告警类型 | 设计承诺 | 实际实现 | 差距 | 状态 |
-|----------|----------|----------|------|------|
-| **应用告警** | 完整规则 | ⚠️ 基础规则 | 50% | 🔄 提升中 |
-| **系统告警** | 完整规则 | ❌ 未实现 | 100% | 🔄 计划中 |
-| **业务告警** | 完整规则 | ❌ 未实现 | 100% | 🔄 计划中 |
-| **告警通知** | 多渠道 | ❌ 未实现 | 100% | 🔄 计划中 |
-
-**告警系统完成度**: 25% (框架搭建阶段)
-
-#### 日志管理评估
-
-| 日志功能 | 设计承诺 | 实际实现 | 差距 | 状态 |
-|----------|----------|----------|------|------|
-| **日志收集** | Loki + Promtail | ✅ 已实现 | 0% | ✅ 已实现 |
-| **日志存储** | Loki | ✅ 已实现 | 0% | ✅ 已实现 |
-| **日志查询** | Grafana | ✅ 已实现 | 0% | ✅ 已实现 |
-| **日志分析** | ELK Stack | ❌ 未实现 | 100% | 🔄 计划中 |
-| **日志告警** | Loki Alert | ❌ 未实现 | 100% | 🔄 计划中 |
-
-**日志管理完成度**: 60% (框架搭建阶段)
-
-### 4.3 系统稳定性和可观测性评估
-
-#### 系统稳定性指标
-
-| 指标 | 目标值 | 实际值 | 评估 | 状态 |
-|------|--------|--------|------|------|
-| **系统可用性** | 99.9% | 未知 | 🔴 无法评估 | 🔄 监控中 |
-| **平均响应时间** | < 200ms | 未知 | 🔴 无法评估 | 🔄 监控中 |
-| **错误率** | < 0.1% | 未知 | 🔴 无法评估 | 🔄 监控中 |
-| **并发用户数** | 1000+ | 未知 | 🔴 无法评估 | 🔄 监控中 |
-
-**系统稳定性**: 🔴 无法评估 (框架搭建阶段，缺少生产数据)
-
-#### 可观测性评估
-
-| 可观测性维度 | 评分 | 说明 | 状态 |
-|--------------|------|------|------|
-| **指标监控** | 9/10 | 基础指标完善 | ✅ 优秀 |
-| **日志追踪** | 7/10 | 日志收集完善,分析不足 | 🟡 良好 |
-| **链路追踪** | 8/10 | Zipkin已集成,使用充分 | ✅ 优秀 |
-| **告警通知** | 4/10 | 告警规则不完善 | 🔄 提升中 |
-| **可视化** | 9/10 | Grafana面板完善 | ✅ 优秀 |
-
-**总体可观测性**: 7.4/10
-
-### 4.4 运维优化建议
-
-#### 短期优化 (1-3个月)
-
-**优先级P0 - 立即执行**
-1. 完善告警系统
-   - 🔄 配置关键指标告警 - 进行中
-   - 🔄 配置告警通知渠道 - 进行中
-   - 🔄 建立告警处理流程 - 进行中
-
-2. 优化日志管理
-   - 🔄 完善日志格式 - 进行中
-   - 🔄 增加关键业务日志 - 进行中
-   - 🔄 建立日志查询规范 - 进行中
-
-**优先级P1 - 重要**
-1. 建立备份恢复机制
-   - 🔄 数据库备份 - 进行中
-   - 🔄 文件备份 - 进行中
-   - 🔄 恢复演练 - 计划中
-
-#### 中期优化 (3-6个月)
-
-1. 部署架构优化
-   - 🔄 引入负载均衡 - 计划中
-   - 🔄 引入配置中心 - 计划中
-   - 🔄 引入服务发现 - 计划中
-
-2. 运维自动化
-   - 🔄 自动化部署 - 进行中
-   - 🔄 自动化扩缩容 - 计划中
-   - 🔄 自动化故障恢复 - 计划中
-
-#### 长期优化 (6-12个月)
-
-1. 云原生改造
-   - 🔄 Kubernetes部署 - 计划中
-   - 🔄 服务网格 - 计划中
-   - 🔄 DevOps流水线 - 计划中
-
-2. 智能运维
-   - 🔄 智能告警 - 计划中
-   - 🔄 故障预测 - 计划中
-   - 🔄 自动化运维 - 计划中
+4. **文档维护**:
+   - 及时更新文档
+   - 记录最佳实践
+   - 分享经验教训
 
 ---
 
-## 📊 5. 差异优先级矩阵
+**文档结束**
 
-### 5.1 P0级别差异 (必须立即解决)
-
-| 差异项 | 影响范围 | 严重程度 | 解决成本 | 优先级 | 建议措施 | 状态 |
-|--------|----------|----------|----------|--------|----------|------|
-| **架构设计不一致** | 整个项目 | 🔴 严重 | 高 | P0 | ✅ 已决策采用三层架构 | ✅ 已解决 |
-| **技术选型不一致** | 整个项目 | 🔴 严重 | 高 | P0 | ✅ 已决策技术栈 | ✅ 已解决 |
-| **文档更新滞后** | 团队协作 | 🔴 严重 | 低 | P0 | 更新所有设计文档 | 🔄 进行中 |
-
-### 5.2 P1级别差异 (重要,需尽快解决)
-
-| 差异项 | 影响范围 | 严重程度 | 解决成本 | 优先级 | 建议措施 | 状态 |
-|--------|----------|----------|----------|--------|----------|------|
-| **测试覆盖不足** | 系统质量 | 🟡 中等 | 中 | P1 | 补充核心功能测试,建立测试框架 | 🔄 进行中 |
-| **监控告警不完善** | 运维效率 | 🟡 中等 | 低 | P1 | 完善告警规则,建立告警机制 | 🔄 进行中 |
-| **主键策略调整** | 数据库设计 | 🟡 中等 | 中 | P1 | 采用雪花算法,更新数据库脚本 | 🔄 进行中 |
-
-### 5.3 P2级别差异 (可选,可延后解决)
-
-| 差异项 | 影响范围 | 严重程度 | 解决成本 | 优先级 | 建议措施 | 状态 |
-|--------|----------|----------|----------|--------|----------|------|
-| **日志分析不完善** | 运维效率 | 🟢 较低 | 中 | P2 | 引入ELK Stack | 🔄 计划中 |
-| **部署架构不完善** | 系统扩展 | 🟢 较低 | 高 | P2 | 引入负载均衡、配置中心 | 🔄 计划中 |
-
----
-
-## ❓ 6. 争议点和不一致内容清单
-
-### 6.1 架构设计争议
-
-#### 争议点1: DDD架构 vs 三层架构
-
-**设计文档**: 采用完整的DDD架构,包括限界上下文、聚合根、值对象、领域事件等
-**实际实现**: 采用传统的三层架构(Controller-Service-Mapper)
-
-**争议分析**:
-- **支持DDD**: 更符合业务建模,代码可维护性高,适合复杂业务
-- **支持三层**: 开发效率高,学习成本低,适合简单业务
-
-**决策**: ✅ **采用三层架构**
-- **决策理由**:
-  1. 当前项目处于工程框架搭建阶段，采用三层架构更实用
-  2. 开发效率高，学习成本低，适合快速开发
-  3. 代码结构清晰，易于理解和维护
-  4. 适合当前项目规模和复杂度
-- **影响**:
-  - 需要更新所有架构设计文档
-  - 需要调整开发规范和代码结构
-  - 需要调整培训材料和开发指南
-- **行动计划**:
-  - ✅ 已决策
-  - 🔄 更新架构设计文档 - 进行中
-  - 🔄 更新开发规范 - 进行中
-
-#### 争议点2: Spring Security vs Sa-Token
-
-**设计文档**: 使用Spring Security + JWT实现认证授权
-**实际实现**: 使用Sa-Token实现认证授权
-
-**争议分析**:
-- **支持Spring Security**: 生态完善,功能强大,企业级应用首选
-- **支持Sa-Token**: 配置简单,上手容易,适合中小型项目
-
-**决策**: ✅ **采用Sa-Token**
-- **决策理由**:
-  1. 配置简单，上手容易，开发效率高
-  2. 文档完善，社区活跃，国内支持好
-  3. 功能完善，满足当前项目需求
-  4. 适合快速开发和迭代
-- **影响**:
-  - 需要更新认证授权设计文档
-  - 需要更新API文档
-  - 需要调整安全相关代码
-- **行动计划**:
-  - ✅ 已决策
-  - 🔄 更新认证授权文档 - 进行中
-  - 🔄 更新API文档 - 进行中
-
-### 6.2 技术选型争议
-
-#### 争议点3: JPA vs MyBatis-Plus
-
-**设计文档**: 使用Spring Data JPA进行数据访问
-**实际实现**: 使用MyBatis-Plus进行数据访问
-
-**争议分析**:
-- **支持JPA**: 符合DDD理念,开发效率高,适合标准CRUD
-- **支持MyBatis-Plus**: SQL控制灵活,性能优化空间大,适合复杂查询
-
-**决策**: ✅ **采用MyBatis-Plus**
-- **决策理由**:
-  1. SQL控制灵活，性能优化空间大
-  2. 国内社区活跃，文档完善
-  3. 支持代码生成，提高开发效率
-  4. 适合复杂查询场景
-- **影响**:
-  - 需要更新数据访问设计文档
-  - 需要更新数据库设计文档
-  - 需要调整数据访问层代码
-- **行动计划**:
-  - ✅ 已决策
-  - 🔄 更新数据访问文档 - 进行中
-  - 🔄 更新数据库设计文档 - 进行中
-
-#### 争议点4: BIGINT vs UUID主键
-
-**设计文档**: 使用BIGINT AUTO_INCREMENT作为主键
-**实际实现**: 使用UUID作为主键
-
-**争议分析**:
-- **支持BIGINT**: 性能好,存储小,索引效率高,适合单体应用
-- **支持UUID**: 分布式友好,无序插入,适合分布式系统
-
-**决策**: ✅ **采用雪花算法**
-- **决策理由**:
-  1. 兼顾性能和分布式扩展性
-  2. 生成有序ID，避免UUID的性能问题
-  3. 支持分布式，避免BIGINT的分布式问题
-  4. 雪花算法成熟，社区支持好
-- **影响**:
-  - 需要更新数据库设计文档
-  - 需要更新数据库脚本
-  - 需要调整实体类主键生成策略
-  - 需要调整Mapper配置
-- **行动计划**:
-  - ✅ 已决策
-  - 🔄 更新数据库设计文档 - 进行中
-  - 🔄 更新数据库脚本 - 进行中
-  - 🔄 调整实体类代码 - 进行中
-  - 🔄 调整Mapper配置 - 进行中
-
----
-
-## 🎯 7. 改进建议和行动计划
-
-### 7.1 立即行动计划 (1-2周)
-
-#### 第1周: 文档同步
-
-**Day 1-2: 更新架构设计文档**
-- ✅ 更新技术架构设计文档，反映三层架构
-- ✅ 更新模块结构设计文档
-- ✅ 更新包结构设计文档
-
-**Day 3-5: 更新技术选型文档**
-- ✅ 更新认证授权文档，反映Sa-Token
-- ✅ 更新数据访问文档，反映MyBatis-Plus
-- ✅ 更新数据库设计文档，反映雪花算法
-
-**Day 6-7: 更新API文档**
-- 🔄 更新Swagger文档
-- 🔄 更新Knife4j文档
-- 🔄 更新API接口文档
-
-#### 第2周: 代码调整
-
-**Day 1-3: 调整主键策略**
-- 🔄 调整实体类主键生成策略
-- 🔄 更新数据库脚本
-- 🔄 更新Mapper配置
-
-**Day 4-5: 补充测试**
-- 🔄 补充核心功能单元测试
-- 🔄 建立基础集成测试框架
-
-**Day 6-7: 完善监控**
-- 🔄 配置关键指标告警
-- 🔄 配置告警通知渠道
-
-### 7.2 短期行动计划 (1-3个月)
-
-#### 目标
-- 完成所有文档更新
-- 提高测试覆盖率至50%
-- 完善监控告警系统
-
-#### 关键里程碑
-
-**里程碑1 (1个月)**
-- ✅ 所有设计文档更新完成
-- ✅ 主键策略调整完成
-- 🔄 测试覆盖率提升至30%
-
-**里程碑2 (2个月)**
-- 🔄 监控告警系统完善
-- 🔄 备份恢复机制建立
-- 🔄 测试覆盖率提升至40%
-
-**里程碑3 (3个月)**
-- 🔄 测试覆盖率提升至50%
-- 🔄 日志管理系统完善
-- 🔄 运维自动化提升
-
-### 7.3 中期行动计划 (3-6个月)
-
-#### 目标
-- 提高测试覆盖率至70%
-- 完善部署架构
-- 建立持续集成
-
-#### 关键里程碑
-
-**里程碑4 (4个月)**
-- 🔄 测试覆盖率提升至60%
-- 🔄 引入负载均衡
-- 🔄 引入配置中心
-
-**里程碑5 (5个月)**
-- 🔄 测试覆盖率提升至70%
-- 🔄 引入服务发现
-- 🔄 建立持续集成
-
-**里程碑6 (6个月)**
-- 🔄 系统稳定性达到99.9%
-- 🔄 运维自动化完成
-- 🔄 测试覆盖率提升至80%
-
-### 7.4 长期行动计划 (6-12个月)
-
-#### 目标
-- 微服务架构演进
-- 云原生改造
-- 智能运维
-
-#### 关键里程碑
-
-**里程碑7 (9个月)**
-- 🔄 微服务架构设计
-- 🔄 服务拆分
-- 🔄 服务治理
-
-**里程碑8 (12个月)**
-- 🔄 Kubernetes部署
-- 🔄 DevOps流水线
-- 🔄 智能运维
-
----
-
-## 📝 8. 总结和建议
-
-### 8.1 核心发现总结
-
-Spring4demo项目是一个技术栈先进、架构合理的项目，当前处于**工程框架搭建阶段**。设计文档描述了基于DDD架构的技术方案，而实际代码实现采用了更实用的三层架构，并在关键技术选型上做出了调整。经过深入分析和讨论，项目团队已对关键技术选型做出了明确决策。
-
-**主要决策**:
-1. ✅ 采用三层架构，简化开发，提高效率
-2. ✅ 采用Sa-Token，配置简单，上手容易
-3. ✅ 采用MyBatis-Plus，SQL控制灵活，性能优化空间大
-4. ✅ 采用雪花算法，兼顾性能和分布式扩展性
-
-**主要优势**:
-1. ✅ 技术栈先进，集成度高
-2. ✅ 代码质量优秀，规范统一
-3. ✅ 监控系统完善，可观测性好
-4. ✅ 部署架构合理，支持容器化
-5. ✅ 决策明确，方向清晰
-
-**主要不足**:
-1. 🔄 文档需要同步更新
-2. 🔄 测试覆盖率需要提升
-3. 🔄 监控告警需要完善
-4. 🔄 部署架构需要优化
-
-### 8.2 最终建议
-
-#### 对项目团队的建议
-
-1. **立即行动**
-   - ✅ 已完成技术决策
-   - 🔄 立即更新所有设计文档
-   - 🔄 同步代码实现与文档
-
-2. **短期目标**
-   - 🔄 完成所有文档更新
-   - 🔄 提高测试覆盖率至50%
-   - 🔄 完善监控告警系统
-
-3. **长期规划**
-   - 🔄 微服务架构演进
-   - 🔄 云原生改造
-   - 🔄 智能运维
-
-#### 对项目决策者的建议
-
-1. **资源投入**
-   - 增加测试资源，提高系统质量
-   - 增加运维资源，完善监控告警
-
-2. **项目定位**
-   - 明确项目定位：工程框架搭建阶段
-   - 根据定位调整项目范围
-   - 制定合理的时间和资源计划
-
-3. **风险管理**
-   - 建立风险监控机制
-   - 定期评估项目风险
-   - 及时调整项目计划
-
-### 8.3 成功关键因素
-
-1. **架构一致性**: 设计与实现必须保持一致
-2. **文档同步**: 文档必须与代码保持同步
-3. **质量保证**: 测试覆盖必须达到目标
-4. **团队协作**: 各角色必须紧密协作
-5. **持续改进**: 建立持续改进机制
-
----
-
-## 📎 附录
-
-### 附录A: 差异对比明细表
-
-| 序号 | 差异项 | 设计承诺 | 实际实现 | 差异程度 | 优先级 | 责任角色 | 状态 |
-|------|--------|----------|----------|----------|--------|----------|------|
-| 1 | 架构分层 | DDD 7层 | 三层架构 | 严重 | P0 | 架构师 | ✅ 已决策 |
-| 2 | 认证框架 | Spring Security + JWT | Sa-Token | 严重 | P0 | 架构师 | ✅ 已决策 |
-| 3 | 数据访问 | Spring Data JPA | MyBatis-Plus | 严重 | P0 | 架构师 | ✅ 已决策 |
-| 4 | 主键策略 | BIGINT AUTO_INCREMENT | 雪花算法 | 严重 | P1 | 研发工程师 | 🔄 进行中 |
-| 5 | 测试覆盖 | >80% | 7.5% | 严重 | P1 | 测试工程师 | 🔄 进行中 |
-| 6 | 监控告警 | 完整规则 | 基础规则 | 中等 | P1 | 运维工程师 | 🔄 进行中 |
-| 7 | 文档同步 | 最新设计 | 滞后 | 中等 | P1 | 项目经理 | 🔄 进行中 |
-
-### 附录B: 角色职责矩阵
-
-| 角色 | 架构设计 | 技术选型 | 代码实现 | 测试质量 | 运维保障 | 项目管理 |
-|------|----------|----------|----------|----------|----------|----------|
-| **架构师** | 主导 | 主导 | 指导 | 指导 | 指导 | 参与 |
-| **研发工程师** | 参与 | 参与 | 主导 | 参与 | 参与 | 参与 |
-| **测试工程师** | 参与 | 参与 | 参与 | 主导 | 参与 | 参与 |
-| **运维工程师** | 参与 | 参与 | 参与 | 参与 | 主导 | 参与 |
-
-### 附录C: 术语表
-
-| 术语 | 英文 | 说明 |
-|------|------|------|
-| DDD | Domain-Driven Design | 领域驱动设计 |
-| JWT | JSON Web Token | JSON Web令牌 |
-| API | Application Programming Interface | 应用程序编程接口 |
-| CI/CD | Continuous Integration/Continuous Deployment | 持续集成/持续部署 |
-| E2E | End-to-End | 端到端 |
-| P0/P1/P2 | Priority 0/1/2 | 优先级等级 |
-
----
-
-**报告结束**
-
-*本报告由AI Business Analyst (Mary) 生成,基于对设计文档和代码实现的深度分析。*
+*本文档由架构师生成，基于Spring Boot 4.0.1和Java 25技术栈。*
 *生成时间: 2026年1月7日*
-*更新时间: 2026年1月7日*
-*报告版本: v2.0.0*
+*文档版本: v3.0.0*
 *项目阶段: 工程框架搭建阶段*

@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 /**
  * 用户实体
  * 
+ * 主键策略：使用雪花算法（ASSIGN_ID）生成分布式唯一ID
+ * 
  * @author spring4demo
  * @version 1.0.0
  */
@@ -17,8 +19,8 @@ import java.time.LocalDateTime;
 @TableName("sys_user")
 public class User {
     
-    @TableId(value = "id", type = IdType.ASSIGN_UUID)
-    private String id;
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    private Long id;
     
     private String username;
     

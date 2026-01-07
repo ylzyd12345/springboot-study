@@ -22,7 +22,7 @@ USE `spring4demo`;
 
 -- 用户表（对应 User 实体类）
 CREATE TABLE IF NOT EXISTS `sys_user` (
-  `id` VARCHAR(64) NOT NULL COMMENT '用户ID（UUID）',
+  `id` BIGINT NOT NULL COMMENT '主键ID（雪花算法）',
   `username` VARCHAR(50) NOT NULL COMMENT '用户名',
   `password` VARCHAR(255) NOT NULL COMMENT '密码',
   `email` VARCHAR(100) DEFAULT NULL COMMENT '邮箱',
@@ -30,10 +30,10 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `real_name` VARCHAR(50) DEFAULT NULL COMMENT '真实姓名',
   `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像URL',
   `status` INT NOT NULL DEFAULT '1' COMMENT '状态（1-启用，0-禁用）',
-  `dept_id` VARCHAR(64) DEFAULT NULL COMMENT '部门ID',
-  `create_by` VARCHAR(64) DEFAULT NULL COMMENT '创建人',
+  `dept_id` BIGINT DEFAULT NULL COMMENT '部门ID',
+  `create_by` BIGINT DEFAULT NULL COMMENT '创建人',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_by` VARCHAR(64) DEFAULT NULL COMMENT '更新人',
+  `update_by` BIGINT DEFAULT NULL COMMENT '更新人',
   `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted` INT NOT NULL DEFAULT '0' COMMENT '逻辑删除标志（0-未删除，1-已删除）',
   `version` INT NOT NULL DEFAULT '0' COMMENT '乐观锁版本号',
@@ -46,8 +46,9 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统用户表';
 
 -- 创建默认管理员用户（密码: admin123，BCrypt加密）
+-- 注意：实际ID由雪花算法生成，此处使用固定值用于初始化
 INSERT INTO `sys_user` (`id`, `username`, `password`, `email`, `real_name`, `status`, `create_by`) VALUES
-('10000000000000000000000000000001', 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFDYZt/I5/BFnhkSLsVBDSC', 'admin@spring4demo.com', '系统管理员', 1, 'system')
+(1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFDYZt/I5/BFnhkSLsVBDSC', 'admin@spring4demo.com', '系统管理员', 1, 1)
 ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
 
 -- 使用zipkin数据库
