@@ -2,7 +2,11 @@
 
 ## 项目概述
 
-这是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级生态环境集成项目，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，包括 Web 开发、数据存储、消息中间件、安全认证、监控运维等多个领域。项目旨在为开发者提供一个全面、实用的 Spring Boot 生态系统参考实现。
+这是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级单体应用项目，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，包括 Web 开发、数据存储、消息中间件、安全认证、监控运维等多个领域。项目旨在为开发者提供一个全面、实用的 Spring Boot 生态系统参考实现。
+
+**架构定位**：单体Spring Boot应用（非微服务架构），适用于中小规模业务场景。
+
+**项目阶段**：工程框架搭建阶段，技术栈覆盖率约30%，核心组件实现率约45%。
 
 ## 技术栈
 
@@ -18,11 +22,11 @@
 ### 🌐 Web技术栈
 
 - [x] **spring-boot-starter-web** - Spring MVC Web应用（默认Tomcat）
-- [x] **spring-boot-starter-webflux** - 响应式Web编程
-- [x] **spring-boot-starter-websocket** - WebSocket支持
+- [x] **spring-boot-starter-webflux** - 响应式Web编程（依赖引入，待实现）
+- [x] **spring-boot-starter-websocket** - WebSocket支持（待实现）
 - [x] **spring-boot-starter-web-services** - Spring Web Services
 - [x] **spring-boot-starter-hateoas** - RESTful超媒体支持
-- [x] **spring-boot-starter-graphql** - GraphQL应用支持
+- [x] **spring-boot-starter-graphql** - GraphQL应用支持（待实现）
 
 ### 💾 数据存储技术栈
 
@@ -36,12 +40,12 @@
 - [x] **Dynamic DataSource** - 动态多数据源 4.3.0
 
 #### NoSQL数据库
-- [x] **MongoDB** - MongoDB文档数据库
+- [ ] **MongoDB** - MongoDB文档数据库（待实现）
 - [x] **Redis** - Redis键值存储 7.0
 - [x] **Redisson** - Redis 客户端 3.35.0
-- [x] **Elasticsearch** - Elasticsearch搜索引擎 8.11.4
-- [x] **Neo4j** - Neo4j图数据库 5.12
-- [x] **InfluxDB** - InfluxDB时间序列数据库 2.7
+- [ ] **Elasticsearch** - Elasticsearch搜索引擎 8.11.4（待实现）
+- [ ] **Neo4j** - Neo4j图数据库 5.12（待实现）
+- [ ] **InfluxDB** - InfluxDB时间序列数据库 2.7（待实现）
 
 #### 文件存储
 - [x] **RustFS** - 高性能分布式对象存储（兼容 S3 协议）
@@ -52,15 +56,15 @@
 
 #### 缓存
 - [x] **Caffeine** - 本地缓存 3.1.6
-- [x] **Guava** - Google工具库 32.1.3
+- [x] **Guava** - Google工具库 32.1.3（含限流功能）
 
 ### 📨 消息中间件技术栈
 
-- [x] **RabbitMQ** - RabbitMQ消息队列 5.17.0
-- [x] **Apache Kafka** - Kafka消息队列 3.6.1
-- [x] **Apache RocketMQ** - RocketMQ消息队列 5.1.4
+- [x] **RabbitMQ** - RabbitMQ消息队列 5.17.0（待使用Spring Stream接入）
+- [x] **Apache Kafka** - Kafka消息队列 3.6.1（待使用Spring Stream接入）
+- [ ] **Apache RocketMQ** - RocketMQ消息队列 5.1.4（不适用于单体应用）
 - [x] **spring-boot-starter-integration** - Spring Integration企业集成模式
-- [x] **spring-boot-starter-rsocket** - RSocket客户端和服务端
+- [ ] **spring-boot-starter-rsocket** - RSocket客户端和服务端（不适用于单体应用）
 
 ### 🔐 安全认证技术栈
 
@@ -72,7 +76,7 @@
 
 - [x] **Spring Task** - Spring 原生任务调度（简单定时任务）
 - [x] **Quartz** - 定时任务框架 2.3.2（复杂调度需求）
-- [x] **Spring Batch** - 批量任务处理 5.1.1（可选）
+- [ ] **Spring Batch** - 批量任务处理 5.1.1（可选，待实现）
 
 ### 📊 监控运维技术栈
 
@@ -89,7 +93,10 @@
 
 ### 🌐 负载均衡与网关
 
-- [x] **Nginx** - 负载均衡 1.24-alpine
+- [x] **Nginx** - 负载均衡 1.24-alpine（单体应用使用）
+- [ ] **Spring Cloud Gateway** - 微服务API网关（不适用于单体应用）
+- [ ] **Nacos** - 服务发现与配置中心（不适用于单体应用）
+- [ ] **Sentinel** - 限流熔断（使用Guava限流替代）
 
 ### 📝 API文档
 
@@ -135,7 +142,7 @@
 
 ### 🔄 分布式事务
 
-- [x] **Seata** - 分布式事务解决方案 2.5.0
+- [x] **Seata** - 分布式事务解决方案 2.5.0（部分实现）
 - [x] **Dubbo Seata Filter** - 安全漏洞修复 3.3.1
 
 ## 项目结构
@@ -148,7 +155,7 @@ spring4demo/
 ├── spring4demo-common/       # 公共模块 - 通用工具类、常量、基础配置
 ├── spring4demo-core/         # 核心业务模块 - 业务逻辑、实体类、数据访问
 ├── spring4demo-web/          # Web应用模块 - Controller层、Web配置
-├── spring4demo-api/          # API接口模块 - 对外API定义
+├── spring4demo-api/          # API接口模块 - 对外API定义、DTO
 ├── spring4demo-admin/        # 管理后台模块 - 后台管理功能
 ├── spring4demo-integration/  # 集成测试模块 - 集成测试
 ├── spring4demo-generator/    # 代码生成器模块 - 代码生成工具
@@ -755,6 +762,19 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 - 考虑性能、可维护性和社区支持
 - 定期更新依赖版本，修复安全漏洞
 
+### 架构定位决策
+
+**单体Spring Boot应用**：基于当前业务规模和团队规模，决定采用单体Spring Boot应用架构，而非微服务架构。
+
+**架构调整**：
+- 去掉微服务组件：Spring Cloud Gateway、Nacos服务发现、Nacos配置中心、Sentinel限流熔断、RSocket、RocketMQ
+- 接入层简化为Nginx负载均衡器
+- 限流方案从Sentinel调整为Guava限流
+- 消息队列使用Spring Stream接入RabbitMQ和Kafka
+- 保留MongoDB、Elasticsearch、Neo4j、InfluxDB等数据存储
+
+**演进路径**：单体应用 → 模块化重构 → 可选的微服务拆分（根据业务需求）
+
 ### 文件存储与预览架构
 
 - **RustFS**: 使用兼容 S3 协议的高性能分布式对象存储
@@ -807,6 +827,26 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
     - SSL/TLS 支持
     - 静态资源服务
 
+### 限流架构
+
+- **Guava RateLimiter**: 轻量级限流方案，适用于单体应用
+- **替代方案**: Redis + Lua脚本、Bucket4j
+- **集成方式**: 通过RateLimiterService实现接口限流
+- **优势**:
+    - 简单易用
+    - 性能优秀
+    - 适合单体应用场景
+
+### 消息队列架构
+
+- **Spring Stream**: 统一的消息中间件抽象层
+- **支持的消息队列**: RabbitMQ、Kafka
+- **集成方式**: 通过Spring Stream绑定器接入消息队列
+- **优势**:
+    - 统一的编程模型
+    - 易于切换消息队列实现
+    - 支持消息可靠性保证
+
 ## 文档维护
 
 本文档应随项目演进持续更新，包括：
@@ -821,3 +861,32 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 - README.md
 - IFLOW.md
 - /docs/**/*.md
+
+## 项目规划
+
+### 当前阶段
+
+**工程框架搭建阶段**：技术栈覆盖率约30%，核心组件实现率约45%。
+
+### 实施计划
+
+详见 `projectplans/.architecture_plan.md`，包括：
+- Guava限流实施计划
+- Spring Stream消息队列实施计划
+- MongoDB、Elasticsearch、Neo4j、InfluxDB实施计划
+- WebFlux、WebSocket、GraphQL实施计划
+
+### 技术栈差异
+
+详见 `REVIEW_DESIGN_CODE.md`，包括：
+- 技术栈差异对比表
+- 未实现的关键组件清单
+- 架构师建议
+- 实施路线图
+
+### 最佳实践
+
+详见 `docs/05-最佳实践/TECH_DEMO.md`，包括：
+- Guava限流代码示例和最佳实践
+- Spring Stream消息队列代码示例和最佳实践
+- MongoDB、Elasticsearch、Neo4j、InfluxDB代码示例和最佳实践

@@ -6,6 +6,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kev1n.spring4demo.common.enums.ErrorCode;
+import com.kev1n.spring4demo.core.annotation.RateLimit;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.service.UserService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
@@ -110,13 +111,14 @@ public class UserController {
 
     /**
      * 分页获取用户列表
-     * 
+     *
      * @param request 查询请求参数
      * @return 分页用户列表
      */
     @GetMapping
     @SaCheckLogin
-    @Operation(summary = "获取用户列表", 
+    @RateLimit(key = "user:list", permits = 100)
+    @Operation(summary = "获取用户列表",
                description = "分页获取用户列表，支持按条件筛选和排序")
     public ResponseEntity<ApiResponse<Page<User>>> getUsers(
             @Parameter(description = "查询参数") @ModelAttribute UserQueryRequest request) {
@@ -173,7 +175,8 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @SaCheckLogin
-    @Operation(summary = "获取用户详情", 
+    @RateLimit(key = "user:detail", permits = 200)
+    @Operation(summary = "获取用户详情",
                description = "根据用户ID获取详细信息")
     public ResponseEntity<ApiResponse<User>> getUserById(
             @Parameter(description = "用户ID") @PathVariable Long id) {

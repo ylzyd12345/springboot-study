@@ -38,3 +38,80 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
       max-poll-records: 500
+
+  # Spring Cloud Stream配置
+  cloud:
+    stream:
+      # 默认绑定器配置
+      default-binder: rabbit
+      # 默认消费者配置
+      default:
+        consumer:
+          max-attempts: 3
+          back-off-initial-interval: 1000
+          back-off-multiplier: 2.0
+          back-off-max-interval: 10000
+
+      # RabbitMQ绑定器配置
+      rabbit:
+        bindings:
+          # 用户创建消息（RabbitMQ）
+          userCreated-out-0:
+            producer:
+              exchange-name: user.exchange
+              routing-key-expression: "'user.created'"
+              exchange-type: direct
+              declare-exchange: true
+              queue-name-group-only: true
+          userCreated-in-0:
+            consumer:
+              exchange-name: user.exchange
+              binding-routing-key: user.created
+              queue-name: user.queue
+              declare-exchange: true
+              bind-queue: true
+              acknowledge-mode: manual
+              prefetch: 1
+              auto-bind-dlq: true
+              dead-letter-queue-name: user.queue.dlq
+          # 通知消息（RabbitMQ）
+          notification-out-0:
+            producer:
+              exchange-name: notification.exchange
+              routing-key-expression: "'notification.' + payload.type"
+              exchange-type: topic
+              declare-exchange: true
+              queue-name-group-only: true
+          notification-in-0:
+            consumer:
+              exchange-name: notification.exchange
+              binding-routing-key: notification.*
+              queue-name: notification.queue
+              declare-exchange: true
+              bind-queue: true
+              acknowledge-mode: manual
+              prefetch: 1
+              auto-bind-dlq: true
+              dead-letter-queue-name: notification.queue.dlq
+
+      # Kafka绑定器配置
+      kafka:
+        bindings:
+          # 用户创建消息（Kafka）
+          userCreatedKafka-out-0:
+            producer:
+              topic: user-created-topic
+              partition-count: 3
+              use-native-encoding: true
+          userCreatedKafka-in-0:
+            consumer:
+              topic: user-created-topic
+              group: user-group
+              enable-dlq: true
+              auto-commit-offset: true
+              auto-offset-reset: earliest
+              max-attempts: 3
+
+      # 函数绑定配置
+      function:
+        definition: userProcessor;userCreated;userCreatedKafka;notification

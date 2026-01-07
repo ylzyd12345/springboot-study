@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 |------|------|
 | **文档名称** | Spring4demo 项目架构设计参考文档 |
-| **版本号** | v3.1.0 |
+| **版本号** | v3.2.0 |
 | **生成日期** | 2026-01-07 |
 | **更新日期** | 2026-01-07 |
 | **文档类型** | 架构师视角技术架构参考 |
@@ -36,12 +36,18 @@
 
 | 技术特性 | 优先级 | 状态 |
 |---------|--------|------|
+| **Guava限流** | P0 | 🔄 待实现 |
+| **Spring Stream (RabbitMQ)** | P0 | 🔄 待实现 |
+| **Spring Stream (Kafka)** | P0 | 🔄 待实现 |
+| **MongoDB** | P1 | 🔄 待实现 |
+| **Elasticsearch** | P1 | 🔄 待实现 |
+| **Neo4j** | P2 | 🔄 待实现 |
+| **InfluxDB** | P2 | 🔄 待实现 |
 | **WebFlux** | P1 | 🔄 待实现 |
 | **WebSocket** | P1 | 🔄 待实现 |
 | **GraphQL** | P2 | 🔄 待实现 |
 | **数据库分库分表** | P1 | 🔄 待实现 |
 | **Caffeine+Redis双缓存** | P1 | 🔄 待实现 |
-| **MQ消息队列** | P1 | 🔄 待实现 |
 | **异步处理** | P1 | 🔄 待实现 |
 | **分布式事务** | P1 | 🔄 待实现 |
 | **定时任务** | P1 | 🔄 待实现 |
@@ -49,6 +55,1157 @@
 ---
 
 ## 📚 技术架构最佳实践
+
+### 0. Guava限流
+
+**技术选型**: Guava RateLimiter
+
+**适用场景**:
+- 单体应用限流
+- API接口限流
+- 防止系统过载
+
+**最佳实践**:
+
+```java
+/**
+ * 限流配置
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+public class RateLimiterConfig {
+
+    /**
+     * 创建限流器缓存
+     */
+    @Bean
+    public LoadingCache<String, RateLimiter> rateLimiterCache() {
+        return Caffeine.newBuilder()
+                .maximumSize(1000)
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .build(key -> RateLimiter.create(100)); // 默认每秒100个请求
+    }
+
+    /**
+     * 创建限流切面
+     */
+    @Bean
+    public RateLimiterAspect rateLimiterAspect() {
+        return new RateLimiterAspect();
+    }
+}
+
+/**
+ * 限流注解
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RateLimit {
+
+    /**
+     * 限流key
+     */
+    String key() default "";
+
+    /**
+     * 每秒允许的请求数
+     */
+    double permits() default 100;
+
+    /**
+     * 超时时间（秒）
+     */
+    long timeout() default 0;
+}
+
+/**
+ * 限流切面
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Aspect
+@Component
+@Slf4j
+public class RateLimiterAspect {
+
+    @Autowired
+    private LoadingCache<String, RateLimiter> rateLimiterCache;
+
+    @Around("@annotation(rateLimit)")
+    public Object around(ProceedingJoinPoint joinPoint, RateLimit rateLimit) throws Throwable {
+        String key = rateLimit.key();
+        if (StringUtils.isEmpty(key)) {
+            key = joinPoint.getSignature().toShortString();
+        }
+
+        RateLimiter rateLimiter = rateLimiterCache.get(key);
+
+        if (rateLimit.timeout() > 0) {
+            // 尝试获取令牌，等待超时时间
+            if (!rateLimiter.tryAcquire(rateLimit.timeout(), TimeUnit.SECONDS)) {
+                log.warn("限流触发: key={}, permits={}, timeout={}", key, rateLimit.permits(), rateLimit.timeout());
+                throw new RateLimitException("请求过于频繁，请稍后重试");
+            }
+        } else {
+            // 不等待，直接返回
+            if (!rateLimiter.tryAcquire()) {
+                log.warn("限流触发: key={}, permits={}", key, rateLimit.permits());
+                throw new RateLimitException("请求过于频繁，请稍后重试");
+            }
+        }
+
+        return joinPoint.proceed();
+    }
+}
+
+/**
+ * 限流异常
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+public class RateLimitException extends RuntimeException {
+
+    public RateLimitException(String message) {
+        super(message);
+    }
+}
+
+/**
+ * 用户控制器（使用限流）
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+@Slf4j
+public class UserController {
+
+    private final UserService userService;
+
+    /**
+     * 获取用户列表（限流：每秒100个请求）
+     */
+    @GetMapping
+    @RateLimit(key = "user:list", permits = 100)
+    public ResponseEntity<List<UserVO>> listUsers() {
+        log.info("获取用户列表");
+        List<UserVO> users = userService.listUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    /**
+     * 获取用户详情（限流：每秒200个请求）
+     */
+    @GetMapping("/{id}")
+    @RateLimit(key = "user:detail", permits = 200)
+    public ResponseEntity<UserVO> getUser(@PathVariable Long id) {
+        log.info("获取用户详情: {}", id);
+        UserVO user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 创建用户（限流：每秒50个请求）
+     */
+    @PostMapping
+    @RateLimit(key = "user:create", permits = 50)
+    public ResponseEntity<UserVO> createUser(@Valid @RequestBody UserCreateDTO dto) {
+        log.info("创建用户: {}", dto.getUsername());
+        UserVO user = userService.createUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **限流粒度**:
+   - 接口级别限流：根据接口特点设置不同的限流阈值
+   - 用户级别限流：根据用户ID设置限流器
+   - IP级别限流：根据IP地址设置限流器
+
+2. **限流策略**:
+   - QPS限流：每秒请求数限流
+   - 并发限流：同时处理的请求数限流
+   - 令牌桶算法：平滑限流
+
+3. **限流处理**:
+   - 直接拒绝：返回限流异常
+   - 排队等待：等待获取令牌
+   - 降级处理：返回缓存数据
+
+4. **监控告警**:
+   - 监控限流触发次数
+   - 监控限流器性能
+   - 设置限流告警阈值
+
+### 1. Spring Stream消息队列
+
+**技术选型**: Spring Cloud Stream + RabbitMQ/Kafka
+
+**适用场景**:
+- 异步消息处理
+- 系统解耦
+- 削峰填谷
+
+**最佳实践**:
+
+```java
+/**
+ * Spring Stream配置
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+public class StreamConfig {
+
+    /**
+     * 消息处理器
+     */
+    @Bean
+    public Function<UserMessage, UserMessage> userProcessor() {
+        return message -> {
+            log.info("处理用户消息: {}", message);
+            // 处理逻辑
+            return message;
+        };
+    }
+}
+
+/**
+ * 消息生产者
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@Slf4j
+public class MessageProducer {
+
+    @Autowired
+    private StreamBridge streamBridge;
+
+    /**
+     * 发送用户创建消息到RabbitMQ
+     */
+    public void sendUserCreatedMessageToRabbitMQ(Long userId) {
+        UserCreatedMessage message = new UserCreatedMessage(userId);
+        streamBridge.send("userCreated-out-0", message);
+        log.info("发送用户创建消息到RabbitMQ: {}", message);
+    }
+
+    /**
+     * 发送用户创建消息到Kafka
+     */
+    public void sendUserCreatedMessageToKafka(Long userId) {
+        UserCreatedMessage message = new UserCreatedMessage(userId);
+        streamBridge.send("userCreatedKafka-out-0", message);
+        log.info("发送用户创建消息到Kafka: {}", message);
+    }
+
+    /**
+     * 发送通知消息
+     */
+    public void sendNotificationMessage(NotificationMessage message) {
+        streamBridge.send("notification-out-0", message);
+        log.info("发送通知消息: {}", message);
+    }
+}
+
+/**
+ * 消息消费者（RabbitMQ）
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@Slf4j
+public class RabbitMQMessageConsumer {
+
+    /**
+     * 消费用户创建消息
+     */
+    @Bean
+    public Consumer<UserCreatedMessage> userCreated() {
+        return message -> {
+            log.info("消费RabbitMQ用户创建消息: {}", message);
+            handleUserCreated(message);
+        };
+    }
+
+    /**
+     * 消费通知消息
+     */
+    @Bean
+    public Consumer<NotificationMessage> notification() {
+        return message -> {
+            log.info("消费RabbitMQ通知消息: {}", message);
+            handleNotification(message);
+        };
+    }
+
+    private void handleUserCreated(UserCreatedMessage message) {
+        // 处理用户创建事件逻辑
+        log.info("处理用户创建事件: userId={}", message.getUserId());
+    }
+
+    private void handleNotification(NotificationMessage message) {
+        // 处理通知消息逻辑
+        log.info("处理通知消息: content={}", message.getContent());
+    }
+}
+
+/**
+ * 消息消费者（Kafka）
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Component
+@Slf4j
+public class KafkaMessageConsumer {
+
+    /**
+     * 消费用户创建消息
+     */
+    @Bean
+    public Consumer<UserCreatedMessage> userCreatedKafka() {
+        return message -> {
+            log.info("消费Kafka用户创建消息: {}", message);
+            handleUserCreated(message);
+        };
+    }
+
+    private void handleUserCreated(UserCreatedMessage message) {
+        // 处理用户创建事件逻辑
+        log.info("处理用户创建事件: userId={}", message.getUserId());
+    }
+}
+
+/**
+ * 消息对象
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserCreatedMessage implements Serializable {
+
+    private Long userId;
+    private String username;
+    private LocalDateTime createdAt;
+}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class NotificationMessage implements Serializable {
+
+    private Long userId;
+    private String title;
+    private String content;
+    private LocalDateTime createdAt;
+}
+```
+
+**application.yml配置**:
+
+```yaml
+spring:
+  cloud:
+    stream:
+      # RabbitMQ配置
+      rabbit:
+        bindings:
+          userCreated-out-0:
+            producer:
+              exchange-name: user.exchange
+              routing-key-expression: "'user.created'"
+          userCreated-in-0:
+            consumer:
+              exchange-name: user.exchange
+              binding-routing-key: user.created
+              queue-name: user.queue
+      # Kafka配置
+      kafka:
+        bindings:
+          userCreatedKafka-out-0:
+            producer:
+              topic: user-created-topic
+          userCreatedKafka-in-0:
+            consumer:
+              topic: user-created-topic
+              group: user-group
+      # 默认绑定器配置
+      default:
+        producer:
+          use-native-encoding: true
+        consumer:
+          use-native-encoding: true
+```
+
+**最佳实践要点**:
+
+1. **消息可靠性**:
+   - 消息持久化
+   - 消息确认机制
+   - 死信队列
+
+2. **消息幂等性**:
+   - 使用消息ID去重
+   - 实现幂等性检查
+   - 使用乐观锁
+
+3. **消息顺序性**:
+   - 单分区保证顺序
+   - 消息编号
+   - 顺序处理
+
+4. **性能优化**:
+   - 批量发送消息
+   - 异步发送
+   - 消息压缩
+
+### 2. MongoDB文档数据库
+
+**技术选型**: Spring Data MongoDB
+
+**适用场景**:
+- 文档数据存储
+- 灵活的数据模型
+- 快速原型开发
+
+**最佳实践**:
+
+```java
+/**
+ * MongoDB配置
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableMongoRepositories(basePackages = "com.kev1n.spring4demo.core.repository.mongo")
+public class MongoConfig {
+
+    @Bean
+    public MongoClient mongoClient() {
+        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/spring4demo");
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .build();
+        return MongoClients.create(settings);
+    }
+
+    @Bean
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(mongoClient(), "spring4demo");
+    }
+}
+
+/**
+ * 用户日志文档
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Data
+@Document(collection = "user_logs")
+@CompoundIndex(name = "user_id_created_at_idx", def = "{'userId': 1, 'createdAt': -1}")
+public class UserLog {
+
+    @Id
+    private String id;
+
+    @Indexed
+    private Long userId;
+
+    private String username;
+
+    private String action;
+
+    private String details;
+
+    private String ipAddress;
+
+    private String userAgent;
+
+    @Indexed
+    private LocalDateTime createdAt;
+
+    @CreatedDate
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
+}
+
+/**
+ * 用户日志Repository
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+public interface UserLogRepository extends MongoRepository<UserLog, String> {
+
+    /**
+     * 根据用户ID查询日志
+     */
+    List<UserLog> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    /**
+     * 根据用户ID和动作查询日志
+     */
+    List<UserLog> findByUserIdAndActionOrderByCreatedAtDesc(Long userId, String action);
+
+    /**
+     * 根据时间范围查询日志
+     */
+    List<UserLog> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+}
+
+/**
+ * 用户日志服务
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserLogService {
+
+    private final UserLogRepository userLogRepository;
+
+    /**
+     * 记录用户日志
+     */
+    public void logUserAction(Long userId, String username, String action, String details,
+                              String ipAddress, String userAgent) {
+        UserLog log = new UserLog();
+        log.setUserId(userId);
+        log.setUsername(username);
+        log.setAction(action);
+        log.setDetails(details);
+        log.setIpAddress(ipAddress);
+        log.setUserAgent(userAgent);
+        log.setCreatedAt(LocalDateTime.now());
+
+        userLogRepository.save(log);
+        log.info("记录用户日志: userId={}, action={}", userId, action);
+    }
+
+    /**
+     * 查询用户日志
+     */
+    public List<UserLog> getUserLogs(Long userId) {
+        return userLogRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    /**
+     * 查询用户日志（分页）
+     */
+    public Page<UserLog> getUserLogs(Long userId, Pageable pageable) {
+        return userLogRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **文档设计**:
+   - 合理的文档结构
+   - 适当的索引设计
+   - 嵌入式文档 vs 引用
+
+2. **查询优化**:
+   - 使用索引
+   - 避免全表扫描
+   - 使用投影减少数据传输
+
+3. **性能优化**:
+   - 批量操作
+   - 使用连接池
+   - 读写分离
+
+### 3. Elasticsearch搜索引擎
+
+**技术选型**: Spring Data Elasticsearch
+
+**适用场景**:
+- 全文搜索
+- 数据检索
+- 日志分析
+
+**最佳实践**:
+
+```java
+/**
+ * Elasticsearch配置
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableElasticsearchRepositories(basePackages = "com.kev1n.spring4demo.core.repository.elasticsearch")
+public class ElasticsearchConfig {
+
+    @Bean
+    public RestHighLevelClient elasticsearchClient() {
+        ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+                .connectedTo("localhost:9200")
+                .build();
+        return RestClients.create(clientConfiguration).rest();
+    }
+
+    @Bean
+    public ElasticsearchOperations elasticsearchTemplate() {
+        return new ElasticsearchRestTemplate(elasticsearchClient());
+    }
+}
+
+/**
+ * 文档文档
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Data
+@Document(indexName = "documents")
+@Setting(settingPath = "elasticsearch/settings.json")
+public class DocumentDocument {
+
+    @Id
+    private String id;
+
+    @Field(type = FieldType.Long)
+    private Long documentId;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String title;
+
+    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
+    private String content;
+
+    @Field(type = FieldType.Keyword)
+    private String status;
+
+    @Field(type = FieldType.Keyword)
+    private String category;
+
+    @Field(type = FieldType.Keyword)
+    private List<String> tags;
+
+    @Field(type = FieldType.Object)
+    private Author author;
+
+    @Field(type = FieldType.Date)
+    private LocalDateTime createdAt;
+
+    @Field(type = FieldType.Date)
+    private LocalDateTime updatedAt;
+
+    @Data
+    public static class Author {
+        @Field(type = FieldType.Long)
+        private Long id;
+
+        @Field(type = FieldType.Keyword)
+        private String username;
+
+        @Field(type = FieldType.Text)
+        private String displayName;
+    }
+}
+
+/**
+ * 文档Repository
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+public interface DocumentRepository extends ElasticsearchRepository<DocumentDocument, String> {
+
+    /**
+     * 全文搜索
+     */
+    Page<DocumentDocument> findByTitleOrContent(String title, String content, Pageable pageable);
+
+    /**
+     * 根据状态查询
+     */
+    Page<DocumentDocument> findByStatus(String status, Pageable pageable);
+
+    /**
+     * 根据分类查询
+     */
+    Page<DocumentDocument> findByCategory(String category, Pageable pageable);
+}
+
+/**
+ * 文档搜索服务
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class DocumentSearchService {
+
+    private final DocumentRepository documentRepository;
+    private final ElasticsearchOperations elasticsearchOperations;
+
+    /**
+     * 索引文档
+     */
+    public void indexDocument(Document document) {
+        DocumentDocument doc = convertToDocumentDocument(document);
+        documentRepository.save(doc);
+        log.info("索引文档: documentId={}", document.getId());
+    }
+
+    /**
+     * 批量索引文档
+     */
+    public void indexDocuments(List<Document> documents) {
+        List<DocumentDocument> docs = documents.stream()
+                .map(this::convertToDocumentDocument)
+                .collect(Collectors.toList());
+        documentRepository.saveAll(docs);
+        log.info("批量索引文档: count={}", documents.size());
+    }
+
+    /**
+     * 搜索文档
+     */
+    public Page<DocumentDocument> searchDocuments(String keyword, Pageable pageable) {
+        return documentRepository.findByTitleOrContent(keyword, keyword, pageable);
+    }
+
+    /**
+     * 高级搜索
+     */
+    public Page<DocumentDocument> advancedSearch(DocumentSearchRequest request) {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        // 关键词搜索
+        if (StringUtils.hasText(request.getKeyword())) {
+            boolQuery.must(QueryBuilders.multiMatchQuery(request.getKeyword())
+                    .field("title", 2.0f)
+                    .field("content", 1.0f)
+                    .type(MultiMatchQueryBuilder.Type.BEST_FIELDS)
+                    .fuzziness("AUTO"));
+        }
+
+        // 状态过滤
+        if (StringUtils.hasText(request.getStatus())) {
+            boolQuery.filter(QueryBuilders.termQuery("status", request.getStatus()));
+        }
+
+        // 分类过滤
+        if (StringUtils.hasText(request.getCategory())) {
+            boolQuery.filter(QueryBuilders.termQuery("category", request.getCategory()));
+        }
+
+        // 标签过滤
+        if (request.getTags() != null && !request.getTags().isEmpty()) {
+            boolQuery.filter(QueryBuilders.termsQuery("tags", request.getTags()));
+        }
+
+        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(boolQuery)
+                .withPageable(request.getPageable())
+                .build();
+
+        return elasticsearchOperations.search(searchQuery, DocumentDocument);
+    }
+
+    private DocumentDocument convertToDocumentDocument(Document document) {
+        DocumentDocument doc = new DocumentDocument();
+        doc.setDocumentId(document.getId());
+        doc.setTitle(document.getTitle());
+        doc.setContent(document.getContent());
+        doc.setStatus(document.getStatus().name());
+        doc.setCategory(document.getCategory().getName());
+        doc.setTags(document.getTags().stream().map(Tag::getName).collect(Collectors.toList()));
+        doc.setCreatedAt(document.getCreatedAt());
+        doc.setUpdatedAt(document.getUpdatedAt());
+        return doc;
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **索引设计**:
+   - 合理的字段类型
+   - 适当的分词器
+   - 有效的索引映射
+
+2. **查询优化**:
+   - 使用复合查询
+   - 合理使用过滤
+   - 使用聚合
+
+3. **性能优化**:
+   - 批量索引
+   - 使用索引别名
+   - 定期优化索引
+
+### 4. Neo4j图数据库
+
+**技术选型**: Spring Data Neo4j
+
+**适用场景**:
+- 图数据存储
+- 关系数据
+- 社交网络
+
+**最佳实践**:
+
+```java
+/**
+ * Neo4j配置
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+@EnableNeo4jRepositories(basePackages = "com.kev1n.spring4demo.core.repository.neo4j")
+public class Neo4jConfig {
+
+    @Bean
+    public org.neo4j.driver.Driver driver() {
+        return GraphDatabase.driver("bolt://localhost:7687",
+                AuthTokens.basic("neo4j", "password"));
+    }
+}
+
+/**
+ * 用户节点
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Data
+@Node("User")
+public class UserNode {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Property("userId")
+    private Long userId;
+
+    @Property("username")
+    private String username;
+
+    @Property("email")
+    private String email;
+
+    @Relationship(type = "FRIEND", direction = Relationship.Direction.OUTGOING)
+    private List<UserNode> friends;
+
+    @Relationship(type = "FOLLOW", direction = Relationship.Direction.OUTGOING)
+    private List<UserNode> followers;
+}
+
+/**
+ * 用户关系Repository
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+public interface UserRepository extends Neo4jRepository<UserNode, Long> {
+
+    /**
+     * 根据用户ID查询
+     */
+    UserNode findByUserId(Long userId);
+
+    /**
+     * 查询朋友
+     */
+    @Query("MATCH (u:User {userId: $userId})-[:FRIEND]->(f:User) RETURN f")
+    List<UserNode> findFriends(@Param("userId") Long userId);
+
+    /**
+     * 查询关注者
+     */
+    @Query("MATCH (u:User {userId: $userId})-[:FOLLOW]->(f:User) RETURN f")
+    List<UserNode> findFollowers(@Param("userId") Long userId);
+}
+
+/**
+ * 用户图服务
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserGraphService {
+
+    private final UserRepository userRepository;
+
+    /**
+     * 创建用户节点
+     */
+    public void createUserNode(User user) {
+        UserNode node = new UserNode();
+        node.setUserId(user.getId());
+        node.setUsername(user.getUsername());
+        node.setEmail(user.getEmail());
+        userRepository.save(node);
+        log.info("创建用户节点: userId={}", user.getId());
+    }
+
+    /**
+     * 添加朋友关系
+     */
+    public void addFriend(Long userId1, Long userId2) {
+        UserNode user1 = userRepository.findByUserId(userId1);
+        UserNode user2 = userRepository.findByUserId(userId2);
+
+        if (user1 != null && user2 != null) {
+            if (user1.getFriends() == null) {
+                user1.setFriends(new ArrayList<>());
+            }
+            user1.getFriends().add(user2);
+            userRepository.save(user1);
+            log.info("添加朋友关系: userId1={}, userId2={}", userId1, userId2);
+        }
+    }
+
+    /**
+     * 查询朋友
+     */
+    public List<UserNode> findFriends(Long userId) {
+        return userRepository.findFriends(userId);
+    }
+
+    /**
+     * 查询朋友的朋友
+     */
+    @Query("MATCH (u:User {userId: $userId})-[:FRIEND]->(f:User)-[:FRIEND]->(ff:User) RETURN DISTINCT ff")
+    public List<UserNode> findFriendsOfFriends(@Param("userId") Long userId) {
+        return userRepository.findFriendsOfFriends(userId);
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **图模型设计**:
+   - 合理的节点和关系设计
+   - 适当的属性设计
+   - 避免过度连接
+
+2. **查询优化**:
+   - 使用Cypher查询
+   - 使用索引
+   - 避免深度遍历
+
+3. **性能优化**:
+   - 批量操作
+   - 使用缓存
+   - 合理使用事务
+
+### 5. InfluxDB时序数据库
+
+**技术选型**: InfluxDB 2.x + InfluxDB Java Client
+
+**适用场景**:
+- 时序数据存储
+- 监控数据
+- IoT数据
+
+**最佳实践**:
+
+```java
+/**
+ * InfluxDB配置
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Configuration
+public class InfluxDBConfig {
+
+    @Value("${influxdb.url}")
+    private String url;
+
+    @Value("${influxdb.token}")
+    private String token;
+
+    @Value("${influxdb.org}")
+    private String org;
+
+    @Value("${influxdb.bucket}")
+    private String bucket;
+
+    @Bean
+    public InfluxDBClient influxDBClient() {
+        return InfluxDBClientFactory.create(url, token.toCharArray(), org, bucket);
+    }
+
+    @Bean
+    public WriteApi writeApi(InfluxDBClient influxDBClient) {
+        WriteOptions writeOptions = WriteOptions.builder()
+                .batchSize(1000)
+                .flushInterval(1000)
+                .build();
+        return influxDBClient.makeWriteApi(writeOptions);
+    }
+
+    @Bean
+    public QueryApi queryApi(InfluxDBClient influxDBClient) {
+        return influxDBClient.getQueryApi();
+    }
+}
+
+/**
+ * 系统指标数据
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Data
+@Measurement(name = "system_metrics")
+public class SystemMetrics {
+
+    @Column(name = "host", tag = true)
+    private String host;
+
+    @Column(name = "region", tag = true)
+    private String region;
+
+    @Column(name = "cpu_usage")
+    private Double cpuUsage;
+
+    @Column(name = "memory_usage")
+    private Double memoryUsage;
+
+    @Column(name = "disk_usage")
+    private Double diskUsage;
+
+    @Column(name = "network_in")
+    private Long networkIn;
+
+    @Column(name = "network_out")
+    private Long networkOut;
+
+    @Column(timestamp = true)
+    private Instant timestamp;
+}
+
+/**
+ * 系统指标服务
+ *
+ * @author spring4demo
+ * @version 1.0.0
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class SystemMetricsService {
+
+    private final WriteApi writeApi;
+    private final QueryApi queryApi;
+
+    /**
+     * 写入系统指标
+     */
+    public void writeMetrics(SystemMetrics metrics) {
+        writeApi.writeMeasurement(WritePrecision.NS, metrics);
+        log.info("写入系统指标: host={}, cpu={}", metrics.getHost(), metrics.getCpuUsage());
+    }
+
+    /**
+     * 查询系统指标
+     */
+    public List<SystemMetrics> queryMetrics(String host, Instant start, Instant end) {
+        String query = String.format(
+                "from(bucket: \"%s\") " +
+                "|> range(start: %d, stop: %d) " +
+                "|> filter(fn: (r) => r._measurement == \"system_metrics\") " +
+                "|> filter(fn: (r) => r.host == \"%s\")",
+                "spring4demo",
+                start.toEpochMilli(),
+                end.toEpochMilli(),
+                host
+        );
+
+        List<FluxTable> tables = queryApi.query(query);
+        return convertToMetrics(tables);
+    }
+
+    /**
+     * 查询平均CPU使用率
+     */
+    public Double getAverageCpuUsage(String host, Instant start, Instant end) {
+        String query = String.format(
+                "from(bucket: \"%s\") " +
+                "|> range(start: %d, stop: %d) " +
+                "|> filter(fn: (r) => r._measurement == \"system_metrics\") " +
+                "|> filter(fn: (r) => r.host == \"%s\") " +
+                "|> filter(fn: (r) => r._field == \"cpu_usage\") " +
+                "|> mean()",
+                "spring4demo",
+                start.toEpochMilli(),
+                end.toEpochMilli(),
+                host
+        );
+
+        List<FluxTable> tables = queryApi.query(query);
+        if (!tables.isEmpty() && !tables.get(0).getRecords().isEmpty()) {
+            return ((Double) tables.get(0).getRecords().get(0).getValue());
+        }
+        return 0.0;
+    }
+
+    private List<SystemMetrics> convertToMetrics(List<FluxTable> tables) {
+        List<SystemMetrics> metrics = new ArrayList<>();
+        // 转换逻辑
+        return metrics;
+    }
+}
+```
+
+**最佳实践要点**:
+
+1. **数据模型设计**:
+   - 合理的measurement设计
+   - 适当的tag和field设计
+   - 合理的数据保留策略
+
+2. **查询优化**:
+   - 使用Flux查询语言
+   - 合理使用时间范围
+   - 使用聚合函数
+
+3. **性能优化**:
+   - 批量写入
+   - 使用压缩
+   - 合理的保留策略
+
+---
 
 ### 1. Web层技术实现
 

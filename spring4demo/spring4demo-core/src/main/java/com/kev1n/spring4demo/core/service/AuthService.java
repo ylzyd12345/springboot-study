@@ -63,7 +63,7 @@ public class AuthService {
             }
 
             // 更新最后登录时间
-            updateLastLoginTime(user.getId());
+            updateLastLoginTime(user.getId().toString());
 
             // 使用Sa-Token登录
             StpUtil.login(user.getId());
@@ -146,7 +146,8 @@ public class AuthService {
                 .build();
         }
 
-        String userId = StpUtil.getLoginId().toString();
+        Object loginId = StpUtil.getLoginId();
+        String userId = loginId instanceof Long ? loginId.toString() : loginId.toString();
         Optional<User> userOpt = userService.getOptById(userId);
         if (userOpt.isEmpty()) {
             return AuthResult.builder()
@@ -177,7 +178,8 @@ public class AuthService {
             return null;
         }
 
-        String userId = StpUtil.getLoginId().toString();
+        Object loginId = StpUtil.getLoginId();
+        String userId = loginId instanceof Long ? loginId.toString() : loginId.toString();
         Optional<User> userOpt = userService.getOptById(userId);
         return userOpt.map(this::buildUserDTO).orElse(null);
     }
@@ -194,7 +196,8 @@ public class AuthService {
                 .build();
         }
 
-        String userId = StpUtil.getLoginId().toString();
+        Object loginId = StpUtil.getLoginId();
+        String userId = loginId instanceof Long ? loginId.toString() : loginId.toString();
         Optional<User> userOpt = userService.getOptById(userId);
         if (userOpt.isEmpty()) {
             return AuthResult.builder()
@@ -248,12 +251,12 @@ public class AuthService {
      */
     private UserDTO buildUserDTO(User user) {
         return UserDTO.builder()
-            .id(user.getId())
+            .id(user.getId() != null ? user.getId().toString() : null)
             .username(user.getUsername())
             .email(user.getEmail())
             .realName(user.getRealName())
             .avatar(user.getAvatar())
-            .deptId(user.getDeptId())
+            .deptId(user.getDeptId() != null ? user.getDeptId().toString() : null)
             .status(user.getStatus())
             .build();
     }

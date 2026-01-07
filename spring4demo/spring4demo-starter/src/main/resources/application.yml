@@ -6,6 +6,14 @@ spring:
     active: dev
     include: datasource,redis,mq,seata,monitoring
 
+  # MongoDB配置
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/spring4demo}
+      database: ${MONGODB_DATABASE:spring4demo}
+      auto-index-creation: true
+      auto-time-logs: true
+
   # Jackson配置
   jackson:
     time-zone: GMT+8
@@ -195,3 +203,23 @@ quartz:
     thread-priority: 5
     # 是否继承加载上下文类加载器
     inherit-context-class-loader-of-initializing-thread: true
+
+# Elasticsearch 配置
+elasticsearch:
+  # Elasticsearch 主机地址
+  host: ${ELASTICSEARCH_HOST:localhost}
+  # Elasticsearch 端口
+  port: ${ELASTICSEARCH_PORT:9200}
+  # 用户名（可选）
+  username: ${ELASTICSEARCH_USERNAME:}
+  # 密码（可选）
+  password: ${ELASTICSEARCH_PASSWORD:}
+  # 协议（http 或 https）
+  protocol: ${ELASTICSEARCH_PROTOCOL:http}
+  # 是否启用 SSL
+  ssl:
+    enabled: ${ELASTICSEARCH_SSL_ENABLED:false}
+  # 连接超时时间（毫秒）
+  connection-timeout: ${ELASTICSEARCH_CONNECTION_TIMEOUT:5000}
+  # Socket 超时时间（毫秒）
+  socket-timeout: ${ELASTICSEARCH_SOCKET_TIMEOUT:30000}
