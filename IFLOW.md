@@ -11,7 +11,7 @@
 | 技术 | 版本 | 说明 |
 |------|------|------|
 | Spring Boot | 4.0.1 | 应用框架核心 |
-| Spring Framework | 4.x | 依赖注入、AOP等核心功能 |
+| Spring Framework | 6.x | 依赖注入、AOP等核心功能 |
 | Java | 25 | 编程语言 |
 | Maven | 3.9.12 | 构建工具 |
 
@@ -30,13 +30,15 @@
 - [x] **MySQL** - MySQL Connector 9.5.0
 - [x] **H2** - H2 Database 2.4.240（测试环境）
 - [x] **MyBatis-Plus** - MyBatis 增强工具 3.5.9
-- [x] **PageHelper** - 分页插件 2.1.0
+- [x] **PageHelper** - 分页插件 2.1.1
 - [x] **Druid** - 高性能数据库连接池 1.2.20
 - [x] **HikariCP** - Spring Boot 默认连接池
+- [x] **Dynamic DataSource** - 动态多数据源 4.3.0
 
 #### NoSQL数据库
 - [x] **MongoDB** - MongoDB文档数据库
 - [x] **Redis** - Redis键值存储 7.0
+- [x] **Redisson** - Redis 客户端 3.35.0
 - [x] **Elasticsearch** - Elasticsearch搜索引擎 8.11.4
 - [x] **Neo4j** - Neo4j图数据库 5.12
 - [x] **InfluxDB** - InfluxDB时间序列数据库 2.7
@@ -54,7 +56,7 @@
 
 ### 📨 消息中间件技术栈
 
-- [x] **RabbitMQ** - RabbitMQ消息队列 3.12
+- [x] **RabbitMQ** - RabbitMQ消息队列 5.17.0
 - [x] **Apache Kafka** - Kafka消息队列 3.6.1
 - [x] **Apache RocketMQ** - RocketMQ消息队列 5.1.4
 - [x] **spring-boot-starter-integration** - Spring Integration企业集成模式
@@ -62,15 +64,15 @@
 
 ### 🔐 安全认证技术栈
 
-- [x] **Sa-Token** - 轻量级 Java 权限认证框架 1.39.0
+- [x] **Sa-Token** - 轻量级 Java 权限认证框架 1.44.0
 - [x] **Sa-Token-OAuth2** - OAuth2/OpenID Connect 支持
 - [x] **Sa-Token-Redis** - Redis 持久化支持
 
 ### 📅 任务调度技术栈
 
 - [x] **Spring Task** - Spring 原生任务调度（简单定时任务）
-- [x] **Quartz** - 定时任务框架（复杂调度需求）
-- [x] **Spring Batch** - 批量任务处理（可选）
+- [x] **Quartz** - 定时任务框架 2.3.2（复杂调度需求）
+- [x] **Spring Batch** - 批量任务处理 5.1.1（可选）
 
 ### 📊 监控运维技术栈
 
@@ -79,9 +81,15 @@
 - [x] **Prometheus** - 指标收集 2.47.0
 - [x] **Grafana** - 监控面板 10.1.0
 - [x] **Zipkin** - 链路追踪 2.24
+- [x] **Loki** - 日志聚合系统 2.9.2
+- [x] **Promtail** - 日志采集代理 2.9.2
 - [x] **Node Exporter** - 系统监控
 - [x] **MySQL Exporter** - MySQL监控
 - [x] **Redis Exporter** - Redis监控
+
+### 🌐 负载均衡与网关
+
+- [x] **Nginx** - 负载均衡 1.24-alpine
 
 ### 📝 API文档
 
@@ -92,13 +100,13 @@
 
 - [x] **Spring Boot DevTools** - 热重载开发工具
 - [x] **Spring Boot Configuration Processor** - 配置元数据生成
-- [x] **Lombok** - 减少样板代码 1.18.34
-- [x] **MapStruct** - Bean映射框架 1.6.0
+- [x] **Lombok** - 减少样板代码 1.18.42
+- [x] **MapStruct** - Bean映射框架 1.6.3
 - [x] **Hutool** - Java工具类库 5.8.40
 - [x] **Fastjson2** - JSON处理 2.0.57
 - [x] **Testcontainers** - 集成测试容器支持 1.20.0
 - [x] **WireMock** - HTTP服务模拟 3.9.0
-- [x] **JaCoCo** - 代码覆盖率 0.8.11
+- [x] **JaCoCo** - 代码覆盖率 0.8.12
 
 ### 🎨 前端技术栈
 
@@ -110,13 +118,25 @@
 - [x] **Vue Router** - 路由管理 4.2.5
 - [x] **Axios** - HTTP客户端 1.6.2
 - [x] **ECharts** - 图表库 5.4.3
+- [x] **Day.js** - 日期处理 1.11.10
+- [x] **Lodash-es** - JavaScript工具库 4.17.21
+- [x] **Vue I18n** - 国际化支持 9.8.0
+- [x] **Sortable.js** - 拖拽排序 1.15.0
+- [x] **Vue Draggable** - Vue 拖拽组件 4.1.0
+- [x] **Vitest** - 测试框架 1.0.4
+- [x] **@vue/test-utils** - Vue 测试工具 2.4.2
 
 ### 🔧 代码质量工具
 
-- [x] **Checkstyle** - 代码风格检查
-- [x] **SpotBugs** - Bug检测
-- [x] **PMD** - 代码质量分析
-- [x] **OWASP Dependency-Check** - 安全漏洞扫描
+- [x] **Checkstyle** - 代码风格检查 3.6.0
+- [x] **SpotBugs** - Bug检测 4.9.8.2
+- [x] **PMD** - 代码质量分析 3.28.0
+- [x] **OWASP Dependency-Check** - 安全漏洞扫描 12.1.9
+
+### 🔄 分布式事务
+
+- [x] **Seata** - 分布式事务解决方案 2.5.0
+- [x] **Dubbo Seata Filter** - 安全漏洞修复 3.3.1
 
 ## 项目结构
 
@@ -124,14 +144,15 @@
 
 ```
 spring4demo/
-├── spring4demo-common/         # 公共模块 - 通用工具类、常量、基础配置
-├── spring4demo-core/           # 核心业务模块 - 业务逻辑、实体类、数据访问
-├── spring4demo-web/            # Web应用模块 - Controller层、Web配置
-├── spring4demo-api/            # API接口模块 - 对外API定义
-├── spring4demo-admin/          # 管理后台模块 - 后台管理功能
-├── spring4demo-integration/    # 集成测试模块 - 集成测试
-├── spring4demo-generator/      # 代码生成器模块 - 代码生成工具
-└── spring4demo-starter/        # 启动器模块 - 应用启动入口
+├── build-tools/              # 构建工具模块 - 代码质量检查配置
+├── spring4demo-common/       # 公共模块 - 通用工具类、常量、基础配置
+├── spring4demo-core/         # 核心业务模块 - 业务逻辑、实体类、数据访问
+├── spring4demo-web/          # Web应用模块 - Controller层、Web配置
+├── spring4demo-api/          # API接口模块 - 对外API定义
+├── spring4demo-admin/        # 管理后台模块 - 后台管理功能
+├── spring4demo-integration/  # 集成测试模块 - 集成测试
+├── spring4demo-generator/    # 代码生成器模块 - 代码生成工具
+└── spring4demo-starter/      # 启动器模块 - 应用启动入口
 ```
 
 ### 前端项目结构
@@ -139,11 +160,11 @@ spring4demo/
 ```
 spring4demo-ui/
 ├── src/
-│   ├── main.ts                 # 应用入口
-│   ├── App.vue                 # 根组件
-│   └── router/                 # 路由配置
-├── package.json                # 依赖配置
-└── vite.config.ts              # Vite配置
+│   ├── main.ts               # 应用入口
+│   ├── App.vue               # 根组件
+│   └── router/               # 路由配置
+├── package.json              # 依赖配置
+└── vite.config.ts            # Vite配置
 ```
 
 ## 构建和运行命令
@@ -309,6 +330,12 @@ mvn -Pnative native:compile
 # Zipkin
 - 端口: 9411
 
+# Loki
+- 端口: 3100
+
+# Nginx
+- 端口: 80 (HTTP), 443 (HTTPS)
+
 # RustFS
 - 端口: 9000
 - 访问密钥: admin
@@ -396,6 +423,53 @@ quartz:
     thread-priority: 5
 ```
 
+### Loki 日志聚合配置
+
+Loki 是一个水平可扩展、高可用的多租户日志聚合系统。
+
+```yaml
+loki:
+  # Loki 服务地址
+  url: http://localhost:3100
+  # 是否启用日志推送
+  enabled: true
+  # 日志标签
+  labels:
+    app: spring4demo
+    env: ${spring.profiles.active:dev}
+  # 日志级别
+  level: INFO
+```
+
+### Promtail 日志采集配置
+
+Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 Loki。
+
+```yaml
+promtail:
+  # Promtail 配置文件路径
+  config-path: ./scripts/loki/promtail-config.yml
+  # 日志采集路径
+  log-path: /var/log/app
+  # 是否启用
+  enabled: true
+```
+
+### Nginx 负载均衡配置
+
+Nginx 用于负载均衡和反向代理。
+
+```yaml
+nginx:
+  # Nginx 配置文件路径
+  config-path: ./scripts/nginx/nginx.conf
+  # 监听端口
+  http-port: 80
+  https-port: 443
+  # 是否启用
+  enabled: true
+```
+
 ### Maven Profile配置
 
 ```bash
@@ -441,6 +515,7 @@ mvn clean -Pcache-clean
 - 使用 Spring Boot Test 进行集成测试
 - 使用 Testcontainers 进行容器化集成测试
 - 使用 WireMock 进行HTTP服务模拟
+- 使用 Vitest 进行前端测试
 - 测试类命名: `{ClassName}Tests`
 - 测试覆盖率目标: 85%+
 
@@ -542,9 +617,10 @@ mvn spring-boot:run
 - **Prometheus**: http://localhost:9090
 - **Grafana**: http://localhost:3000 (admin/admin)
 - **Zipkin**: http://localhost:9411
+- **Loki**: http://localhost:3100
+- **Nginx**: http://localhost:80
 - **RustFS**: http://localhost:9000
 - **KKFileView**: http://localhost:8012
-- **XXL-Job**: http://localhost:8080/xxl-job-admin (admin/123456)
 
 ## 文件存储与预览
 
@@ -594,16 +670,50 @@ KKFileView 提供多种格式文件的在线预览功能。
 docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
 ```
 
+## 日志管理
+
+### Loki 日志聚合
+
+Loki 是一个水平可扩展、高可用的多租户日志聚合系统，与 Grafana 集成，提供强大的日志查询和分析功能。
+
+**特性：**
+- 高效的日志存储和索引
+- 与 Grafana 无缝集成
+- 支持多种日志格式
+- 分布式架构
+- 低资源消耗
+
+**使用方式：**
+1. 应用日志通过 Promtail 采集
+2. Promtail 将日志推送到 Loki
+3. 在 Grafana 中查询和分析日志
+
+### Promtail 日志采集
+
+Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 Loki。
+
+**配置文件**: `scripts/loki/promtail-config.yml`
+
+**支持的日志源：**
+- 文件日志
+- Docker 容器日志
+- 系统日志
+- 应用日志
+
 ## 参考资源
 
 ### 官方文档
 
-- [Spring Boot 官方文档](https://docs.spring.io/spring-boot/3.2.10/reference/)
+- [Spring Boot 官方文档](https://docs.spring.io/spring-boot/4.0.1/reference/)
 - [Spring Framework 官方文档](https://docs.spring.io/spring-framework/reference/)
 - [Maven 官方文档](https://maven.apache.org/guides/)
 - [MyBatis-Plus 官方文档](https://baomidou.com/)
 - [Sa-Token 官方文档](https://sa-token.cc/)
 - [Knife4j 官方文档](https://doc.xiaominfo.com/)
+- [Loki 官方文档](https://grafana.com/docs/loki/latest/)
+- [Promtail 官方文档](https://grafana.com/docs/loki/latest/clients/promtail/)
+- [Seata 官方文档](https://seata.io/zh-cn/)
+- [Redisson 官方文档](https://redisson.org/)
 
 ### 项目文档
 
@@ -621,6 +731,7 @@ docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
 
 ### 模块职责划分
 
+- **build-tools模块**: 代码质量检查配置（Checkstyle、SpotBugs、PMD）
 - **common模块**: 只做公共功能（工具类、常量、基础配置），不包含业务逻辑，不依赖其他业务模块
 - **core模块**: 核心业务逻辑，包含实体类、数据访问层、业务服务层
 - **web模块**: Web层，包含Controller、Web配置，依赖core模块
@@ -664,6 +775,38 @@ docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
     - core 模块: 任务处理器和任务调度服务
     - web 模块: 任务管理 Controller
 
+### 日志管理架构
+
+- **Loki**: 日志聚合系统，用于集中存储和管理日志
+- **Promtail**: 日志采集代理，用于采集应用日志并推送到 Loki
+- **Grafana**: 可视化平台，用于查询和分析日志
+- **集成方式**: 应用日志 → Promtail → Loki → Grafana
+- **优势**:
+    - 高效的日志存储和检索
+    - 与监控系统集成
+    - 支持分布式日志聚合
+    - 低资源消耗
+
+### 分布式事务架构
+
+- **Seata**: 分布式事务解决方案，支持 AT、TCC、Saga 等模式
+- **Dubbo Seata Filter**: 修复安全漏洞，增强 Dubbo 与 Seata 的集成
+- **集成方式**: 通过 Seata Starter 集成，支持自动事务代理
+- **使用场景**:
+    - 跨服务事务
+    - 分布式数据一致性
+    - 微服务架构
+
+### 负载均衡架构
+
+- **Nginx**: 负载均衡和反向代理
+- **集成方式**: 通过 Nginx 配置文件实现负载均衡策略
+- **支持特性**:
+    - 轮询、加权轮询、IP 哈希等负载均衡算法
+    - 健康检查
+    - SSL/TLS 支持
+    - 静态资源服务
+
 ## 文档维护
 
 本文档应随项目演进持续更新，包括：
@@ -674,9 +817,7 @@ docker run -d -p 8012:8012 --name kkfileview keking/kkfileview
 - 常见问题的补充
 - 最佳实践的总结
 
-更新时请保持文档的准确性和时效性。
-# AI Dev Tasks
-Use these files when I request structured feature development using PRDs:
-ai-dev-tasks/create-prd.md
-ai-dev-tasks/generate-tasks.md
-ai-dev-tasks/process-task-list.md
+更新时请保持文档的准确性和时效性。包括：
+- README.md
+- IFLOW.md
+- /docs/**/*.md
