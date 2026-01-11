@@ -1,0 +1,19 @@
+# Elasticsearch 配置
+elasticsearch:
+  # Elasticsearch 主机地址
+  host: ${ELASTICSEARCH_HOST:localhost}
+  # Elasticsearch 端口
+  port: ${ELASTICSEARCH_PORT:9200}
+  # 用户名（可选）
+  username: ${ELASTICSEARCH_USERNAME:}
+  # 密码（可选）
+  password: ${ELASTICSEARCH_PASSWORD:}
+  # 协议（http 或 https）
+  protocol: ${ELASTICSEARCH_PROTOCOL:http}
+  # 是否启用 SSL
+  ssl:
+    enabled: ${ELASTICSEARCH_SSL_ENABLED:false}
+  # 连接超时时间（毫秒）
+  connection-timeout: ${ELASTICSEARCH_CONNECTION_TIMEOUT:5000}
+  # Socket 超时时间（毫秒）
+  socket-timeout: ${ELASTICSEARCH_SOCKET_TIMEOUT:30000}
