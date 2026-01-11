@@ -5,11 +5,11 @@
 | 项目 | 内容 |
 |------|------|
 | **文档名称** | Spring4demo 项目架构设计参考文档 |
-| **版本号** | v3.2.0 |
+| **版本号** | v3.3.0 |
 | **生成日期** | 2026-01-07 |
-| **更新日期** | 2026-01-07 |
+| **更新日期** | 2026-01-11 |
 | **文档类型** | 架构师视角技术架构参考 |
-| **项目阶段** | 工程框架搭建阶段 |
+| **项目阶段** | 功能完善阶段 |
 
 ---
 
@@ -36,21 +36,21 @@
 
 | 技术特性 | 优先级 | 状态 |
 |---------|--------|------|
-| **Guava限流** | P0 | 🔄 待实现 |
-| **Spring Stream (RabbitMQ)** | P0 | 🔄 待实现 |
-| **Spring Stream (Kafka)** | P0 | 🔄 待实现 |
-| **MongoDB** | P1 | 🔄 待实现 |
-| **Elasticsearch** | P1 | 🔄 待实现 |
-| **Neo4j** | P2 | 🔄 待实现 |
-| **InfluxDB** | P2 | 🔄 待实现 |
-| **WebFlux** | P1 | 🔄 待实现 |
-| **WebSocket** | P1 | 🔄 待实现 |
-| **GraphQL** | P2 | 🔄 待实现 |
-| **数据库分库分表** | P1 | 🔄 待实现 |
-| **Caffeine+Redis双缓存** | P1 | 🔄 待实现 |
-| **异步处理** | P1 | 🔄 待实现 |
-| **分布式事务** | P1 | 🔄 待实现 |
-| **定时任务** | P1 | 🔄 待实现 |
+| **Guava限流** | P0 | ✅ 已实现 |
+| **Spring Boot原生消息队列 (RabbitMQ)** | P0 | ✅ 已实现 |
+| **Spring Boot原生消息队列 (Kafka)** | P0 | ✅ 已实现 |
+| **MongoDB** | P1 | ✅ 已实现 |
+| **Elasticsearch** | P1 | ✅ 已实现 |
+| **Neo4j** | P2 | ❌ 待实现 |
+| **InfluxDB** | P2 | ❌ 待实现 |
+| **WebFlux** | P1 | ⚠️ 部分实现 |
+| **WebSocket** | P1 | ⚠️ 部分实现 |
+| **GraphQL** | P2 | ❌ 待实现 |
+| **数据库分库分表** | P1 | ❌ 待实现 |
+| **Caffeine+Redis双缓存** | P1 | ✅ 已实现 |
+| **异步处理** | P1 | ⚠️ 部分实现 |
+| **分布式事务** | P1 | ⚠️ 部分实现 |
+| **定时任务** | P1 | ⚠️ 部分实现 |
 
 ---
 
@@ -249,9 +249,9 @@ public class UserController {
    - 监控限流器性能
    - 设置限流告警阈值
 
-### 1. Spring Stream消息队列
+### 1. Spring Boot原生消息队列
 
-**技术选型**: Spring Cloud Stream + RabbitMQ/Kafka
+**技术选型**: Spring Boot AMQP (RabbitMQ) + Spring Kafka
 
 **适用场景**:
 - 异步消息处理
@@ -262,24 +262,220 @@ public class UserController {
 
 ```java
 /**
- * Spring Stream配置
+ * RabbitMQ配置
  *
  * @author spring4demo
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Configuration
-public class StreamConfig {
+public class RabbitMQConfig {
+
+    // 队列定义
+    public static final String USER_CREATED_QUEUE = "user.created.queue";
+    public static final String NOTIFICATION_QUEUE = "notification.queue";
+
+    // 交换机定义
+    public static final String USER_EXCHANGE = "user.topic.exchange";
+    public static final String NOTIFICATION_EXCHANGE = "notification.topic.exchange";
+
+    // 路由键定义
+    public static final String USER_CREATED_ROUTING_KEY = "user.created";
+    public static final String NOTIFICATION_ROUTING_KEY = "notification.#";
 
     /**
-     * 消息处理器
+     * 用户创建队列
      */
     @Bean
-    public Function<UserMessage, UserMessage> userProcessor() {
-        return message -> {
-            log.info("处理用户消息: {}", message);
-            // 处理逻辑
-            return message;
-        };
+    public Queue userCreatedQueue() {
+        return QueueBuilder.durable(USER_CREATED_QUEUE)
+                .withArgument("x-dead-letter-exchange", "user.dlx.exchange")
+                .withArgument("x-dead-letter-routing-key", "user.created.dlq")
+                .build();
+    }
+
+    /**
+     * 通知队列
+     */
+    @Bean
+    public Queue notificationQueue() {
+        return QueueBuilder.durable(NOTIFICATION_QUEUE)
+                .withArgument("x-dead-letter-exchange", "notification.dlx.exchange")
+                .withArgument("x-dead-letter-routing-key", "notification.dlq")
+                .build();
+    }
+
+    /**
+     * 用户主题交换机
+     */
+    @Bean
+    public TopicExchange userExchange() {
+        return new TopicExchange(USER_EXCHANGE, true, false);
+    }
+
+    /**
+     * 通知主题交换机
+     */
+    @Bean
+    public TopicExchange notificationExchange() {
+        return new TopicExchange(NOTIFICATION_EXCHANGE, true, false);
+    }
+
+    /**
+     * 绑定用户创建队列到交换机
+     */
+    @Bean
+    public Binding userCreatedBinding() {
+        return BindingBuilder.bind(userCreatedQueue())
+                .to(userExchange())
+                .with(USER_CREATED_ROUTING_KEY);
+    }
+
+    /**
+     * 绑定通知队列到交换机
+     */
+    @Bean
+    public Binding notificationBinding() {
+        return BindingBuilder.bind(notificationQueue())
+                .to(notificationExchange())
+                .with(NOTIFICATION_ROUTING_KEY);
+    }
+
+    /**
+     * JSON消息转换器
+     */
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+    /**
+     * RabbitTemplate配置
+     */
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+
+        // 开启发送确认
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+            if (ack) {
+                log.info("消息发送成功: correlationId={}", correlationData);
+            } else {
+                log.error("消息发送失败: correlationId={}, cause={}", correlationData, cause);
+            }
+        });
+
+        // 开启返回确认
+        rabbitTemplate.setReturnsCallback(returned -> {
+            log.error("消息被退回: message={}, replyCode={}, replyText={}, exchange={}, routingKey={}",
+                    returned.getMessage(),
+                    returned.getReplyCode(),
+                    returned.getReplyText(),
+                    returned.getExchange(),
+                    returned.getRoutingKey());
+        });
+
+        return rabbitTemplate;
+    }
+}
+
+/**
+ * Kafka配置
+ *
+ * @author spring4demo
+ * @version 2.0.0
+ */
+@Configuration
+@EnableKafka
+public class KafkaConfig {
+
+    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    private String bootstrapServers;
+
+    /**
+     * 生产者配置
+     */
+    @Bean
+    public Map<String, Object> producerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.ACKS_CONFIG, "all");
+        props.put(ProducerConfig.RETRIES_CONFIG, 3);
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
+        props.put(ProducerConfig.LINGER_MS_CONFIG, 1);
+        props.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
+        return props;
+    }
+
+    /**
+     * 生产者工厂
+     */
+    @Bean
+    public ProducerFactory<String, Object> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    /**
+     * KafkaTemplate
+     */
+    @Bean
+    public KafkaTemplate<String, Object> kafkaTemplate() {
+        KafkaTemplate<String, Object> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+
+        // 设置发送回调
+        kafkaTemplate.setProducerListener(new ProducerListener<String, Object>() {
+            @Override
+            public void onSuccess(String topic, Integer partition, String key, Object value, RecordMetadata metadata) {
+                log.info("Kafka 消息发送成功: topic={}, partition={}, offset={}", topic, partition, metadata.offset());
+            }
+
+            @Override
+            public void onError(String topic, Integer partition, String key, Object value, Exception exception) {
+                log.error("Kafka 消息发送失败: topic={}, partition={}, key={}, value={}", topic, partition, key, value, exception);
+            }
+        });
+
+        return kafkaTemplate;
+    }
+
+    /**
+     * 消费者配置
+     */
+    @Bean
+    public Map<String, Object> consumerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "spring4demo-group");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        return props;
+    }
+
+    /**
+     * 消费者工厂
+     */
+    @Bean
+    public ConsumerFactory<String, Object> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+    }
+
+    /**
+     * Kafka监听器容器工厂
+     */
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(3);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        factory.setAutoStartup(true);
+        return factory;
     }
 }
 
@@ -287,66 +483,279 @@ public class StreamConfig {
  * 消息生产者
  *
  * @author spring4demo
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Component
 @Slf4j
 public class MessageProducer {
 
-    @Autowired
-    private StreamBridge streamBridge;
+    private final RabbitTemplate rabbitTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     /**
      * 发送用户创建消息到RabbitMQ
      */
-    public void sendUserCreatedMessageToRabbitMQ(Long userId) {
-        UserCreatedMessage message = new UserCreatedMessage(userId);
-        streamBridge.send("userCreated-out-0", message);
-        log.info("发送用户创建消息到RabbitMQ: {}", message);
+    public void sendUserCreatedMessageToRabbitMQ(Long userId, String username, String email, String realName) {
+        UserCreatedMessage message = UserCreatedMessage.builder()
+                .userId(userId)
+                .username(username)
+                .email(email)
+                .realName(realName)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        try {
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.USER_EXCHANGE,
+                    RabbitMQConfig.USER_CREATED_ROUTING_KEY,
+                    message
+            );
+            log.info("发送用户创建消息到RabbitMQ成功: userId={}, username={}", userId, username);
+        } catch (Exception e) {
+            log.error("发送用户创建消息到RabbitMQ失败: userId={}, error={}", userId, e.getMessage(), e);
+            throw new RuntimeException("发送用户创建消息失败", e);
+        }
     }
 
     /**
      * 发送用户创建消息到Kafka
      */
-    public void sendUserCreatedMessageToKafka(Long userId) {
-        UserCreatedMessage message = new UserCreatedMessage(userId);
-        streamBridge.send("userCreatedKafka-out-0", message);
-        log.info("发送用户创建消息到Kafka: {}", message);
+    public void sendUserCreatedMessageToKafka(Long userId, String username, String email, String realName) {
+        UserCreatedMessage message = UserCreatedMessage.builder()
+                .userId(userId)
+                .username(username)
+                .email(email)
+                .realName(realName)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        String topic = "user-created-topic";
+        String key = String.valueOf(userId);
+
+        try {
+            CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(topic, key, message);
+
+            future.whenComplete((result, ex) -> {
+                if (ex == null) {
+                    log.info("发送用户创建消息到Kafka成功: topic={}, partition={}, offset={}, userId={}",
+                            result.getRecordMetadata().topic(),
+                            result.getRecordMetadata().partition(),
+                            result.getRecordMetadata().offset(),
+                            userId);
+                } else {
+                    log.error("发送用户创建消息到Kafka失败: topic={}, key={}, userId={}, error={}",
+                            topic, key, userId, ex.getMessage(), ex);
+                    throw new RuntimeException("发送用户创建消息到Kafka失败", ex);
+                }
+            });
+        } catch (Exception e) {
+            log.error("发送用户创建消息到Kafka失败: userId={}, error={}", userId, e.getMessage(), e);
+            throw new RuntimeException("发送用户创建消息到Kafka失败", e);
+        }
     }
 
     /**
      * 发送通知消息
      */
-    public void sendNotificationMessage(NotificationMessage message) {
-        streamBridge.send("notification-out-0", message);
-        log.info("发送通知消息: {}", message);
+    public void sendNotificationMessage(Long userId, String username, String title, String content, String type) {
+        NotificationMessage message = NotificationMessage.builder()
+                .userId(userId)
+                .username(username)
+                .title(title)
+                .content(content)
+                .type(type)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        try {
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.NOTIFICATION_EXCHANGE,
+                    "notification." + type.toLowerCase(),
+                    message
+            );
+            log.info("发送通知消息到RabbitMQ成功: userId={}, type={}, title={}", userId, type, title);
+        } catch (Exception e) {
+            log.error("发送通知消息到RabbitMQ失败: userId={}, type={}, error={}", userId, type, e.getMessage(), e);
+            throw new RuntimeException("发送通知消息失败", e);
+        }
     }
 }
 
 /**
- * 消息消费者（RabbitMQ）
+ * RabbitMQ消息消费者
  *
  * @author spring4demo
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Component
 @Slf4j
+@RabbitListener(queues = {
+        RabbitMQConfig.USER_CREATED_QUEUE,
+        RabbitMQConfig.NOTIFICATION_QUEUE
+})
 public class RabbitMQMessageConsumer {
 
     /**
-     * 消费用户创建消息
+     * 处理用户创建消息
      */
-    @Bean
-    public Consumer<UserCreatedMessage> userCreated() {
-        return message -> {
-            log.info("消费RabbitMQ用户创建消息: {}", message);
-            handleUserCreated(message);
-        };
+    @RabbitHandler
+    public void handleUserCreated(UserCreatedMessage message) {
+        log.info("消费RabbitMQ用户创建消息: userId={}, username={}", message.getUserId(), message.getUsername());
+
+        try {
+            handleUserCreatedEvent(message);
+            log.info("处理用户创建事件成功: userId={}", message.getUserId());
+        } catch (Exception e) {
+            log.error("处理用户创建事件失败: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            throw e; // 抛出异常以触发重试机制
+        }
     }
 
     /**
-     * 消费通知消息
+     * 处理通知消息
      */
+    @RabbitHandler
+    public void handleNotification(NotificationMessage message) {
+        log.info("消费RabbitMQ通知消息: userId={}, type={}, title={}",
+                message.getUserId(), message.getType(), message.getTitle());
+
+        try {
+            handleNotificationEvent(message);
+            log.info("处理通知消息成功: userId={}, type={}", message.getUserId(), message.getType());
+        } catch (Exception e) {
+            log.error("处理通知消息失败: userId={}, type={}, error={}",
+                    message.getUserId(), message.getType(), e.getMessage(), e);
+            throw e; // 抛出异常以触发重试机制
+        }
+    }
+
+    /**
+     * 处理用户创建事件
+     */
+    private void handleUserCreatedEvent(UserCreatedMessage message) {
+        log.info("处理用户创建事件: userId={}, username={}, email={}",
+                message.getUserId(), message.getUsername(), message.getEmail());
+        // TODO: 根据实际业务需求处理用户创建事件
+    }
+
+    /**
+     * 处理通知消息
+     */
+    private void handleNotificationEvent(NotificationMessage message) {
+        log.info("处理通知消息: userId={}, type={}, title={}, content={}",
+                message.getUserId(), message.getType(), message.getTitle(), message.getContent());
+
+        // 根据通知类型处理
+        switch (message.getType()) {
+            case "EMAIL":
+                // TODO: 发送邮件通知
+                break;
+            case "SMS":
+                // TODO: 发送短信通知
+                break;
+            case "PUSH":
+                // TODO: 发送推送通知
+                break;
+            case "SYSTEM":
+                // TODO: 保存系统通知
+                break;
+            default:
+                log.warn("未知的通知类型: userId={}, type={}", message.getUserId(), message.getType());
+        }
+    }
+}
+
+/**
+ * Kafka消息消费者
+ *
+ * @author spring4demo
+ * @version 2.0.0
+ */
+@Component
+@Slf4j
+public class KafkaMessageConsumer {
+
+    /**
+     * 消费用户创建消息（Kafka）
+     */
+    @KafkaListener(
+            topics = "user-created-topic",
+            groupId = "user-created-group",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
+    public void handleUserCreated(
+            @Payload UserCreatedMessage message,
+            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
+            @Header(KafkaHeaders.OFFSET) long offset,
+            Acknowledgment acknowledgment) {
+
+        log.info("消费Kafka用户创建消息: topic={}, partition={}, offset={}, userId={}, username={}",
+                topic, partition, offset, message.getUserId(), message.getUsername());
+
+        try {
+            handleUserCreatedEvent(message);
+            // 手动确认消息
+            acknowledgment.acknowledge();
+            log.info("处理用户创建事件成功并确认: userId={}", message.getUserId());
+        } catch (Exception e) {
+            log.error("处理用户创建事件失败: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // 不确认消息，让Kafka重新投递
+            throw new RuntimeException("处理用户创建事件失败", e);
+        }
+    }
+
+    /**
+     * 处理用户创建事件
+     */
+    private void handleUserCreatedEvent(UserCreatedMessage message) {
+        log.info("处理用户创建事件（Kafka）: userId={}, username={}, email={}",
+                message.getUserId(), message.getUsername(), message.getEmail());
+        // TODO: 根据实际业务需求处理用户创建事件
+    }
+}
+```
+
+**配置示例**:
+
+```yaml
+# RabbitMQ配置
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        prefetch: 1
+        default-requeue-rejected: false
+
+# Kafka配置
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: spring4demo-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+```
+
+**优势**:
+- ✅ 更轻量级，无额外依赖
+- ✅ 更直接的 API，更易调试
+- ✅ 更好的性能和资源利用
+- ✅ 更灵活的配置和控制
+- ✅ 完全不依赖 Spring Cloud 生态
     @Bean
     public Consumer<NotificationMessage> notification() {
         return message -> {

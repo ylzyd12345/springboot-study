@@ -126,22 +126,16 @@
 
         <!-- ==================== 消息队列 ==================== -->
 
-        <!-- Spring Cloud Stream -->
+        <!-- Spring Boot AMQP (RabbitMQ) -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
-        <!-- Spring Cloud Stream RabbitMQ Binder -->
+        <!-- Spring Boot Kafka -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
-        </dependency>
-
-        <!-- Spring Cloud Stream Kafka Binder -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
 
         <!-- ==================== 搜索引擎 ==================== -->

@@ -60,8 +60,8 @@
 
 ### 📨 消息中间件技术栈
 
-- [x] **RabbitMQ** - RabbitMQ消息队列 5.17.0（待使用Spring Stream接入）
-- [x] **Apache Kafka** - Kafka消息队列 3.6.1（待使用Spring Stream接入）
+- [x] **RabbitMQ** - RabbitMQ消息队列 5.17.0（使用Spring Boot AMQP接入）
+- [x] **Apache Kafka** - Kafka消息队列 3.6.1（使用Spring Kafka接入）
 - [ ] **Apache RocketMQ** - RocketMQ消息队列 5.1.4（不适用于单体应用）
 - [x] **spring-boot-starter-integration** - Spring Integration企业集成模式
 - [ ] **spring-boot-starter-rsocket** - RSocket客户端和服务端（不适用于单体应用）
@@ -770,7 +770,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 - 去掉微服务组件：Spring Cloud Gateway、Nacos服务发现、Nacos配置中心、Sentinel限流熔断、RSocket、RocketMQ
 - 接入层简化为Nginx负载均衡器
 - 限流方案从Sentinel调整为Guava限流
-- 消息队列使用Spring Stream接入RabbitMQ和Kafka
+- 消息队列使用Spring Boot原生AMQP和Spring Kafka接入RabbitMQ和Kafka
 - 保留MongoDB、Elasticsearch、Neo4j、InfluxDB等数据存储
 
 **演进路径**：单体应用 → 模块化重构 → 可选的微服务拆分（根据业务需求）
@@ -839,14 +839,16 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 ### 消息队列架构
 
-- **Spring Stream**: 统一的消息中间件抽象层
+- **Spring Boot AMQP**: RabbitMQ 原生集成
+- **Spring Kafka**: Kafka 原生集成
 - **支持的消息队列**: RabbitMQ、Kafka
-- **集成方式**: 通过Spring Stream绑定器接入消息队列
+- **集成方式**: 通过 Spring Boot 原生 API 接入消息队列
 - **优势**:
-    - 统一的编程模型
-    - 易于切换消息队列实现
-    - 支持消息可靠性保证
-
+  - 更轻量级，无额外依赖
+  - 更直接的 API，更易调试
+  - 更好的性能和资源利用
+  - 更灵活的配置和控制
+  - 完全不依赖 Spring Cloud 生态
 ## 文档维护
 
 本文档应随项目演进持续更新，包括：
@@ -872,7 +874,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 详见 `projectplans/.architecture_plan.md`，包括：
 - Guava限流实施计划
-- Spring Stream消息队列实施计划
+- Spring Boot消息队列实施计划
 - MongoDB、Elasticsearch、Neo4j、InfluxDB实施计划
 - WebFlux、WebSocket、GraphQL实施计划
 
@@ -888,5 +890,5 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 详见 `docs/05-最佳实践/TECH_DEMO.md`，包括：
 - Guava限流代码示例和最佳实践
-- Spring Stream消息队列代码示例和最佳实践
+- Spring Boot消息队列代码示例和最佳实践
 - MongoDB、Elasticsearch、Neo4j、InfluxDB代码示例和最佳实践

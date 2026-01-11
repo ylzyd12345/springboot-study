@@ -14,7 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -216,7 +221,7 @@ public class UserReactiveController {
         BeanUtils.copyProperties(user, vo);
         // 转换状态枚举
         if (user.getStatus() != null) {
-            vo.setStatus(UserStatus.fromCode(user.getStatus()));
+            vo.setStatus(UserStatus.fromValue(user.getStatus()));
         }
         return vo;
     }

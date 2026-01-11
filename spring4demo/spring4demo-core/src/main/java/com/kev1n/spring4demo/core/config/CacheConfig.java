@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.support.CompositeCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -12,9 +13,10 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -65,7 +67,7 @@ public class CacheConfig {
         template.setHashKeySerializer(stringSerializer);
 
         // 设置value序列化方式（JSON）
-        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
+        GenericJacksonJsonRedisSerializer jsonSerializer = new GenericJacksonJsonRedisSerializer(new ObjectMapper());
         template.setValueSerializer(jsonSerializer);
         template.setHashValueSerializer(jsonSerializer);
 
@@ -152,13 +154,13 @@ public class CacheConfig {
                         .fromSerializer(new StringRedisSerializer()))
                 // 设置value序列化方式（JSON）
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                        .fromSerializer(new GenericJacksonJsonRedisSerializer(new ObjectMapper())))
                 // 设置过期时间（30分钟）
                 .entryTtl(Duration.ofMinutes(30))
                 // 不缓存null值
-                .disableCachingNullValues()
-                // 使用前缀
-                .usePrefix();
+                .disableCachingNullValues();
+        // 使用前缀
+        defaultConfig.usePrefix();
 
         // 针对不同缓存名称设置不同的过期时间
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();

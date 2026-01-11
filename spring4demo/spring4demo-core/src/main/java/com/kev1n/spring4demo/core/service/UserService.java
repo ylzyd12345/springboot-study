@@ -20,6 +20,11 @@ public interface UserService extends IService<User> {
     Optional<User> findByUsername(String username);
 
     /**
+     * 根据Id查找用户
+     */
+    User getById(Long id);
+
+    /**
      * 根据邮箱查找用户
      */
     Optional<User> findByEmail(String email);
