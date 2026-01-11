@@ -194,23 +194,6 @@ public class UserReactiveController {
     }
 
     /**
-     * TODO: 响应式查询用户订单列表
-     * 待实现订单模块后补充
-     *
-     * @param userId 用户ID
-     * @return 订单列表Flux
-     */
-    @Operation(summary = "响应式查询用户订单列表", description = "待实现")
-    @GetMapping("/{userId}/orders")
-    public Flux<String> getUserOrders(
-            @Parameter(description = "用户ID", required = true)
-            @PathVariable Long userId) {
-        log.info("响应式查询用户订单列表: {}", userId);
-        // TODO: 待实现订单模块后补充
-        return Flux.error(new UnsupportedOperationException("订单模块待实现"));
-    }
-
-    /**
      * 将User实体转换为UserVO
      *
      * @param user 用户实体

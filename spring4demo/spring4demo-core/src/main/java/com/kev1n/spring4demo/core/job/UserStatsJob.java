@@ -286,19 +286,4 @@ public class UserStatsJob implements Job {
         // 1. 创建UserStatsMessage消息
         // 2. 发送消息到RabbitMQ或Kafka
     }
-
-    /**
-     * TODO: 统计订单数据（待实现订单模块后启用）
-     *
-     * @return 订单数据统计结果
-     */
-    private Map<String, Object> countOrderStats() {
-        log.warn("[UserStatsJob] 订单数据统计功能待实现，需要订单模块支持");
-        Map<String, Object> stats = new HashMap<>();
-        // TODO: 待实现订单模块后启用
-        // 1. 统计订单数量
-        // 2. 统计订单金额
-        // 3. 统计订单状态
-        return stats;
-    }
 }

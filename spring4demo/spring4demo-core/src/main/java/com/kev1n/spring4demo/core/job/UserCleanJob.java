@@ -209,19 +209,6 @@ public class UserCleanJob implements Job {
     }
 
     /**
-     * TODO: 清理订单数据（待实现订单模块后启用）
-     *
-     * @param retentionDays 保留天数
-     */
-    private void cleanExpiredOrders(int retentionDays) {
-        log.warn("[UserCleanJob] 订单数据清理功能待实现，需要订单模块支持");
-        // TODO: 待实现订单模块后启用
-        // 1. 查询超过指定天数的已完成订单
-        // 2. 归档订单数据到历史表
-        // 3. 删除原订单数据
-    }
-
-    /**
      * TODO: 清理日志数据（待实现日志模块后启用）
      *
      * @param retentionDays 保留天数

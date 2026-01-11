@@ -86,37 +86,6 @@ public interface MessageConstants {
     }
 
     /**
-     * 订单相关消息
-     */
-    interface ORDER {
-
-        /**
-         * 订单创建消息主题
-         */
-        String CREATED_TOPIC = NAMESPACE + DELIMITER + "order" + DELIMITER + "created";
-
-        /**
-         * 订单支付消息主题
-         */
-        String PAID_TOPIC = NAMESPACE + DELIMITER + "order" + DELIMITER + "paid";
-
-        /**
-         * 订单取消消息主题
-         */
-        String CANCELLED_TOPIC = NAMESPACE + DELIMITER + "order" + DELIMITER + "cancelled";
-
-        /**
-         * 订单完成消息主题
-         */
-        String COMPLETED_TOPIC = NAMESPACE + DELIMITER + "order" + DELIMITER + "completed";
-
-        /**
-         * 订单退款消息主题
-         */
-        String REFUNDED_TOPIC = NAMESPACE + DELIMITER + "order" + DELIMITER + "refunded";
-    }
-
-    /**
      * 日志相关消息
      */
     interface LOG {
@@ -184,11 +153,6 @@ public interface MessageConstants {
             String USER_EXCHANGE = "user.exchange";
 
             /**
-             * 订单交换机
-             */
-            String ORDER_EXCHANGE = "order.exchange";
-
-            /**
              * 通知交换机
              */
             String NOTIFICATION_EXCHANGE = "notification.exchange";
@@ -213,11 +177,6 @@ public interface MessageConstants {
              * 用户主题
              */
             String USER_TOPIC = "user-topic";
-
-            /**
-             * 订单主题
-             */
-            String ORDER_TOPIC = "order-topic";
 
             /**
              * 通知主题

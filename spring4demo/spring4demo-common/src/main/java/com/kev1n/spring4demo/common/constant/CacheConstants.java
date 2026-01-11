@@ -232,12 +232,6 @@ public interface CacheConstants {
         String USER_LOCK_KEY = KEY_PREFIX + DELIMITER + "user";
 
         /**
-         * 订单锁key
-         * 格式: spring4demo:lock:order:{orderId}
-         */
-        String ORDER_LOCK_KEY = KEY_PREFIX + DELIMITER + "order";
-
-        /**
          * 锁过期时间（秒）- 30秒
          */
         long EXPIRE_TIME = 30L;

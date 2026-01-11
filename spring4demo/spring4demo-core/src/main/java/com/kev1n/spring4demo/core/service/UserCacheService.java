@@ -280,35 +280,6 @@ public class UserCacheService {
     }
 
     /**
-     * TODO: 获取订单缓存（待实现订单模块后启用）
-     *
-     * @param orderId 订单ID
-     * @return 订单对象
-     */
-    public Object getOrderFromCache(Long orderId) {
-        log.warn("订单缓存功能待实现: orderId={}", orderId);
-        return null;
-    }
-
-    /**
-     * TODO: 将订单放入缓存（待实现订单模块后启用）
-     *
-     * @param order 订单对象
-     */
-    public void putOrderToCache(Object order) {
-        log.warn("订单缓存功能待实现");
-    }
-
-    /**
-     * TODO: 删除订单缓存（待实现订单模块后启用）
-     *
-     * @param orderId 订单ID
-     */
-    public void deleteOrderFromCache(Long orderId) {
-        log.warn("订单缓存功能待实现: orderId={}", orderId);
-    }
-
-    /**
      * TODO: 获取商品缓存（待实现商品模块后启用）
      *
      * @param productId 商品ID

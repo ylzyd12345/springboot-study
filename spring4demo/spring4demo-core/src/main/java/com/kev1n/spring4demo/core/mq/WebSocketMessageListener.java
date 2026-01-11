@@ -144,25 +144,16 @@ public class WebSocketMessageListener {
             // TODO: 检查用户权限
             // if (!SecurityUtils.hasPermission("system:broadcast")) {
             //     throw new AccessDeniedException("无权限发送系统广播");
-            // }
-        }
-
-        return message;
-    }
-
-    // TODO: 订单消息监听（待实现）
-    // @MessageMapping("/app/order/message")
-    // @SendTo("/topic/order-messages")
-    // public OrderMessage handleOrderMessage(@Payload OrderMessage message) {
-    //     log.info("收到订单消息: {}", message);
-    //     // TODO: 实现订单消息处理逻辑
-    //     return message;
-    // }
-
-    // TODO: 系统通知消息监听（待实现）
-    // @MessageMapping("/app/notification/message")
-    // public void handleNotificationMessage(@Payload NotificationMessage message) {
-    //     log.info("收到通知消息: {}", message);
-    //     // TODO: 实现通知消息处理逻辑
-    // }
-}
+            //     }
+                    }
+            
+                    return message;
+                }
+            
+                // TODO: 系统通知消息监听（待实现）
+                // @MessageMapping("/app/notification/message")
+                // public void handleNotificationMessage(@Payload NotificationMessage message) {
+                //     log.info("收到通知消息: {}", message);
+                //     // TODO: 实现通知消息处理逻辑
+                // }
+            }

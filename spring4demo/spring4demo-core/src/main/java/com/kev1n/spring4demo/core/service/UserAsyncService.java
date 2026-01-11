@@ -199,41 +199,4 @@ public class UserAsyncService {
         return CompletableFuture.completedFuture(successCount);
     }
 
-    // ==================== 其他对象相关异步方法（TODO） ====================
-
-    /**
-     * TODO: 异步处理用户订单
-     * 待实现订单模块后补充
-     *
-     * @param userId  用户ID
-     * @param orderId 订单ID
-     * @return CompletableFuture<Void>
-     */
-    @Async("taskExecutor")
-    public CompletableFuture<Void> processOrderAsync(Long userId, Long orderId) {
-        log.info("开始异步处理用户订单: userId={}, orderId={}", userId, orderId);
-        // TODO: 待实现订单模块后补充
-        // Order order = orderService.getById(orderId);
-        // orderService.processOrder(order);
-        log.info("订单处理功能待实现: userId={}, orderId={}", userId, orderId);
-        return CompletableFuture.completedFuture(null);
     }
-
-    /**
-     * TODO: 异步处理用户支付
-     * 待实现支付模块后补充
-     *
-     * @param userId  用户ID
-     * @param paymentId 支付ID
-     * @return CompletableFuture<Void>
-     */
-    @Async("taskExecutor")
-    public CompletableFuture<Void> processPaymentAsync(Long userId, Long paymentId) {
-        log.info("开始异步处理用户支付: userId={}, paymentId={}", userId, paymentId);
-        // TODO: 待实现支付模块后补充
-        // Payment payment = paymentService.getById(paymentId);
-        // paymentService.processPayment(payment);
-        log.info("支付处理功能待实现: userId={}, paymentId={}", userId, paymentId);
-        return CompletableFuture.completedFuture(null);
-    }
-}

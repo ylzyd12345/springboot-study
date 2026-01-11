@@ -4,7 +4,7 @@ spring:
     name: spring4demo
   profiles:
     active: dev
-    include: datasource,redis,mq,seata,monitoring
+    include: datasource,redis,mq,seata,monitoring,sharding
 
   # MongoDB配置
   data:

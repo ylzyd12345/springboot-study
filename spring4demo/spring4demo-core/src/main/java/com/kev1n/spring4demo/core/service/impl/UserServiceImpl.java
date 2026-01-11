@@ -353,13 +353,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 });
     }
 
-    @Override
-    public Flux<String> getUserOrdersReactive(Long userId) {
-        log.debug("响应式查询用户订单列表: {}", userId);
-        // TODO: 待实现订单模块后补充
-        return Flux.error(new UnsupportedOperationException("订单模块待实现"));
-    }
-
     // ==================== 分布式事务方法实现 ====================
 
     /**
@@ -371,29 +364,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User registerUserDistributed(UserCreateDTO dto) {
         log.info("调用用户注册分布式事务: username={}", dto.getUsername());
         return userDistributedService.registerUser(dto);
-    }
-
-    /**
-     * 用户充值（分布式事务）
-     *
-     * 委托给UserDistributedService处理
-     */
-    @Override
-    public boolean rechargeDistributed(Long userId, java.math.BigDecimal amount, Integer points) {
-        log.info("调用用户充值分布式事务: userId={}, amount={}, points={}",
-                userId, amount, points);
-        return userDistributedService.recharge(userId, amount, points);
-    }
-
-    /**
-     * 用户转账（分布式事务）
-     *
-     * 委托给UserDistributedService处理
-     */
-    @Override
-    public boolean transferDistributed(Long fromUserId, Long toUserId, java.math.BigDecimal amount) {
-        log.info("调用用户转账分布式事务: fromUserId={}, toUserId={}, amount={}",
-                fromUserId, toUserId, amount);
-        return userDistributedService.transfer(fromUserId, toUserId, amount);
     }
 }

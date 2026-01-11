@@ -129,51 +129,17 @@ public interface UserService extends IService<User> {
      */
     reactor.core.publisher.Flux<User> streamUsersReactive();
 
-    /**
-     * TODO: 响应式查询用户订单列表
-     * 待实现订单模块后补充
-     *
-     * @param userId 用户ID
-     * @return 订单列表Flux
-     */
-    reactor.core.publisher.Flux<String> getUserOrdersReactive(Long userId);
-
     // ==================== 分布式事务方法 ====================
 
     /**
      * 用户注册（分布式事务）
      *
      * 使用Seata AT模式保证分布式事务一致性
-     * 涉及：用户表 + 用户账户表 + 用户积分表
+     * 涉及：用户表 + 用户日志表
      *
      * @param dto 用户创建DTO
      * @return 创建的用户对象
      */
     User registerUserDistributed(com.kev1n.spring4demo.api.dto.UserCreateDTO dto);
 
-    /**
-     * 用户充值（分布式事务）
-     *
-     * 使用Seata AT模式保证分布式事务一致性
-     * 涉及：用户账户表 + 用户积分表
-     *
-     * @param userId 用户ID
-     * @param amount 充值金额
-     * @param points 获得积分
-     * @return 是否充值成功
-     */
-    boolean rechargeDistributed(Long userId, java.math.BigDecimal amount, Integer points);
-
-    /**
-     * 用户转账（分布式事务）
-     *
-     * 使用Seata AT模式保证分布式事务一致性
-     * 涉及：用户A账户表 + 用户B账户表
-     *
-     * @param fromUserId 转出用户ID
-     * @param toUserId 转入用户ID
-     * @param amount 转账金额
-     * @return 是否转账成功
-     */
-    boolean transferDistributed(Long fromUserId, Long toUserId, java.math.BigDecimal amount);
-}
+    }

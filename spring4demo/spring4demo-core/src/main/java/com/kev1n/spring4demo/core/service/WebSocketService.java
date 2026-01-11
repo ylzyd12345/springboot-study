@@ -207,12 +207,6 @@ public class WebSocketService {
     //     // TODO: 实现消息持久化逻辑
     // }
 
-    // TODO: 发送订单消息（待实现）
-    // public void sendOrderMessage(Long userId, OrderMessage message) {
-    //     log.info("发送订单消息: userId={}, message={}", userId, message);
-    //     // TODO: 实现订单消息发送逻辑
-    // }
-
     // TODO: 发送系统通知（待实现）
     // public void sendNotification(Long userId, NotificationMessage message) {
     //     log.info("发送系统通知: userId={}, message={}", userId, message);

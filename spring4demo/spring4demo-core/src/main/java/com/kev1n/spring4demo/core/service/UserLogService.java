@@ -107,7 +107,6 @@ public interface UserLogService {
     long countUserLogsByAction(String action);
 
     // TODO: 待实现其他对象的日志记录功能
-    // TODO: 订单日志（OrderLog）
     // TODO: 文档日志（DocumentLog）
     // TODO: 系统日志（SystemLog）
 }

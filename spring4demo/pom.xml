@@ -102,6 +102,10 @@
         <springdoc.version>2.7.0</springdoc.version>
         <knife4j.version>4.5.0</knife4j.version>
 
+        <!-- ==================== GraphQL ==================== -->
+        <graphql-java.version>21.3</graphql-java.version>
+        <graphql-spring-boot-starter.version>15.0.0</graphql-spring-boot-starter.version>
+
         <!-- ==================== 工具类 ==================== -->
         <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
@@ -115,6 +119,7 @@
         <redisson.version>3.35.0</redisson.version>
         <dynamic-datasource.version>4.3.0</dynamic-datasource.version>
         <seata.version>2.5.0</seata.version>
+        <shardingsphere.version>5.3.2</shardingsphere.version>
 
         <!-- ==================== 任务调度 ==================== -->
         <quartz.version>2.3.2</quartz.version>
@@ -351,6 +356,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- ShardingSphere 分库分表 -->
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
 
             <!-- ==================== 任务调度 ==================== -->
             <dependency>
@@ -392,6 +403,18 @@
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
+            </dependency>
+
+            <!-- ==================== GraphQL ==================== -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-graphql</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java</artifactId>
+                <version>${graphql-java.version}</version>
             </dependency>
 
             <!-- ==================== 测试 ==================== -->

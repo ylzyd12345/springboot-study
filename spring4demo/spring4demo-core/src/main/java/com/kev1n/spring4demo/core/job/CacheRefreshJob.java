@@ -211,16 +211,6 @@ public class CacheRefreshJob implements Job {
     }
 
     /**
-     * TODO: 刷新订单缓存（待实现订单模块后启用）
-     */
-    private void refreshOrderCache() {
-        log.warn("[CacheRefreshJob] 订单缓存刷新功能待实现，需要订单模块支持");
-        // TODO: 待实现订单模块后启用
-        // 1. 查询活跃订单
-        // 2. 预热订单缓存
-    }
-
-    /**
      * TODO: 刷新商品缓存（待实现商品模块后启用）
      */
     private void refreshProductCache() {

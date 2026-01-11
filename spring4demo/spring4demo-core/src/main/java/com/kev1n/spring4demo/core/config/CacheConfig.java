@@ -171,9 +171,6 @@ public class CacheConfig {
         // 用户列表缓存：10分钟
         cacheConfigurations.put("userList", defaultConfig.entryTtl(Duration.ofMinutes(10)));
 
-        // TODO: 订单缓存配置（待实现订单模块后启用）
-        // cacheConfigurations.put("order", defaultConfig.entryTtl(Duration.ofHours(1)));
-
         // TODO: 商品缓存配置（待实现商品模块后启用）
         // cacheConfigurations.put("product", defaultConfig.entryTtl(Duration.ofHours(2)));
 
