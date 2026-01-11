@@ -45,7 +45,7 @@
 - [x] **Redisson** - Redis 客户端 3.35.0
 - [ ] **Elasticsearch** - Elasticsearch搜索引擎 8.11.4（待实现）
 - [x] **Neo4j** - Neo4j图数据库 5.12（已完成）
-- [x] **InfluxDB** - InfluxDB时间序列数据库 2.7（已完成）
+- [x] **InfluxDB** - InfluxDB3时间序列数据库 3.0（已完成）
 
 #### 文件存储
 - [x] **RustFS** - 高性能分布式对象存储（兼容 S3 协议）
@@ -319,12 +319,9 @@ mvn -Pnative native:compile
 - 用户名: neo4j
 - 密码: password
 
-# InfluxDB
-- 端口: 8086
-- 用户名: admin
-- 密码: password
-- 组织: spring4demo
-- 存储桶: metrics
+# InfluxDB3
+- 端口: 8181
+- 数据库: spring4demo
 
 # Prometheus
 - 端口: 9090
@@ -620,7 +617,7 @@ mvn spring-boot:run
 - **Kafka UI**: http://localhost:8081
 - **Kibana**: http://localhost:5601
 - **Neo4j Browser**: http://localhost:7474
-- **InfluxDB UI**: http://localhost:8086
+- **InfluxDB3 UI**: http://localhost:8181
 - **Prometheus**: http://localhost:9090
 - **Grafana**: http://localhost:3000 (admin/admin)
 - **Zipkin**: http://localhost:9411

@@ -143,12 +143,14 @@
         <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.5.0</maven-failsafe-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 
         <!-- ==================== 代码质量 ==================== -->
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spotbugs-maven-plugin.version>4.9.8.2</spotbugs-maven-plugin.version>
         <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
         <dependency-check-maven.version>12.1.9</dependency-check-maven.version>
+
     </properties>
 
 
@@ -525,6 +527,7 @@
                             <include>**/*Tests.java</include>
                         </includes>
                         <!-- 在Java 25环境下跳过JaCoCo agent，避免兼容性问题 -->
+                        <!--suppress UnresolvedMavenProperty -->
                         <argLine>${argLine} -Djdk.attach.allowAttachSelf=true</argLine>
                     </configuration>
                 </plugin>
@@ -715,6 +718,24 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <!-- Javadoc - API 文档生成 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <doclint>none</doclint>
+                        <quiet>true</quiet>
+                        <failOnError>false</failOnError>
+                        <encoding>UTF-8</encoding>
+                        <charset>UTF-8</charset>
+                        <docencoding>UTF-8</docencoding>
+                        <show>private</show>
+                        <nohelp>true</nohelp>
+                    </configuration>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
@@ -765,6 +786,12 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
+            </plugin>
+
+            <!-- Javadoc - API 文档生成 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
