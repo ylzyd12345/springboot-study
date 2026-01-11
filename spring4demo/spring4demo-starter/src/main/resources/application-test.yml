@@ -244,3 +244,24 @@ testcontainers:
       privileged: true
   docker:
     client-strategy: org.testcontainers.dockerclient.EnvironmentAndSystemPropertyClientProviderStrategy
+
+# Neo4j 图数据库配置（测试环境 - Testcontainers）
+spring:
+  data:
+    neo4j:
+      uri: ${NEO4J_URI:bolt://localhost:7687}
+      authentication:
+        username: ${NEO4J_USERNAME:neo4j}
+        password: ${NEO4J_PASSWORD:password}
+      database: ${NEO4J_DATABASE:neo4j_test}
+
+# InfluxDB 时序数据库配置（测试环境 - Testcontainers）
+influxdb:
+  url: ${INFLUXDB_URL:http://localhost:8086}
+  token: ${INFLUXDB_TOKEN:}
+  org: ${INFLUXDB_ORG:spring4demo}
+  bucket: ${INFLUXDB_BUCKET:spring4demo_test}
+  connectTimeout: 10000
+  writeTimeout: 10000
+  readTimeout: 10000
+  logLevel: INFO

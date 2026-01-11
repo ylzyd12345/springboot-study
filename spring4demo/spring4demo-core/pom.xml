@@ -160,6 +160,22 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
+        <!-- ==================== 图数据库 ==================== -->
+
+        <!-- Spring Data Neo4j -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-neo4j</artifactId>
+        </dependency>
+
+        <!-- ==================== 时序数据库 ==================== -->
+
+        <!-- InfluxDB Client -->
+        <dependency>
+            <groupId>com.influxdb</groupId>
+            <artifactId>influxdb-client-java</artifactId>
+        </dependency>
+
         <!-- ==================== WebSocket ==================== -->
 
         <!-- Spring WebSocket -->

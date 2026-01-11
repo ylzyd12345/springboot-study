@@ -4,7 +4,7 @@ spring:
     name: spring4demo
   profiles:
     active: dev
-    include: datasource,redis,mq,seata,monitoring,mongodb,elasticsearch,quartz,rustfs,kkfileview,satoken
+    include: datasource,redis,mq,seata,monitoring,mongodb,elasticsearch,quartz,rustfs,kkfileview,satoken,neo4j,influxdb
 
   # Jackson配置
   jackson:

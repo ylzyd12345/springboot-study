@@ -1,0 +1,27 @@
+# Neo4j 图数据库配置
+spring:
+  data:
+    neo4j:
+      # Neo4j 连接 URI
+      uri: ${NEO4J_URI:bolt://localhost:7687}
+      # 认证配置
+      authentication:
+        username: ${NEO4J_USERNAME:neo4j}
+        password: ${NEO4J_PASSWORD:password}
+      # 数据库名称（Neo4j 4.0+ 支持）
+      database: ${NEO4J_DATABASE:neo4j}
+
+# Neo4j 连接池配置
+neo4j:
+  # 连接池配置
+  pool:
+    max-connection-pool-size: 50
+    connection-acquisition-timeout: 60s
+    max-connection-lifetime: 1h
+    connection-timeout: 30s
+    idle-time-before-connection-test: 30s
+  # 日志配置
+  logging:
+    query:
+      enabled: false
+      level: INFO
