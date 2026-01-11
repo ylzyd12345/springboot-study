@@ -1,13 +1,11 @@
-# InfluxDB 时序数据库配置
+# InfluxDB3 时序数据库配置
 influxdb:
-  # InfluxDB 服务器地址
-  url: ${INFLUXDB_URL:http://localhost:8086}
+  # InfluxDB3 服务器地址
+  url: ${INFLUXDB_URL:http://localhost:8181}
   # 认证令牌
   token: ${INFLUXDB_TOKEN:}
-  # 组织名称
-  org: ${INFLUXDB_ORG:spring4demo}
-  # 存储桶名称
-  bucket: ${INFLUXDB_BUCKET:spring4demo}
+  # 数据库名称
+  database: ${INFLUXDB_DATABASE:spring4demo}
   # 连接超时时间（毫秒）
   connectTimeout: ${INFLUXDB_CONNECT_TIMEOUT:10000}
   # 写超时时间（毫秒）

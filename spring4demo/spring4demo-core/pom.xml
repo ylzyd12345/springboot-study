@@ -170,10 +170,10 @@
 
         <!-- ==================== 时序数据库 ==================== -->
 
-        <!-- InfluxDB Client -->
+        <!-- InfluxDB3 Client -->
         <dependency>
             <groupId>com.influxdb</groupId>
-            <artifactId>influxdb-client-java</artifactId>
+            <artifactId>influxdb3-java</artifactId>
         </dependency>
 
         <!-- ==================== WebSocket ==================== -->

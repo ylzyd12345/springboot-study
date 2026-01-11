@@ -179,22 +179,19 @@ services:
       - spring4demo-network
     restart: unless-stopped
 
-  # InfluxDB时序数据库
+  # InfluxDB3时序数据库
   influxdb:
-    image: influxdb:2.7-alpine
-    container_name: spring4demo-influxdb
+    image: influxdb:3.0
+    container_name: spring4demo-influxdb3
     environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: admin
-      DOCKER_INFLUXDB_INIT_PASSWORD: password
-      DOCKER_INFLUXDB_INIT_ORG: spring4demo
-      DOCKER_INFLUXDB_INIT_BUCKET: metrics
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: spring4demo-token
+      # InfluxDB3 数据目录
+      INFLUXDB_ENGINE_PATH: /var/lib/influxdb3/engine
+      # 日志级别
+      INFLUXDB_LOG_LEVEL: info
     ports:
-      - "8086:8086"
+      - "8181:8181"
     volumes:
-      - influxdb_data:/var/lib/influxdb2
-      - influxdb_config:/etc/influxdb2
+      - influxdb3_data:/var/lib/influxdb3
     networks:
       - spring4demo-network
     restart: unless-stopped
@@ -446,9 +443,7 @@ volumes:
     driver: local
   neo4j_plugins:
     driver: local
-  influxdb_data:
-    driver: local
-  influxdb_config:
+  influxdb3_data:
     driver: local
   prometheus_data:
     driver: local

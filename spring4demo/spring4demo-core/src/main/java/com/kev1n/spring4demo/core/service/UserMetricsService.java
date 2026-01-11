@@ -1,20 +1,18 @@
 package com.kev1n.spring4demo.core.service;
 
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.WriteApi;
-import com.influxdb.client.domain.WritePrecision;
-import com.influxdb.query.FluxRecord;
-import com.influxdb.query.FluxTable;
+import com.influxdb.v3.client.InfluxDBClient;
+import com.influxdb.v3.client.Point;
 import com.kev1n.spring4demo.core.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * 用户指标时序数据服务
@@ -22,7 +20,7 @@ import java.util.List;
  * <p>提供用户相关指标的时序数据写入和查询功能，支持用户登录、操作等行为的数据收集和分析。</p>
  *
  * @author spring4demo
- * @version 1.0.0
+ * @version 2.0.0
  */
 @Slf4j
 @Service
@@ -30,12 +28,6 @@ import java.util.List;
 public class UserMetricsService {
 
     private final InfluxDBClient influxDBClient;
-
-    @Value("${influxdb.org:spring4demo}")
-    private String org;
-
-    @Value("${influxdb.bucket:spring4demo}")
-    private String bucket;
 
     /**
      * 记录用户登录指标
@@ -45,21 +37,20 @@ public class UserMetricsService {
     public void recordUserLogin(User user) {
         log.info("记录用户登录指标: userId={}, username={}", user.getId(), user.getUsername());
 
-        WriteApi writeApi = influxDBClient.getWriteApi();
+        Point point = Point.measurement("user_login")
+                .setTag("userId", user.getId().toString())
+                .setTag("username", user.getUsername())
+                .setField("email", user.getEmail() != null ? user.getEmail() : "")
+                .setField("phone", user.getPhone() != null ? user.getPhone() : "")
+                .setField("status", user.getStatus() != null ? user.getStatus() : 0)
+                .setTimestamp(Instant.now());
 
-        writeApi.writeMeasurement(
-            WritePrecision.NS,
-            new UserLoginMetrics(
-                user.getId().toString(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPhone(),
-                user.getStatus(),
-                Instant.now()
-            )
-        );
-
-        writeApi.close();
+        try {
+            influxDBClient.writePoint(point);
+            log.info("用户登录指标记录成功: userId={}", user.getId());
+        } catch (Exception e) {
+            log.error("记录用户登录指标失败: userId={}, error={}", user.getId(), e.getMessage(), e);
+        }
     }
 
     /**
@@ -72,20 +63,19 @@ public class UserMetricsService {
     public void recordUserOperation(User user, String operation, String operationDetail) {
         log.info("记录用户操作指标: userId={}, username={}, operation={}", user.getId(), user.getUsername(), operation);
 
-        WriteApi writeApi = influxDBClient.getWriteApi();
+        Point point = Point.measurement("user_operation")
+                .setTag("userId", user.getId().toString())
+                .setTag("username", user.getUsername())
+                .setTag("operation", operation)
+                .setField("operationDetail", operationDetail != null ? operationDetail : "")
+                .setTimestamp(Instant.now());
 
-        writeApi.writeMeasurement(
-            WritePrecision.NS,
-            new UserOperationMetrics(
-                user.getId().toString(),
-                user.getUsername(),
-                operation,
-                operationDetail,
-                Instant.now()
-            )
-        );
-
-        writeApi.close();
+        try {
+            influxDBClient.writePoint(point);
+            log.info("用户操作指标记录成功: userId={}, operation={}", user.getId(), operation);
+        } catch (Exception e) {
+            log.error("记录用户操作指标失败: userId={}, operation={}, error={}", user.getId(), operation, e.getMessage(), e);
+        }
     }
 
     /**
@@ -97,31 +87,24 @@ public class UserMetricsService {
      * @return 登录次数
      */
     public long countUserLogins(Long userId, LocalDateTime startTime, LocalDateTime endTime) {
-        String flux = String.format(
-            "from(bucket: \"%s\") " +
-            "|> range(start: %s, stop: %s) " +
-            "|> filter(fn: (r) => r._measurement == \"user_login\") " +
-            "|> filter(fn: (r) => r.userId == \"%s\") " +
-            "|> count()",
-            bucket,
+        String sql = String.format(
+            "SELECT COUNT(*) AS count FROM user_login " +
+            "WHERE time >= '%s' AND time <= '%s' AND userId = '%s'",
             startTime.atZone(ZoneId.systemDefault()).toInstant(),
             endTime.atZone(ZoneId.systemDefault()).toInstant(),
             userId.toString()
         );
 
-        List<FluxTable> tables = influxDBClient.getQueryApi().query(flux, org);
-        long count = 0;
-        
-        for (FluxTable table : tables) {
-            for (FluxRecord record : table.getRecords()) {
-                Object value = record.getValueByKey("_value");
-                if (value instanceof Number) {
-                    count += ((Number) value).longValue();
-                }
-            }
+        try (Stream<Object[]> stream = influxDBClient.query(sql)) {
+            return stream
+                    .filter(row -> row.length > 0 && row[0] instanceof Number)
+                    .map(row -> ((Number) row[0]).longValue())
+                    .findFirst()
+                    .orElse(0L);
+        } catch (Exception e) {
+            log.error("查询用户登录次数失败: userId={}, error={}", userId, e.getMessage(), e);
+            return 0;
         }
-
-        return count;
     }
 
     /**
@@ -134,33 +117,25 @@ public class UserMetricsService {
      * @return 操作次数
      */
     public long countUserOperations(Long userId, String operation, LocalDateTime startTime, LocalDateTime endTime) {
-        String flux = String.format(
-            "from(bucket: \"%s\") " +
-            "|> range(start: %s, stop: %s) " +
-            "|> filter(fn: (r) => r._measurement == \"user_operation\") " +
-            "|> filter(fn: (r) => r.userId == \"%s\") " +
-            "|> filter(fn: (r) => r.operation == \"%s\") " +
-            "|> count()",
-            bucket,
+        String sql = String.format(
+            "SELECT COUNT(*) AS count FROM user_operation " +
+            "WHERE time >= '%s' AND time <= '%s' AND userId = '%s' AND operation = '%s'",
             startTime.atZone(ZoneId.systemDefault()).toInstant(),
             endTime.atZone(ZoneId.systemDefault()).toInstant(),
             userId.toString(),
             operation
         );
 
-        List<FluxTable> tables = influxDBClient.getQueryApi().query(flux, org);
-        long count = 0;
-        
-        for (FluxTable table : tables) {
-            for (FluxRecord record : table.getRecords()) {
-                Object value = record.getValueByKey("_value");
-                if (value instanceof Number) {
-                    count += ((Number) value).longValue();
-                }
-            }
+        try (Stream<Object[]> stream = influxDBClient.query(sql)) {
+            return stream
+                    .filter(row -> row.length > 0 && row[0] instanceof Number)
+                    .map(row -> ((Number) row[0]).longValue())
+                    .findFirst()
+                    .orElse(0L);
+        } catch (Exception e) {
+            log.error("查询用户操作次数失败: userId={}, operation={}, error={}", userId, operation, e.getMessage(), e);
+            return 0;
         }
-
-        return count;
     }
 
     /**
@@ -172,27 +147,31 @@ public class UserMetricsService {
      * @param window 时间窗口（1h, 1d 等）
      * @return 操作趋势数据
      */
-    public List<FluxRecord> getUserOperationTrend(Long userId, LocalDateTime startTime, LocalDateTime endTime, String window) {
-        String flux = String.format(
-            "from(bucket: \"%s\") " +
-            "|> range(start: %s, stop: %s) " +
-            "|> filter(fn: (r) => r._measurement == \"user_operation\") " +
-            "|> filter(fn: (r) => r.userId == \"%s\") " +
-            "|> aggregateWindow(every: %s, fn: count, createEmpty: false) " +
-            "|> yield(name: \"count\")",
-            bucket,
+    public List<OperationTrendResult> getUserOperationTrend(Long userId, LocalDateTime startTime, LocalDateTime endTime, String window) {
+        String sql = String.format(
+            "SELECT time, COUNT(*) AS count FROM user_operation " +
+            "WHERE time >= '%s' AND time <= '%s' AND userId = '%s' " +
+            "GROUP BY time(%s)",
             startTime.atZone(ZoneId.systemDefault()).toInstant(),
             endTime.atZone(ZoneId.systemDefault()).toInstant(),
             userId.toString(),
             window
         );
 
-        List<FluxTable> tables = influxDBClient.getQueryApi().query(flux, org);
-        
-        // 将所有记录合并到一个列表
-        return tables.stream()
-            .flatMap(table -> table.getRecords().stream())
-            .toList();
+        List<OperationTrendResult> results = new ArrayList<>();
+        try (Stream<Object[]> stream = influxDBClient.query(sql)) {
+            stream.forEach(row -> {
+                if (row.length >= 2) {
+                    OperationTrendResult result = new OperationTrendResult();
+                    result.time = row[0] instanceof Instant ? (Instant) row[0] : null;
+                    result.count = row[1] instanceof Number ? ((Number) row[1]).longValue() : 0;
+                    results.add(result);
+                }
+            });
+        } catch (Exception e) {
+            log.error("查询用户操作趋势失败: userId={}, error={}", userId, e.getMessage(), e);
+        }
+        return results;
     }
 
     /**
@@ -203,124 +182,48 @@ public class UserMetricsService {
      * @param window 时间窗口
      * @return 活跃用户数趋势
      */
-    public List<FluxRecord> getActiveUserCount(LocalDateTime startTime, LocalDateTime endTime, String window) {
-        String flux = String.format(
-            "from(bucket: \"%s\") " +
-            "|> range(start: %s, stop: %s) " +
-            "|> filter(fn: (r) => r._measurement == \"user_login\") " +
-            "|> aggregateWindow(every: %s, fn: count, createEmpty: false) " +
-            "|> group(columns: [\"_time\"]) " +
-            "|> distinct(column: \"userId\") " +
-            "|> count()",
-            bucket,
+    public List<ActiveUserResult> getActiveUserCount(LocalDateTime startTime, LocalDateTime endTime, String window) {
+        String sql = String.format(
+            "SELECT time, COUNT(DISTINCT userId) AS count FROM user_login " +
+            "WHERE time >= '%s' AND time <= '%s' " +
+            "GROUP BY time(%s)",
             startTime.atZone(ZoneId.systemDefault()).toInstant(),
             endTime.atZone(ZoneId.systemDefault()).toInstant(),
             window
         );
 
-        List<FluxTable> tables = influxDBClient.getQueryApi().query(flux, org);
-        
-        return tables.stream()
-            .flatMap(table -> table.getRecords().stream())
-            .toList();
+        List<ActiveUserResult> results = new ArrayList<>();
+        try (Stream<Object[]> stream = influxDBClient.query(sql)) {
+            stream.forEach(row -> {
+                if (row.length >= 2) {
+                    ActiveUserResult result = new ActiveUserResult();
+                    result.time = row[0] instanceof Instant ? (Instant) row[0] : null;
+                    result.count = row[1] instanceof Number ? ((Number) row[1]).longValue() : 0;
+                    results.add(result);
+                }
+            });
+        } catch (Exception e) {
+            log.error("查询活跃用户数失败: error={}", e.getMessage(), e);
+        }
+        return results;
     }
 
-    // ==================== 用户登录指标数据类 ====================
+    // ==================== 查询结果类 ====================
 
     /**
-     * 用户登录指标
+     * 操作趋势查询结果
      */
-    public static class UserLoginMetrics {
-        private final String measurement = "user_login";
-        private final Instant time;
-        private final String userId;
-        private final String username;
-        private final String email;
-        private final String phone;
-        private final Integer status;
-
-        public UserLoginMetrics(String userId, String username, String email, String phone, Integer status, Instant time) {
-            this.userId = userId;
-            this.username = username;
-            this.email = email;
-            this.phone = phone;
-            this.status = status;
-            this.time = time;
-        }
-
-        public String getMeasurement() {
-            return measurement;
-        }
-
-        public Instant getTime() {
-            return time;
-        }
-
-        public String getUserId() {
-            return userId;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-
-        public Integer getStatus() {
-            return status;
-        }
+    public static class OperationTrendResult {
+        public Instant time;
+        public long count;
     }
 
-    // ==================== 用户操作指标数据类 ====================
-
     /**
-     * 用户操作指标
+     * 活跃用户数查询结果
      */
-    public static class UserOperationMetrics {
-        private final String measurement = "user_operation";
-        private final Instant time;
-        private final String userId;
-        private final String username;
-        private final String operation;
-        private final String operationDetail;
-
-        public UserOperationMetrics(String userId, String username, String operation, String operationDetail, Instant time) {
-            this.userId = userId;
-            this.username = username;
-            this.operation = operation;
-            this.operationDetail = operationDetail;
-            this.time = time;
-        }
-
-        public String getMeasurement() {
-            return measurement;
-        }
-
-        public Instant getTime() {
-            return time;
-        }
-
-        public String getUserId() {
-            return userId;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getOperation() {
-            return operation;
-        }
-
-        public String getOperationDetail() {
-            return operationDetail;
-        }
+    public static class ActiveUserResult {
+        public Instant time;
+        public long count;
     }
 
     // ==================== TODO: 待添加的指标收集方法 ====================

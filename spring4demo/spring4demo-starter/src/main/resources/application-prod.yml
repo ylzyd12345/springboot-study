@@ -262,12 +262,11 @@ spring:
         password: ${NEO4J_PASSWORD:}
       database: ${NEO4J_DATABASE:neo4j}
 
-# InfluxDB 时序数据库配置（生产环境）
+# InfluxDB3 时序数据库配置（生产环境）
 influxdb:
-  url: ${INFLUXDB_URL:http://influxdb-prod:8086}
+  url: ${INFLUXDB_URL:http://influxdb-prod:8181}
   token: ${INFLUXDB_TOKEN:}
-  org: ${INFLUXDB_ORG:spring4demo}
-  bucket: ${INFLUXDB_BUCKET:spring4demo_prod}
+  database: ${INFLUXDB_DATABASE:spring4demo_prod}
   connectTimeout: 10000
   writeTimeout: 10000
   readTimeout: 10000
