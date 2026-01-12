@@ -1,211 +1,238 @@
 package com.kev1n.spring4demo.web.controller;
 
-import com.kev1n.spring4demo.api.dto.UserCreateDTO;
-import com.kev1n.spring4demo.api.dto.UserVO;
-import com.kev1n.spring4demo.api.enums.UserStatus;
 import com.kev1n.spring4demo.core.entity.User;
-import com.kev1n.spring4demo.core.service.UserService;
+import com.kev1n.spring4demo.core.service.UserReactiveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
+import jakarta.validation.Valid;
+import java.util.List;
 
 /**
  * 用户响应式控制器
- * 提供响应式编程风格的API接口
+ * 使用WebFlux + R2DBC实现真正的响应式API端点
  *
  * @author spring4demo
  * @version 1.0.0
  */
-@Tag(name = "用户响应式API", description = "用户响应式编程接口")
 @Slf4j
 @RestController
 @RequestMapping("/api/reactive/users")
-@RequiredArgsConstructor
+@Tag(name = "用户响应式API", description = "用户管理的响应式API接口（使用R2DBC）")
 public class UserReactiveController {
 
-    private final UserService userService;
+    @Autowired
+    private UserReactiveService userReactiveService;
 
     /**
-     * 响应式查询用户列表
-     * 使用Flux处理多个用户数据，支持背压
-     *
-     * @return 用户列表Flux
-     */
-    @Operation(summary = "响应式查询用户列表", description = "使用Flux返回所有用户数据")
-    @GetMapping
-    public Flux<UserVO> listUsers() {
-        log.info("响应式查询用户列表");
-        return userService.listUsersReactive()
-                .map(this::convertToVO)
-                .doOnComplete(() -> log.info("用户列表查询完成"));
-    }
-
-    /**
-     * 响应式查询单个用户
-     * 使用Mono处理单个用户数据
+     * 根据ID查询用户
      *
      * @param id 用户ID
      * @return 用户Mono
      */
-    @Operation(summary = "响应式查询单个用户", description = "使用Mono返回单个用户数据")
-    @GetMapping("/{id}")
-    public Mono<UserVO> getUser(
+    @Operation(summary = "根据ID查询用户", description = "使用R2DBC响应式编程根据ID查询用户信息")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<User> getUserById(
             @Parameter(description = "用户ID", required = true)
             @PathVariable Long id) {
-        log.info("响应式查询用户: {}", id);
-        return userService.getUserByIdReactive(id)
-                .map(this::convertToVO)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + id)));
+        log.info("R2DBC响应式查询用户: id={}", id);
+        return userReactiveService.findById(id);
     }
 
     /**
-     * 响应式创建用户
-     * 使用Mono处理异步创建操作
+     * 查询所有用户
      *
-     * @param dto 用户创建DTO
+     * @return 用户Flux
+     */
+    @Operation(summary = "查询所有用户", description = "使用R2DBC响应式编程查询所有用户信息")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<User> getAllUsers() {
+        log.info("R2DBC响应式查询所有用户");
+        return userReactiveService.findAll();
+    }
+
+    /**
+     * 创建用户
+     *
+     * @param user 用户实体
      * @return 创建后的用户Mono
      */
-    @Operation(summary = "响应式创建用户", description = "使用Mono异步创建用户")
-    @PostMapping
-    public Mono<UserVO> createUser(
-            @Parameter(description = "用户创建DTO", required = true)
-            @Valid @RequestBody UserCreateDTO dto) {
-        log.info("响应式创建用户: {}", dto.getUsername());
-        return userService.createUserReactive(dto)
-                .map(this::convertToVO);
+    @Operation(summary = "创建用户", description = "使用R2DBC响应式编程创建新用户")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<User> createUser(
+            @Parameter(description = "用户信息", required = true)
+            @Valid @RequestBody User user) {
+        log.info("R2DBC响应式创建用户: username={}", user.getUsername());
+        return userReactiveService.save(user);
     }
 
     /**
-     * 响应式批量创建用户
-     * 使用Flux处理批量数据
+     * 更新用户
      *
-     * @param dtos 用户创建DTO列表
-     * @return 创建后的用户列表Flux
+     * @param id 用户ID
+     * @param user 用户实体
+     * @return 更新后的用户Mono
      */
-    @Operation(summary = "响应式批量创建用户", description = "使用Flux批量创建用户")
-    @PostMapping("/batch")
-    public Flux<UserVO> batchCreate(
-            @Parameter(description = "用户创建DTO列表", required = true)
-            @Valid @RequestBody java.util.List<UserCreateDTO> dtos) {
-        log.info("响应式批量创建用户: {}", dtos.size());
-        return Flux.fromIterable(dtos)
-                .flatMap(userService::createUserReactive)
-                .map(this::convertToVO);
+    @Operation(summary = "更新用户", description = "使用R2DBC响应式编程更新用户信息")
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<User> updateUser(
+            @Parameter(description = "用户ID", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "用户信息", required = true)
+            @Valid @RequestBody User user) {
+        log.info("R2DBC响应式更新用户: id={}", id);
+        user.setId(id);
+        return userReactiveService.update(user);
     }
 
     /**
-     * 响应式流式数据推送
-     * 使用ServerSentEvent实现实时数据推送
+     * 删除用户
      *
-     * @return 用户流Flux
+     * @param id 用户ID
+     * @return 是否删除成功Mono
      */
-    @Operation(summary = "响应式流式推送用户数据", description = "使用SSE实时推送用户数据")
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<UserVO>> streamUsers() {
-        log.info("响应式流式推送用户数据");
-        return userService.streamUsersReactive()
-                .map(user -> ServerSentEvent.<UserVO>builder()
-                        .data(convertToVO(user))
-                        .id(String.valueOf(user.getId()))
-                        .event("user-update")
-                        .build())
-                .delayElements(Duration.ofSeconds(1));
+    @Operation(summary = "删除用户", description = "使用R2DBC响应式编程删除用户")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Boolean> deleteUser(
+            @Parameter(description = "用户ID", required = true)
+            @PathVariable Long id) {
+        log.info("R2DBC响应式删除用户: id={}", id);
+        return userReactiveService.deleteById(id);
     }
 
     /**
-     * 响应式根据用户名查询用户
+     * 批量删除用户
+     *
+     * @param ids 用户ID列表
+     * @return 是否删除成功Mono
+     */
+    @Operation(summary = "批量删除用户", description = "使用R2DBC响应式编程批量删除用户")
+    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Boolean> deleteUsers(
+            @Parameter(description = "用户ID列表", required = true)
+            @RequestBody List<Long> ids) {
+        log.info("R2DBC响应式批量删除用户: count={}", ids.size());
+        return userReactiveService.deleteAllById(ids);
+    }
+
+    /**
+     * 根据用户名查找用户
      *
      * @param username 用户名
      * @return 用户Mono
      */
-    @Operation(summary = "响应式根据用户名查询用户", description = "使用Mono根据用户名查询用户")
-    @GetMapping("/username/{username}")
-    public Mono<UserVO> getUserByUsername(
+    @Operation(summary = "根据用户名查找用户", description = "使用R2DBC响应式编程根据用户名查找用户")
+    @GetMapping(value = "/username/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<User> getUserByUsername(
             @Parameter(description = "用户名", required = true)
             @PathVariable String username) {
-        log.info("响应式根据用户名查询用户: {}", username);
-        return userService.getUserByUsernameReactive(username)
-                .map(this::convertToVO)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + username)));
+        log.info("R2DBC响应式根据用户名查找: username={}", username);
+        return userReactiveService.findByUsername(username);
     }
 
     /**
-     * 响应式根据邮箱查询用户
+     * 根据邮箱查找用户
      *
      * @param email 邮箱
      * @return 用户Mono
      */
-    @Operation(summary = "响应式根据邮箱查询用户", description = "使用Mono根据邮箱查询用户")
-    @GetMapping("/email/{email}")
-    public Mono<UserVO> getUserByEmail(
+    @Operation(summary = "根据邮箱查找用户", description = "使用R2DBC响应式编程根据邮箱查找用户")
+    @GetMapping(value = "/email/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<User> getUserByEmail(
             @Parameter(description = "邮箱", required = true)
             @PathVariable String email) {
-        log.info("响应式根据邮箱查询用户: {}", email);
-        return userService.getUserByEmailReactive(email)
-                .map(this::convertToVO)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + email)));
+        log.info("R2DBC响应式根据邮箱查找: email={}", email);
+        return userReactiveService.findByEmail(email);
     }
 
     /**
-     * 响应式根据状态查询用户列表
+     * 根据状态查找用户
      *
-     * @param status 用户状态
-     * @return 用户列表Flux
+     * @param status 状态
+     * @return 用户Flux
      */
-    @Operation(summary = "响应式根据状态查询用户列表", description = "使用Flux根据状态查询用户")
-    @GetMapping("/status/{status}")
-    public Flux<UserVO> getUsersByStatus(
-            @Parameter(description = "用户状态", required = true)
+    @Operation(summary = "根据状态查找用户", description = "使用R2DBC响应式编程根据状态查找用户")
+    @GetMapping(value = "/status/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<User> getUsersByStatus(
+            @Parameter(description = "状态", required = true)
             @PathVariable Integer status) {
-        log.info("响应式根据状态查询用户列表: {}", status);
-        return userService.getUsersByStatusReactive(status)
-                .map(this::convertToVO);
+        log.info("R2DBC响应式根据状态查找用户: status={}", status);
+        return userReactiveService.findByStatus(status);
     }
 
     /**
-     * 响应式统计指定状态的用户数量
+     * 查找所有活跃用户
      *
-     * @param status 用户状态
+     * @return 用户Flux
+     */
+    @Operation(summary = "查找所有活跃用户", description = "使用R2DBC响应式编程查找所有活跃用户")
+    @GetMapping(value = "/active", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<User> getActiveUsers() {
+        log.info("R2DBC响应式查找活跃用户");
+        return userReactiveService.findActiveUsers();
+    }
+
+    /**
+     * 根据部门ID查找用户
+     *
+     * @param deptId 部门ID
+     * @return 用户Flux
+     */
+    @Operation(summary = "根据部门ID查找用户", description = "使用R2DBC响应式编程根据部门ID查找用户")
+    @GetMapping(value = "/dept/{deptId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<User> getUsersByDeptId(
+            @Parameter(description = "部门ID", required = true)
+            @PathVariable String deptId) {
+        log.info("R2DBC响应式根据部门ID查找用户: deptId={}", deptId);
+        return userReactiveService.findByDeptId(deptId);
+    }
+
+    /**
+     * 统计用户数量
+     *
      * @return 用户数量Mono
      */
-    @Operation(summary = "响应式统计用户数量", description = "使用Mono统计指定状态的用户数量")
-    @GetMapping("/count/{status}")
-    public Mono<Long> countByStatus(
-            @Parameter(description = "用户状态", required = true)
-            @PathVariable Integer status) {
-        log.info("响应式统计用户数量: {}", status);
-        return userService.countByStatusReactive(status);
+    @Operation(summary = "统计用户数量", description = "使用R2DBC响应式编程统计用户数量")
+    @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Long> countUsers() {
+        log.info("R2DBC响应式统计用户数量");
+        return userReactiveService.count();
     }
 
     /**
-     * 将User实体转换为UserVO
+     * 根据状态统计用户数量
      *
-     * @param user 用户实体
-     * @return 用户视图对象
+     * @param status 状态
+     * @return 用户数量Mono
      */
-    private UserVO convertToVO(User user) {
-        UserVO vo = new UserVO();
-        BeanUtils.copyProperties(user, vo);
-        // 转换状态枚举
-        if (user.getStatus() != null) {
-            vo.setStatus(UserStatus.fromValue(user.getStatus()));
-        }
-        return vo;
+    @Operation(summary = "根据状态统计用户数量", description = "使用R2DBC响应式编程根据状态统计用户数量")
+    @GetMapping(value = "/count/{status}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<Long> countUsersByStatus(
+            @Parameter(description = "状态", required = true)
+            @PathVariable Integer status) {
+        log.info("R2DBC响应式根据状态统计用户数量: status={}", status);
+        return userReactiveService.countByStatus(status);
+    }
+
+    /**
+     * 批量创建用户
+     *
+     * @param users 用户列表
+     * @return 创建后的用户Flux
+     */
+    @Operation(summary = "批量创建用户", description = "使用R2DBC响应式编程批量创建用户")
+    @PostMapping(value = "/batch", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Flux<User> createUsers(
+            @Parameter(description = "用户列表", required = true)
+            @Valid @RequestBody List<User> users) {
+        log.info("R2DBC响应式批量创建用户: count={}", users.size());
+        return userReactiveService.saveAll(users);
     }
 }

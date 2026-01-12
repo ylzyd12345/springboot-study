@@ -239,7 +239,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Flux<User> listUsersReactive() {
         log.debug("响应式查询所有用户");
-        return userReactiveRepository.findAll()
+        return Flux.defer(() -> Flux.fromIterable(userMapper.selectList(null)))
                 .timeout(Duration.ofSeconds(30))
                 .onErrorResume(throwable -> {
                     log.error("响应式查询所有用户失败", throwable);
@@ -250,7 +250,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Mono<User> getUserByIdReactive(Long id) {
         log.debug("响应式根据ID查询用户: {}", id);
-        return userReactiveRepository.findById(id)
+        return Mono.fromCallable(() -> userMapper.selectById(id))
                 .timeout(Duration.ofSeconds(10))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + id)))
                 .onErrorResume(throwable -> {
@@ -262,7 +262,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Mono<User> getUserByUsernameReactive(String username) {
         log.debug("响应式根据用户名查询用户: {}", username);
-        return userReactiveRepository.findByUsername(username)
+        return Mono.fromCallable(() -> userMapper.findByUsername(username).orElse(null))
                 .timeout(Duration.ofSeconds(10))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + username)))
                 .onErrorResume(throwable -> {
@@ -274,7 +274,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Mono<User> getUserByEmailReactive(String email) {
         log.debug("响应式根据邮箱查询用户: {}", email);
-        return userReactiveRepository.findByEmail(email)
+        return Mono.fromCallable(() -> userMapper.findByEmail(email).orElse(null))
                 .timeout(Duration.ofSeconds(10))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + email)))
                 .onErrorResume(throwable -> {
@@ -286,7 +286,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Flux<User> getUsersByStatusReactive(Integer status) {
         log.debug("响应式根据状态查询用户列表: {}", status);
-        return userReactiveRepository.findByStatus(status)
+        return Flux.defer(() -> Flux.fromIterable(userMapper.findByStatus(status)))
                 .timeout(Duration.ofSeconds(30))
                 .onErrorResume(throwable -> {
                     log.error("响应式根据状态查询用户列表失败: {}", status, throwable);
@@ -301,8 +301,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 先检查用户名和邮箱是否已存在
         return Mono.zip(
-                        userReactiveRepository.existsByUsername(dto.getUsername()),
-                        userReactiveRepository.existsByEmail(dto.getEmail())
+                        Mono.fromCallable(() -> userMapper.existsByUsername(dto.getUsername())),
+                        Mono.fromCallable(() -> userMapper.existsByEmail(dto.getEmail()))
                 )
                 .flatMap(tuple -> {
                     boolean usernameExists = tuple.getT1();
@@ -324,7 +324,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         user.setStatus(UserStatus.ACTIVE.getValue());
                     }
 
-                    return userReactiveRepository.save(user);
+                    return Mono.fromCallable(() -> {
+                        userMapper.insert(user);
+                        return user;
+                    });
                 })
                 .timeout(Duration.ofSeconds(30))
                 .doOnSuccess(savedUser -> log.info("响应式创建用户成功: {}", savedUser.getId()))
@@ -334,7 +337,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Mono<Long> countByStatusReactive(Integer status) {
         log.debug("响应式统计指定状态的用户数量: {}", status);
-        return userReactiveRepository.countByStatus(status)
+        return Mono.fromCallable(() -> userMapper.countByStatus(status))
                 .timeout(Duration.ofSeconds(10))
                 .onErrorResume(throwable -> {
                     log.error("响应式统计用户数量失败: {}", status, throwable);
@@ -345,7 +348,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Flux<User> streamUsersReactive() {
         log.debug("响应式流式查询用户数据");
-        return userReactiveRepository.streamUsers()
+        return Flux.interval(Duration.ofSeconds(1))
+                .flatMap(tick -> listUsersReactive())
                 .timeout(Duration.ofMinutes(5))
                 .onErrorResume(throwable -> {
                     log.error("响应式流式查询用户数据失败", throwable);

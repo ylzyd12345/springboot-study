@@ -82,6 +82,7 @@
         <mybatis-plus.version>3.5.9</mybatis-plus.version>
         <pagehelper.version>2.1.1</pagehelper.version>
         <h2.version>2.4.240</h2.version>
+        <r2dbc-mysql.version>1.4.1</r2dbc-mysql.version>
 
         <!-- ==================== 缓存 ==================== -->
         <caffeine.version>3.1.6</caffeine.version>
@@ -269,6 +270,12 @@
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper-spring-boot-starter</artifactId>
                 <version>${pagehelper.version}</version>
+            </dependency>
+            <!-- R2DBC MySQL Driver -->
+            <dependency>
+                <groupId>io.asyncer</groupId>
+                <artifactId>r2dbc-mysql</artifactId>
+                <version>${r2dbc-mysql.version}</version>
             </dependency>
 
             <!-- ==================== 缓存 ==================== -->

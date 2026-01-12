@@ -1,0 +1,80 @@
+# GraphQL Schema for Spring4demo
+# 用户查询和变更
+
+scalar LocalDateTime
+
+# 用户类型
+type User {
+    id: ID!
+    username: String!
+    email: String
+    phone: String
+    realName: String
+    avatar: String
+    status: Int!
+    deptId: String
+    createdAt: LocalDateTime!
+    updatedAt: LocalDateTime!
+    deleted: Int!
+    version: Int!
+}
+
+# 用户输入类型
+input UserInput {
+    username: String!
+    password: String!
+    email: String
+    phone: String
+    realName: String
+    avatar: String
+    status: Int
+    deptId: String
+}
+
+# 用户更新输入类型
+input UserUpdateInput {
+    id: ID!
+    username: String
+    email: String
+    phone: String
+    realName: String
+    avatar: String
+    status: Int
+    deptId: String
+}
+
+# 用户查询类型
+type Query {
+    # 根据ID查询用户
+    user(id: ID!): User
+    
+    # 查询所有用户
+    users(status: Int, limit: Int = 10, offset: Int = 0): [User]!
+    
+    # 根据用户名查询用户
+    userByUsername(username: String!): User
+    
+    # 根据邮箱查询用户
+    userByEmail(email: String!): User
+}
+
+# 用户变更类型
+type Mutation {
+    # 创建用户
+    createUser(input: UserInput!): User!
+    
+    # 更新用户
+    updateUser(input: UserUpdateInput!): User!
+    
+    # 删除用户
+    deleteUser(id: ID!): Boolean!
+    
+    # 批量删除用户
+    deleteUsers(ids: [ID!]!): Boolean!
+}
+
+# 订阅类型（用于实时更新）
+type Subscription {
+    # 用户更新通知
+    userUpdated(userId: ID!): User
+}

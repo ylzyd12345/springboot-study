@@ -1,0 +1,25 @@
+# GraphQL配置
+spring:
+  graphql:
+    # GraphQL路径配置
+    path: /graphql
+    # WebSocket路径配置
+    websocket:
+      path: /graphql
+    # GraphiQL启用（开发环境）
+    graphiql:
+      enabled: true
+      path: /graphiql
+    # Schema文件位置
+    schema:
+      locations: classpath:graphql/**/*.graphqls
+      printer:
+        enabled: true
+    # 执行配置
+    execution:
+      max-query-depth: 10
+      max-query-complexity: 1000
+    # 数据加载器配置
+    data-loader:
+      enabled: true
+      max-batch-size: 100
