@@ -64,16 +64,16 @@ public class UserNode {
     private Integer status;
 
     /**
-     * 创建时间（对应 sys_user.create_time）
+     * 创建时间（对应 sys_user.created_at）
      */
-    @Property("createTime")
-    private LocalDateTime createTime;
+    @Property("createdAt")
+    private LocalDateTime createdAt;
 
     /**
-     * 更新时间（对应 sys_user.update_time）
+     * 更新时间（对应 sys_user.updated_at）
      */
-    @Property("updateTime")
-    private LocalDateTime updateTime;
+    @Property("updatedAt")
+    private LocalDateTime updatedAt;
 
     /**
      * 最后登录时间（对应 sys_user.last_login_time）

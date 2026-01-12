@@ -9,6 +9,9 @@ import lombok.Getter;
 /**
  * 用户状态枚举
  *
+ * 数据库存储：INT 类型（1-启用，0-禁用）
+ * 代码使用：ENUM 类型
+ *
  * @author spring4demo
  * @version 1.0.0
  */
@@ -18,19 +21,14 @@ import lombok.Getter;
 public enum UserStatus {
 
     /**
-     * 激活状态
+     * 启用状态
      */
-    ACTIVE(1, "激活"),
+    ACTIVE(1, "启用"),
 
     /**
-     * 未激活状态
+     * 禁用状态
      */
-    INACTIVE(0, "未激活"),
-
-    /**
-     * 锁定状态
-     */
-    LOCKED(2, "锁定");
+    INACTIVE(0, "禁用");
 
     /**
      * 数据库存储值

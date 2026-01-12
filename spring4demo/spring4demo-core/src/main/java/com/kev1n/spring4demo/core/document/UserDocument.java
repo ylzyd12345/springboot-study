@@ -90,7 +90,7 @@ public class UserDocument {
      * 创建时间
      */
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
-    private LocalDateTime createTime;
+    private LocalDateTime createdAt;
 
     /**
      * 更新人
@@ -102,7 +102,7 @@ public class UserDocument {
      * 更新时间
      */
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     /**
      * 删除标记（0-未删除，1-已删除）
@@ -134,9 +134,9 @@ public class UserDocument {
                 .status(user.getStatus())
                 .deptId(user.getDeptId())
                 .createBy(user.getCreateBy())
-                .createTime(user.getCreateTime())
+                .createdAt(user.getCreatedAt())
                 .updateBy(user.getUpdateBy())
-                .updateTime(user.getUpdateTime())
+                .updatedAt(user.getUpdatedAt())
                 .deleted(user.getDeleted())
                 .version(user.getVersion())
                 .build();

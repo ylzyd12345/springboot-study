@@ -106,21 +106,21 @@ public class UserStatsJob implements Job {
             // 统计今日新增用户数
             LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
             LambdaQueryWrapper<User> todayQuery = new LambdaQueryWrapper<>();
-            todayQuery.ge(User::getCreateTime, todayStart);
+            todayQuery.ge(User::getCreatedAt, todayStart);
             Long todayCount = userMapper.selectCount(todayQuery);
             stats.put("todayCount", todayCount);
 
             // 统计本周新增用户数
             LocalDateTime weekStart = LocalDateTime.now().minusDays(7);
             LambdaQueryWrapper<User> weekQuery = new LambdaQueryWrapper<>();
-            weekQuery.ge(User::getCreateTime, weekStart);
+            weekQuery.ge(User::getCreatedAt, weekStart);
             Long weekCount = userMapper.selectCount(weekQuery);
             stats.put("weekCount", weekCount);
 
             // 统计本月新增用户数
             LocalDateTime monthStart = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
             LambdaQueryWrapper<User> monthQuery = new LambdaQueryWrapper<>();
-            monthQuery.ge(User::getCreateTime, monthStart);
+            monthQuery.ge(User::getCreatedAt, monthStart);
             Long monthCount = userMapper.selectCount(monthQuery);
             stats.put("monthCount", monthCount);
 
@@ -151,7 +151,7 @@ public class UserStatsJob implements Job {
             // 统计活跃用户数（最近7天有登录记录）
             LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
             LambdaQueryWrapper<User> activeQuery = new LambdaQueryWrapper<>();
-            activeQuery.ge(User::getUpdateTime, sevenDaysAgo);
+            activeQuery.ge(User::getUpdatedAt, sevenDaysAgo);
             activeQuery.eq(User::getStatus, 1); // 1表示正常状态
             Long activeCount = userMapper.selectCount(activeQuery);
             stats.put("activeCount", activeCount);
@@ -159,7 +159,7 @@ public class UserStatsJob implements Job {
             // 统计日活跃用户数（最近1天有登录记录）
             LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
             LambdaQueryWrapper<User> dailyActiveQuery = new LambdaQueryWrapper<>();
-            dailyActiveQuery.ge(User::getUpdateTime, oneDayAgo);
+            dailyActiveQuery.ge(User::getUpdatedAt, oneDayAgo);
             dailyActiveQuery.eq(User::getStatus, 1);
             Long dailyActiveCount = userMapper.selectCount(dailyActiveQuery);
             stats.put("dailyActiveCount", dailyActiveCount);
@@ -170,7 +170,7 @@ public class UserStatsJob implements Job {
             // 统计月活跃用户数（最近30天有登录记录）
             LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
             LambdaQueryWrapper<User> monthlyActiveQuery = new LambdaQueryWrapper<>();
-            monthlyActiveQuery.ge(User::getUpdateTime, thirtyDaysAgo);
+            monthlyActiveQuery.ge(User::getUpdatedAt, thirtyDaysAgo);
             monthlyActiveQuery.eq(User::getStatus, 1);
             Long monthlyActiveCount = userMapper.selectCount(monthlyActiveQuery);
             stats.put("monthlyActiveCount", monthlyActiveCount);

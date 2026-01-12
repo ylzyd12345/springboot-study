@@ -46,8 +46,8 @@ public class UserGraphService {
                 .phone(user.getPhone())
                 .realName(user.getRealName())
                 .status(user.getStatus())
-                .createTime(user.getCreateTime())
-                .updateTime(user.getUpdateTime())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
 //                .lastLoginTime(user.getLastLoginTime())
 //                .loginCount(user.getLoginCount())
                 .build();
@@ -164,7 +164,7 @@ public class UserGraphService {
             userNode.setPhone(user.getPhone());
             userNode.setRealName(user.getRealName());
             userNode.setStatus(user.getStatus());
-            userNode.setUpdateTime(user.getUpdateTime());
+            userNode.setUpdatedAt(user.getUpdatedAt());
 //            userNode.setLastLoginTime(user.getLastLoginTime());
 //            userNode.setLoginCount(user.getLoginCount());
 

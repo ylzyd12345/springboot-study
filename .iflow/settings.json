@@ -1,20 +1,3 @@
 {
-  "mcpServers": {
-    "youxuan-mcp": {
-      "url": "https://mcp-youxuan.baidu.com/mcp/sse?key=百度优选申请key"
-    },
-    "xhs-toolkit": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "iflow-mcp_xhs-toolkit",
-        "xhs-toolkit",
-        "--stdio"
-      ],
-      "env": {
-        "ENABLE_AUTO_COLLECTION": "false",
-        "DATA_STORAGE_PATH": "."
-      }
-    }
-  }
+  "mcpServers": {}
 }

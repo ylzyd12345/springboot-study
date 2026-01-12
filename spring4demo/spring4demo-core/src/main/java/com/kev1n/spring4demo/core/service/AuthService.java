@@ -120,9 +120,9 @@ public class AuthService {
         user.setRealName(realName);
         user.setStatus(1);
         user.setCreateBy("system");
-        user.setCreateTime(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
         user.setUpdateBy("system");
-        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         user.setDeleted(0);
         user.setVersion(1);
 
@@ -218,7 +218,7 @@ public class AuthService {
 
         // 更新密码
         user.setPassword(passwordEncoder.encode(newPassword));
-        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         userService.updateById(user);
 
         return AuthResult.builder()
@@ -241,7 +241,7 @@ public class AuthService {
         Optional<User> userOpt = userService.getOptById(userId);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            user.setUpdateTime(LocalDateTime.now());
+            user.setUpdatedAt(LocalDateTime.now());
             userService.updateById(user);
         }
     }

@@ -103,7 +103,7 @@ public class CacheRefreshJob implements Job {
             // 查询最近活跃的用户（最近7天有更新记录的用户）
             LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
             LambdaQueryWrapper<User> activeQuery = new LambdaQueryWrapper<>();
-            activeQuery.ge(User::getUpdateTime, sevenDaysAgo);
+            activeQuery.ge(User::getUpdatedAt, sevenDaysAgo);
             activeQuery.eq(User::getStatus, 1); // 1表示正常状态
             activeQuery.last("LIMIT 100"); // 限制最多100个用户
             List<User> activeUsers = userMapper.selectList(activeQuery);

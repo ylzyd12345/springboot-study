@@ -64,6 +64,6 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 查找最近创建的用户
      */
-    @Select("SELECT * FROM sys_user WHERE status = 1 AND deleted = 0 ORDER BY create_time DESC")
+    @Select("SELECT * FROM sys_user WHERE status = 1 AND deleted = 0 ORDER BY created_at DESC")
     List<User> findRecentActiveUsers();
 }

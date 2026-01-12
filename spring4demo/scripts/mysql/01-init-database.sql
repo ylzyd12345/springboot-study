@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   `status` INT NOT NULL DEFAULT '1' COMMENT '状态（1-启用，0-禁用）',
   `dept_id` BIGINT DEFAULT NULL COMMENT '部门ID',
   `create_by` BIGINT DEFAULT NULL COMMENT '创建人',
-  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_by` BIGINT DEFAULT NULL COMMENT '更新人',
-  `update_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `deleted` INT NOT NULL DEFAULT '0' COMMENT '逻辑删除标志（0-未删除，1-已删除）',
   `version` INT NOT NULL DEFAULT '0' COMMENT '乐观锁版本号',
   PRIMARY KEY (`id`),
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
   UNIQUE KEY `uk_email` (`email`),
   KEY `idx_status` (`status`),
   KEY `idx_dept_id` (`dept_id`),
-  KEY `idx_create_time` (`create_time`)
+  KEY `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统用户表';
 
 -- 创建默认管理员用户（密码: admin123，BCrypt加密）

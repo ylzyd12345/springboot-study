@@ -59,7 +59,7 @@ public interface UserRepository extends Neo4jRepository<UserNode, Long> {
      * @param endTime 结束时间
      * @return 用户节点列表
      */
-    @Query("MATCH (u:User) WHERE u.status = $status AND u.createTime >= $startTime AND u.createTime <= $endTime RETURN u")
+    @Query("MATCH (u:User) WHERE u.status = $status AND u.createdAt >= $startTime AND u.createdAt <= $endTime RETURN u")
     List<UserNode> findByStatusAndCreateTimeBetween(Integer status, String startTime, String endTime);
 
     /**
