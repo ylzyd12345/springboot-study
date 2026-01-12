@@ -19,11 +19,11 @@ public class ${entity}Request {
     @NotBlank(message = "创建人不能为空")
     private String createBy;
 
-    private LocalDateTime createTime;
+    private LocalDateTime createAt;
 
     private String updateBy;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updateAt;
 
     private Integer deleted;
 
