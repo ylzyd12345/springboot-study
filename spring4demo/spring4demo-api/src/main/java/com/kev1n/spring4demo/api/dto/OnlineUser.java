@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 在线用户
+ * 在线用户.
  *
  * @author spring4demo
  * @version 1.0.0
@@ -19,42 +19,42 @@ import java.time.LocalDateTime;
 public class OnlineUser implements Serializable {
 
     /**
-     * 用户ID
+     * 用户ID.
      */
     private Long userId;
 
     /**
-     * 用户名
+     * 用户名.
      */
     private String username;
 
     /**
-     * 真实姓名
+     * 真实姓名.
      */
     private String realName;
 
     /**
-     * 头像
+     * 头像.
      */
     private String avatar;
 
     /**
-     * 状态 (ONLINE, BUSY, AWAY)
+     * 状态 (ONLINE, BUSY, AWAY).
      */
     private String status;
 
     /**
-     * 会话ID
+     * 会话ID.
      */
     private String sessionId;
 
     /**
-     * 上线时间
+     * 上线时间.
      */
     private LocalDateTime onlineTime;
 
     /**
-     * 最后活跃时间
+     * 最后活跃时间.
      */
     private LocalDateTime lastActiveTime;
 }

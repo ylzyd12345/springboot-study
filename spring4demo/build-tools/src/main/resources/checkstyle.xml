@@ -139,6 +139,10 @@
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="separateLineBetweenGroups" value="true"/>
             <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
+            <!-- 允许导入组之前有空行，IDE通常会自动处理 -->
+            <property name="allowBlankLines" value="true"/>
+            <!-- 不强制要求特定的导入顺序，减少不必要的warning -->
+            <property name="option" value="bottom"/>
         </module>
         <module name="MethodParamPad"/>
         <module name="ParenPad"/>

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 统一API响应格式
+ * 统一API响应格式.
  * 
  * <p>提供统一的API响应格式，包含响应码、消息、数据和时间戳。
  * 所有Controller接口都应该使用此类作为返回值类型。</p>
@@ -26,24 +26,25 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     
-    /** 响应码 */
+    /** 响应码. */
     private Integer code;
-    
-    /** 响应消息 */
+
+    /** 响应消息. */
     private String message;
-    
-    /** 响应数据 */
+
+    /** 响应数据. */
     private T data;
-    
-    /** 响应时间戳 */
+
+    /** 响应时间戳. */
     private LocalDateTime timestamp;
-    
-    /** 请求ID（用于链路追踪） */
+
+    /** 请求ID（用于链路追踪）. */
     private String traceId;
 
     /**
-     * 成功响应（无数据）
-     * 
+     * 成功响应（无数据）.
+     *
+     * @param <T> 响应数据类型
      * @return 成功响应
      */
     public static <T> ApiResponse<T> success() {
@@ -55,8 +56,9 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 成功响应（带数据）
-     * 
+     * 成功响应（带数据）.
+     *
+     * @param <T> 响应数据类型
      * @param data 响应数据
      * @return 成功响应
      */
@@ -70,8 +72,9 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 成功响应（自定义消息）
-     * 
+     * 成功响应（自定义消息）.
+     *
+     * @param <T> 响应数据类型
      * @param message 响应消息
      * @param data 响应数据
      * @return 成功响应
@@ -86,8 +89,9 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 失败响应
-     * 
+     * 失败响应.
+     *
+     * @param <T> 响应数据类型
      * @param message 错误消息
      * @return 失败响应
      */
@@ -100,8 +104,9 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 失败响应（自定义错误码）
-     * 
+     * 失败响应（自定义错误码）.
+     *
+     * @param <T> 响应数据类型
      * @param code 错误码
      * @param message 错误消息
      * @return 失败响应
@@ -115,8 +120,9 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 失败响应（带数据）
-     * 
+     * 失败响应（带数据）.
+     *
+     * @param <T> 响应数据类型
      * @param code 错误码
      * @param message 错误消息
      * @param data 响应数据
@@ -132,8 +138,8 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 判断响应是否成功
-     * 
+     * 判断响应是否成功.
+     *
      * @return 是否成功
      */
     public boolean isSuccess() {

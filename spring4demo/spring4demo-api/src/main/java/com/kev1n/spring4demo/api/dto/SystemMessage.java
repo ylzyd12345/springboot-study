@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 系统消息
+ * 系统消息.
  *
  * @author spring4demo
  * @version 1.0.0
@@ -19,27 +19,27 @@ import java.time.LocalDateTime;
 public class SystemMessage implements Serializable {
 
     /**
-     * 消息ID
+     * 消息ID.
      */
     private Long messageId;
 
     /**
-     * 消息标题
+     * 消息标题.
      */
     private String title;
 
     /**
-     * 消息内容
+     * 消息内容.
      */
     private String content;
 
     /**
-     * 消息类型 (NOTICE, WARNING, ERROR, INFO)
+     * 消息类型 (NOTICE, WARNING, ERROR, INFO).
      */
     private String messageType;
 
     /**
-     * 发送时间
+     * 发送时间.
      */
     private LocalDateTime sentAt;
 

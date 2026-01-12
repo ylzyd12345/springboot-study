@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 用户状态枚举
+ * 用户状态枚举.
  *
  * 数据库存储：INT 类型（1-启用，0-禁用）
  * 代码使用：ENUM 类型
@@ -21,31 +21,31 @@ import lombok.Getter;
 public enum UserStatus {
 
     /**
-     * 启用状态
+     * 启用状态.
      */
     ACTIVE(1, "启用"),
 
     /**
-     * 禁用状态
+     * 禁用状态.
      */
     INACTIVE(0, "禁用");
 
     /**
-     * 数据库存储值
+     * 数据库存储值.
      */
     @EnumValue
     @Schema(description = "状态值")
     private final Integer value;
 
     /**
-     * 状态描述
+     * 状态描述.
      */
     @JsonValue
     @Schema(description = "状态描述")
     private final String description;
 
     /**
-     * 根据值获取枚举
+     * 根据值获取枚举.
      *
      * @param value 状态值
      * @return 用户状态枚举
@@ -63,7 +63,7 @@ public enum UserStatus {
     }
 
     /**
-     * 根据描述获取枚举
+     * 根据描述获取枚举.
      *
      * @param description 状态描述
      * @return 用户状态枚举

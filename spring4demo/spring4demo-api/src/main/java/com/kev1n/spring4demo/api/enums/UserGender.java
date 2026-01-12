@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 用户性别枚举
+ * 用户性别枚举.
  *
  * @author spring4demo
  * @version 1.0.0
@@ -18,36 +18,36 @@ import lombok.Getter;
 public enum UserGender {
 
     /**
-     * 男性
+     * 男性.
      */
     MALE(1, "男"),
 
     /**
-     * 女性
+     * 女性.
      */
     FEMALE(2, "女"),
 
     /**
-     * 未知
+     * 未知.
      */
     UNKNOWN(0, "未知");
 
     /**
-     * 数据库存储值
+     * 数据库存储值.
      */
     @EnumValue
     @Schema(description = "性别值")
     private final Integer value;
 
     /**
-     * 性别描述
+     * 性别描述.
      */
     @JsonValue
     @Schema(description = "性别描述")
     private final String description;
 
     /**
-     * 根据值获取枚举
+     * 根据值获取枚举.
      *
      * @param value 性别值
      * @return 用户性别枚举
@@ -65,7 +65,7 @@ public enum UserGender {
     }
 
     /**
-     * 根据描述获取枚举
+     * 根据描述获取枚举.
      *
      * @param description 性别描述
      * @return 用户性别枚举

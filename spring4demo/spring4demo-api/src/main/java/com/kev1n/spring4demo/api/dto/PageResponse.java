@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * 分页响应格式
- * 
+ * 分页响应格式.
+ *
  * <p>提供分页数据的统一响应格式，包含数据列表、分页信息等。</p>
- * 
+ *
  * @param <T> 数据类型
  * @author spring4demo
  * @version 1.0.0
@@ -25,30 +25,31 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageResponse<T> {
     
-    /** 数据列表 */
+    /** 数据列表。 */
     private List<T> records;
-    
-    /** 总记录数 */
+
+    /** 总记录数。 */
     private Long total;
-    
-    /** 当前页码（从0开始） */
+
+    /** 当前页码（从0开始）。 */
     private Integer current;
-    
-    /** 每页大小 */
+
+    /** 每页大小。 */
     private Integer size;
-    
-    /** 总页数 */
+
+    /** 总页数。 */
     private Integer pages;
-    
-    /** 是否有下一页 */
+
+    /** 是否有下一页。 */
     private Boolean hasNext;
-    
-    /** 是否有上一页 */
+
+    /** 是否有上一页。 */
     private Boolean hasPrevious;
 
     /**
-     * 创建分页响应
-     * 
+     * 创建分页响应.
+     *
+     * @param <T> 数据类型
      * @param records 数据列表
      * @param total 总记录数
      * @param current 当前页码
