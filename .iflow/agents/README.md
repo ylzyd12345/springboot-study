@@ -1,3 +1,9 @@
+---
+name: agents-readme
+description: Documentation for the NioPD agents directory structure and usage
+category: documentation
+---
+
 # NioPD Agents Directory
 
 This directory contains all the specialized AI agents used by the NioPD system. Each agent is defined by a markdown file that provides detailed instructions for a specific task.
