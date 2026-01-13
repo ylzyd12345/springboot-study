@@ -106,11 +106,14 @@ spring:
 logging:
   level:
     root: info
-    com.kev1n.spring4demo: info
+    com.kev1n.spring4demo: debug
     org.springframework.web: info
     org.springframework.security: warn
-    org.testcontainers: info
-    org.testcontainers.containers: info
+    org.springframework.boot.autoconfigure: info
+    org.springframework.data: debug
+    org.testcontainers: debug
+    org.testcontainers.containers: debug
+    com.baomidou.mybatisplus: debug
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){cyan} %clr([%X{traceId:-},%X{userId:-}]){magenta} %clr(%logger{50}){yellow} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{userId:-}] %logger{50} - %msg%n"

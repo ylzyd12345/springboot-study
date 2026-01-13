@@ -21,7 +21,10 @@
     <modules>
         <!-- 公共模块 - 通用配置、工具类、常量、异常 -->
         <module>spring4demo-common</module>
-        
+
+        <!-- 测试支持模块 - Testcontainers 配置和测试工具类 -->
+        <module>spring4demo-test-support</module>
+
         <!-- API 模块 - DTO、枚举、常量 -->
         <module>spring4demo-api</module>
         
@@ -62,9 +65,10 @@
         <maven.test.skip>false</maven.test.skip>
         <skipTests>false</skipTests>
         <jacoco.skip>true</jacoco.skip>
-        <spotbugs.skip>true</spotbugs.skip>
-        <pmd.skip>true</pmd.skip>
-        <dependency-check.skip>true</dependency-check.skip>
+        <spotbugs.skip>false</spotbugs.skip>
+        <pmd.skip>false</pmd.skip>
+        <dependency-check.skip>false</dependency-check.skip>
+        <checkstyle.skip>true</checkstyle.skip>
 
         <!-- ==================== 测试覆盖率目标 ==================== -->
         <jacoco.coverage.ratio>0.85</jacoco.coverage.ratio>
@@ -138,6 +142,8 @@
         <!-- ==================== 测试 ==================== -->
         <jacoco.version>0.8.12</jacoco.version>
         <wiremock.version>3.9.0</wiremock.version>
+        <testcontainers.version>2.0.3</testcontainers.version>
+        <testcontainers-redis-module.version>2.2.4</testcontainers-redis-module.version>
 
         <!-- ==================== Maven 插件 ==================== -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
@@ -169,6 +175,15 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- ==================== Testcontainers BOM ==================== -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- ==================== Spring Cloud BOM ==================== -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -187,6 +202,11 @@
             <dependency>
                 <groupId>com.kev1n</groupId>
                 <artifactId>spring4demo-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.kev1n</groupId>
+                <artifactId>spring4demo-test-support</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -455,6 +475,76 @@
 
             <!-- ==================== Testcontainers ==================== -->
             <!-- Testcontainers 核心模块 -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers MySQL -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-mysql</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers MongoDB -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-mongodb</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Redis -->
+            <dependency>
+                <groupId>com.redis</groupId>
+                <artifactId>testcontainers-redis</artifactId>
+                <version>${testcontainers-redis-module.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Elasticsearch -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-elasticsearch</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Neo4j -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-neo4j</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers InfluxDB -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-influxdb</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers RabbitMQ -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-rabbitmq</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Kafka -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-kafka</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -642,10 +732,12 @@
                         </dependency>
                     </dependencies>
                     <configuration>
+                        <skip>${checkstyle.skip}</skip>
                         <consoleOutput>true</consoleOutput>
                         <failsOnError>true</failsOnError>
                         <configLocation>/checkstyle.xml</configLocation>
                     </configuration>
+                    <!-- 暂时注释掉execution，避免依赖build-tools模块 -->
                     <executions>
                         <execution>
                             <id>validate</id>

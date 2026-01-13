@@ -115,12 +115,68 @@
         </dependency>
 
         <!-- ==================== 测试依赖 ==================== -->
-        
+
         <!-- Spring Boot Test Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers 核心模块（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers MySQL（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mysql</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers MongoDB（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mongodb</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers Elasticsearch（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-elasticsearch</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers Neo4j（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-neo4j</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers InfluxDB（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-influxdb</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers RabbitMQ（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-rabbitmq</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testcontainers Kafka（provided，用于TestContainersConfig） -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-kafka</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

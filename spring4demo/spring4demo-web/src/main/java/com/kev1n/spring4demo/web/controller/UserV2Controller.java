@@ -1,18 +1,26 @@
 package com.kev1n.spring4demo.web.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kev1n.spring4demo.api.dto.ApiResponse;
 import com.kev1n.spring4demo.api.dto.PageResponse;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.service.UserService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kev1n.spring4demo.web.annotation.ApiVersion;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -104,7 +112,7 @@ public class UserV2Controller {
         }
         
         userService.save(user);
-        return ApiResponse.success(user, "用户创建成功");
+        return ApiResponse.success("用户创建成功", user);
     }
 
     /**
@@ -130,7 +138,7 @@ public class UserV2Controller {
         
         user.setId(id);
         userService.updateById(user);
-        return ApiResponse.success(user, "用户更新成功");
+        return ApiResponse.success("用户更新成功", user);
     }
 
     /**
@@ -153,7 +161,7 @@ public class UserV2Controller {
         
         boolean result = userService.removeById(id);
         if (result) {
-            return ApiResponse.success(true, "用户删除成功");
+            return ApiResponse.success("用户删除成功",true);
         } else {
             return ApiResponse.error(500, "用户删除失败");
         }
@@ -173,7 +181,7 @@ public class UserV2Controller {
         log.info("v2版本批量删除用户: count={}", ids.size());
         boolean result = userService.removeByIds(ids);
         if (result) {
-            return ApiResponse.success(true, "批量删除成功");
+            return ApiResponse.success("批量删除成功", true);
         } else {
             return ApiResponse.error(500, "批量删除失败");
         }

@@ -215,11 +215,18 @@
         </dependency>
 
         <!-- ==================== 测试依赖 ==================== -->
-        
+
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 测试支持模块 - Testcontainers 配置和测试工具类 -->
+        <dependency>
+            <groupId>com.kev1n</groupId>
+            <artifactId>spring4demo-test-support</artifactId>
             <scope>test</scope>
         </dependency>
 

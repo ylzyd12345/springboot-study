@@ -1,5 +1,6 @@
 package com.kev1n.spring4demo.api.dto;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,6 +67,23 @@ public class PageResponse<T> {
                 .pages(pages)
                 .hasNext(current < pages - 1)
                 .hasPrevious(current > 0)
+                .build();
+    }
+
+    /**
+     * 创建分页响应.
+     *
+     * @param <T> 数据类型
+     * @param page mybatis-plus的page
+     * @return 分页响应
+     */
+    public static <T> PageResponse<T> of(Page<T> page) {
+        int pages = page.getPages() > 0 ? (int) Math.ceil((double) page.getTotal() / page.getSize()) : 0;
+        return PageResponse.<T>builder()
+                .records(page.getRecords())
+                .total(page.getTotal())
+                .size((int) page.getSize())
+                .pages(pages)
                 .build();
     }
 }
