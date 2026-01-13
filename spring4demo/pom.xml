@@ -286,11 +286,7 @@
                 <artifactId>mybatis-plus-jsqlparser</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>${pagehelper.version}</version>
-            </dependency>
+            
             <!-- R2DBC MySQL Driver -->
             <dependency>
                 <groupId>io.asyncer</groupId>

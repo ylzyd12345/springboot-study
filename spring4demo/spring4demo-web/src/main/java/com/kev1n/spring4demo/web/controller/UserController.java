@@ -9,10 +9,13 @@ import com.kev1n.spring4demo.common.enums.ErrorCode;
 import com.kev1n.spring4demo.core.annotation.RateLimit;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.service.UserService;
+import com.kev1n.spring4demo.api.dto.PageResponse;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import com.kev1n.spring4demo.web.dto.UserCreateRequest;
 import com.kev1n.spring4demo.web.dto.UserUpdateRequest;
 import com.kev1n.spring4demo.web.dto.UserQueryRequest;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,6 +57,7 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final MeterRegistry meterRegistry;
 
     /**
      * 创建用户
@@ -126,7 +130,15 @@ public class UserController {
         log.debug("获取用户列表: current={}, size={}, keyword={}", 
                 request.getCurrent(), request.getSize(), request.getKeyword());
         
+        Timer.Sample sample = Timer.start(meterRegistry);
+        
         try {
+            // 监控深度分页
+            if (request.getCurrent() > 1000) {
+                log.warn("深度分页查询: current={}, size={}", 
+                        request.getCurrent(), request.getSize());
+            }
+            
             // 构建查询条件
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             
@@ -159,9 +171,20 @@ public class UserController {
             Page<User> page = new Page<>(request.getCurrent(), request.getSize());
             Page<User> result = userService.page(page, queryWrapper);
             
+            // 记录分页查询指标
+            sample.stop(Timer.builder("pagination.query.duration")
+                    .tag("entity", "user")
+                    .tag("current", String.valueOf(request.getCurrent()))
+                    .tag("size", String.valueOf(request.getSize()))
+                    .register(meterRegistry));
+            
             return ResponseEntity.ok(ApiResponse.success(result));
             
         } catch (Exception e) {
+            sample.stop(Timer.builder("pagination.query.duration")
+                    .tag("entity", "user")
+                    .tag("status", "error")
+                    .register(meterRegistry));
             log.error("获取用户列表失败", e);
             return ResponseEntity.ok(ApiResponse.error("系统异常，查询失败"));
         }

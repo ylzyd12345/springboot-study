@@ -1,6 +1,8 @@
 package com.kev1n.spring4demo.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 /**
@@ -21,6 +23,7 @@ public class UserQueryRequest {
      * 
      * <p>分页查询的当前页码，从1开始。</p>
      */
+    @Min(value = 1, message = "当前页码必须大于等于1")
     @Schema(description = "当前页码，从1开始", example = "1", defaultValue = "1")
     private Integer current = 1;
 
@@ -29,6 +32,8 @@ public class UserQueryRequest {
      * 
      * <p>每页显示的记录数，默认10，最大100。</p>
      */
+    @Min(value = 1, message = "每页大小必须大于等于1")
+    @Max(value = 100, message = "每页大小不能超过100")
     @Schema(description = "每页大小，最大100", example = "10", defaultValue = "10")
     private Integer size = 10;
 

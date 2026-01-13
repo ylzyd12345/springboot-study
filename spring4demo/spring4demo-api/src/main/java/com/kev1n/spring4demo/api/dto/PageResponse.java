@@ -58,6 +58,17 @@ public class PageResponse<T> {
      * @return 分页响应
      */
     public static <T> PageResponse<T> of(List<T> records, Long total, Integer current, Integer size) {
+        // 参数校验
+        if (current == null || current < 0) {
+            current = 0;
+        }
+        if (size == null || size < 1) {
+            size = 10;
+        }
+        if (size > 100) {
+            size = 100; // 限制最大分页大小
+        }
+        
         int pages = size > 0 ? (int) Math.ceil((double) total / size) : 0;
         return PageResponse.<T>builder()
                 .records(records)
@@ -78,12 +89,19 @@ public class PageResponse<T> {
      * @return 分页响应
      */
     public static <T> PageResponse<T> of(Page<T> page) {
-        int pages = page.getPages() > 0 ? (int) Math.ceil((double) page.getTotal() / page.getSize()) : 0;
+        int current = (int) page.getCurrent();
+        int size = (int) page.getSize();
+        long total = page.getTotal();
+        int pages = size > 0 ? (int) Math.ceil((double) total / size) : 0;
+        
         return PageResponse.<T>builder()
                 .records(page.getRecords())
-                .total(page.getTotal())
-                .size((int) page.getSize())
+                .total(total)
+                .current(current)
+                .size(size)
                 .pages(pages)
+                .hasNext(current < pages - 1)
+                .hasPrevious(current > 0)
                 .build();
     }
 }
