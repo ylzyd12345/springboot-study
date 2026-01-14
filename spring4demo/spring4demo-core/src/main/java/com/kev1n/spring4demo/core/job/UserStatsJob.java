@@ -88,9 +88,6 @@ public class UserStatsJob implements Job {
             // 发送告警通知
             sendAlert("用户统计任务失败", "数据库访问失败: " + e.getMessage());
             throw new JobExecutionException("数据库访问失败", e);
-        } catch (JobExecutionException e) {
-            log.error("[UserStatsJob] 任务执行异常: {}", e.getMessage());
-            throw e;
         } catch (RuntimeException e) {
             log.error("[UserStatsJob] 用户统计任务执行时发生运行时异常: {}", e.getMessage());
             // 发送告警通知

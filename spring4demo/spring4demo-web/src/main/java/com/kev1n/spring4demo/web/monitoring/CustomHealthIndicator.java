@@ -59,13 +59,6 @@ public class CustomHealthIndicator implements HealthIndicator {
                         .build();
             }
 
-        } catch (java.sql.SQLException e) {
-            log.error("Database health check failed", e);
-            details.put("error", e.getMessage());
-            details.put("errorType", "SQLException");
-            return Health.down()
-                    .withDetails(details)
-                    .build();
         } catch (NumberFormatException e) {
             log.error("Health check parsing error", e);
             details.put("error", e.getMessage());

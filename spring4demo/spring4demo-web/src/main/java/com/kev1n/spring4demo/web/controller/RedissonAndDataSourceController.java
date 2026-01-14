@@ -3,7 +3,7 @@ package com.kev1n.spring4demo.web.controller;
 import com.kev1n.spring4demo.common.exception.BusinessException;
 import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.core.service.DynamicDataSourceService;
-import com.kev1n.spring4demo.core.service.RedissonService;
+import com.kev1n.spring4demo.core.service.RedissonServiceFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 @Tag(name = "Redisson和动态数据源示例", description = "演示 Redisson 分布式锁、缓存和动态数据源读写分离")
 public class RedissonAndDataSourceController {
 
-    private final RedissonService redissonService;
+    private final RedissonServiceFacade redissonServiceFacade;
     private final DynamicDataSourceService dynamicDataSourceService;
 
     /**
@@ -48,7 +48,7 @@ public class RedissonAndDataSourceController {
         Map<String, Object> result = new HashMap<>();
 
         // 尝试获取锁
-        boolean locked = redissonService.tryLock(lockKey, 10, 30, TimeUnit.SECONDS);
+        boolean locked = redissonServiceFacade.lock().tryLock(lockKey, 10, 30, TimeUnit.SECONDS);
 
         if (locked) {
             try {
@@ -66,7 +66,7 @@ public class RedissonAndDataSourceController {
                 result.put("message", "操作被中断");
             } finally {
                 // 释放锁
-                redissonService.unlock(lockKey);
+                redissonServiceFacade.lock().unlock(lockKey);
                 result.put("unlock", "锁已释放");
             }
         } else {
@@ -93,7 +93,7 @@ public class RedissonAndDataSourceController {
         Map<String, Object> result = new HashMap<>();
 
         // 设置缓存
-        redissonService.set(key, value, 60, TimeUnit.SECONDS);
+        redissonServiceFacade.cache().set(key, value, 60, TimeUnit.SECONDS);
 
         result.put("status", "success");
         result.put("message", "缓存设置成功");
@@ -118,7 +118,7 @@ public class RedissonAndDataSourceController {
         Map<String, Object> result = new HashMap<>();
 
         // 获取缓存
-        String value = redissonService.get(key);
+        String value = redissonServiceFacade.cache().get(key);
 
         if (value != null) {
             result.put("status", "success");
@@ -278,10 +278,10 @@ public class RedissonAndDataSourceController {
         Map<String, Object> result = new HashMap<>();
 
         // 设置 Map 值
-        redissonService.mapPut(key, mapKey, value);
+        redissonServiceFacade.collection().mapPut(key, mapKey, value);
 
         // 获取 Map 值
-        String retrievedValue = redissonService.mapGet(key, mapKey);
+        String retrievedValue = redissonServiceFacade.collection().mapGet(key, mapKey);
 
         result.put("status", "success");
         result.put("message", "Map 操作成功");
@@ -308,7 +308,7 @@ public class RedissonAndDataSourceController {
         Map<String, Object> result = new HashMap<>();
 
         // 添加到 Set
-        boolean added = redissonService.setAdd(key, value);
+        boolean added = redissonServiceFacade.collection().setAdd(key, value);
 
         result.put("status", "success");
         result.put("message", "Set 操作成功");
@@ -334,10 +334,10 @@ public class RedissonAndDataSourceController {
         Map<String, Object> result = new HashMap<>();
 
         // 添加到 List
-        boolean added = redissonService.listAdd(key, value);
+        boolean added = redissonServiceFacade.collection().listAdd(key, value);
 
         // 获取 List 中的第一个元素
-        String firstValue = redissonService.listGet(key, 0);
+        String firstValue = redissonServiceFacade.collection().listGet(key, 0);
 
         result.put("status", "success");
         result.put("message", "List 操作成功");

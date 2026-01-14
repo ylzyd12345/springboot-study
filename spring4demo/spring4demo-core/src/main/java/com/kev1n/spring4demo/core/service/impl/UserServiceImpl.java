@@ -7,6 +7,7 @@ import com.kev1n.spring4demo.common.exception.BusinessException;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.mapper.UserMapper;
 import com.kev1n.spring4demo.core.repository.UserReactiveRepository;
+import com.kev1n.spring4demo.common.helper.AsyncExecutorHelper;
 import com.kev1n.spring4demo.core.service.UserAsyncService;
 import com.kev1n.spring4demo.core.service.UserCacheService;
 import com.kev1n.spring4demo.core.service.UserDistributedService;
@@ -43,6 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserCacheService userCacheService;
     private final UserAsyncService userAsyncService;
     private final UserDistributedService userDistributedService;
+    private final AsyncExecutorHelper asyncExecutor;
 
     @Override
     public Optional<User> findByUsername(String username) {
@@ -146,34 +148,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             logUserAction(user, "CREATE", null, null, null);
 
             // 异步发送欢迎邮件
-            try {
-                userAsyncService.sendWelcomeEmailAsync(user.getId());
-                log.info("已触发异步发送欢迎邮件: userId={}", user.getId());
-            } catch (BusinessException e) {
-                log.error("触发异步发送欢迎邮件失败(业务异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (RuntimeException e) {
-                log.error("触发异步发送欢迎邮件失败(运行时异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (Exception e) {
-                log.error("触发异步发送欢迎邮件失败(未知异常): userId={}", user.getId(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            }
+            asyncExecutor.executeAsync("发送欢迎邮件", 
+                () -> userAsyncService.sendWelcomeEmailAsync(user.getId()));
 
             // 索引用户到Elasticsearch
-            try {
-                userSearchService.indexUser(user.getId());
-                log.info("用户已索引到Elasticsearch: userId={}", user.getId());
-            } catch (BusinessException e) {
-                log.error("索引用户到Elasticsearch失败(业务异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (RuntimeException e) {
-                log.error("索引用户到Elasticsearch失败(运行时异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (Exception e) {
-                log.error("索引用户到Elasticsearch失败(未知异常): userId={}", user.getId(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            }
+            asyncExecutor.executeAsync("索引用户到Elasticsearch", 
+                () -> userSearchService.indexUser(user.getId()));
         }
         return result;
     }
@@ -197,41 +177,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             logUserAction(user, "UPDATE", null, null, null);
 
             // 异步记录用户操作日志（额外记录详细信息）
-            try {
-                userAsyncService.logUserActionAsync(
+            asyncExecutor.executeAsync("记录用户操作日志", 
+                () -> userAsyncService.logUserActionAsync(
                         user.getId(),
                         user.getUsername(),
                         "UPDATE_ASYNC",
                         String.format("用户信息更新: status=%s, email=%s", user.getStatus(), user.getEmail()),
                         null,
                         null
-                );
-                log.info("已触发异步记录用户操作日志: userId={}", user.getId());
-            } catch (BusinessException e) {
-                log.error("触发异步记录用户操作日志失败(业务异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (RuntimeException e) {
-                log.error("触发异步记录用户操作日志失败(运行时异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (Exception e) {
-                log.error("触发异步记录用户操作日志失败(未知异常): userId={}", user.getId(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            }
+                ));
 
             // 更新Elasticsearch索引
-            try {
-                userSearchService.syncUserToEs(user.getId());
-                log.info("用户索引已更新到Elasticsearch: userId={}", user.getId());
-            } catch (BusinessException e) {
-                log.error("更新用户Elasticsearch索引失败(业务异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (RuntimeException e) {
-                log.error("更新用户Elasticsearch索引失败(运行时异常): userId={}, error={}", user.getId(), e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (Exception e) {
-                log.error("更新用户Elasticsearch索引失败(未知异常): userId={}", user.getId(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            }
+            asyncExecutor.executeAsync("更新用户Elasticsearch索引", 
+                () -> userSearchService.syncUserToEs(user.getId()));
         }
         return result;
     }
@@ -253,19 +211,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
             logUserAction(user, "DELETE", null, null, null);
             // 删除Elasticsearch索引
-            try {
-                userSearchService.deleteUserIndex(id);
-                log.info("用户索引已从Elasticsearch删除: userId={}", id);
-            } catch (BusinessException e) {
-                log.error("删除用户Elasticsearch索引失败(业务异常): userId={}, error={}", id, e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (RuntimeException e) {
-                log.error("删除用户Elasticsearch索引失败(运行时异常): userId={}, error={}", id, e.getMessage(), e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            } catch (Exception e) {
-                log.error("删除用户Elasticsearch索引失败(未知异常): userId={}", id, e);
-                // 异步操作失败不影响主业务流程，记录日志即可
-            }
+            asyncExecutor.executeAsync("删除用户Elasticsearch索引", 
+                () -> userSearchService.deleteUserIndex(id));
         }
         return result;
     }

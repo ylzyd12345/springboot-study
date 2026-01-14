@@ -3,7 +3,6 @@ package com.kev1n.spring4demo.web.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.kev1n.spring4demo.common.enums.ErrorCode;
 import com.kev1n.spring4demo.common.exception.BusinessException;
-import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.core.service.FileStorageService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +15,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -191,9 +197,6 @@ public class FileStorageController {
 
             return ResponseEntity.ok(ApiResponse.success(fileInfo));
 
-        } catch (IOException e) {
-            log.error("文件IO异常: fileName={}", fileName, e);
-            return ResponseEntity.ok(ApiResponse.error("获取文件信息失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
@@ -230,9 +233,6 @@ public class FileStorageController {
             log.info("文件删除成功: fileName={}", fileName);
             return ResponseEntity.ok(ApiResponse.success("文件删除成功", null));
 
-        } catch (IOException e) {
-            log.error("文件IO异常: fileName={}", fileName, e);
-            return ResponseEntity.ok(ApiResponse.error("文件删除失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
@@ -270,9 +270,6 @@ public class FileStorageController {
             log.info("批量删除文件成功: count={}", fileNames.size());
             return ResponseEntity.ok(ApiResponse.success("批量删除成功", null));
 
-        } catch (IOException e) {
-            log.error("文件IO异常", e);
-            return ResponseEntity.ok(ApiResponse.error("批量删除失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: error={}", e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
@@ -303,9 +300,6 @@ public class FileStorageController {
             List<Map<String, Object>> files = fileStorageService.listFiles(prefix);
             return ResponseEntity.ok(ApiResponse.success(files));
 
-        } catch (IOException e) {
-            log.error("文件IO异常", e);
-            return ResponseEntity.ok(ApiResponse.error("列出文件失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: error={}", e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
@@ -345,9 +339,6 @@ public class FileStorageController {
 
             return ResponseEntity.ok(ApiResponse.success(result));
 
-        } catch (IOException e) {
-            log.error("文件IO异常: fileName={}", fileName, e);
-            return ResponseEntity.ok(ApiResponse.error("获取文件URL失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
@@ -387,9 +378,6 @@ public class FileStorageController {
             log.info("文件复制成功: {} -> {}", sourceFileName, targetFileName);
             return ResponseEntity.ok(ApiResponse.success("文件复制成功", null));
 
-        } catch (IOException e) {
-            log.error("文件IO异常: {} -> {}", sourceFileName, targetFileName, e);
-            return ResponseEntity.ok(ApiResponse.error("文件复制失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: {} -> {}, error={}", sourceFileName, targetFileName, e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
@@ -429,9 +417,6 @@ public class FileStorageController {
             log.info("文件移动成功: {} -> {}", sourceFileName, targetFileName);
             return ResponseEntity.ok(ApiResponse.success("文件移动成功", null));
 
-        } catch (IOException e) {
-            log.error("文件IO异常: {} -> {}", sourceFileName, targetFileName, e);
-            return ResponseEntity.ok(ApiResponse.error("文件移动失败: " + e.getMessage()));
         } catch (BusinessException e) {
             log.error("业务异常: {} -> {}, error={}", sourceFileName, targetFileName, e.getMessage(), e);
             return ResponseEntity.ok(ApiResponse.error(e.getMessage()));

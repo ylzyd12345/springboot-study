@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -166,6 +169,56 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(e.getHttpStatus())
                 .body(ApiResponse.error(e.getHttpStatus(), e.getMessage()));
+    }
+    
+    // ==================== 数据库异常 ====================
+    
+    /**
+     * 处理数据重复异常
+     * 
+     * @param e 数据重复异常
+     * @param request HTTP请求
+     * @return API响应
+     */
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicateKeyException(
+            DuplicateKeyException e, HttpServletRequest request) {
+        log.warn("数据重复异常: {}, URI: {}", e.getMessage(), request.getRequestURI());
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ErrorCode.USER_ALREADY_EXISTS.getCode(), "数据已存在"));
+    }
+    
+    /**
+     * 处理数据完整性异常
+     * 
+     * @param e 数据完整性异常
+     * @param request HTTP请求
+     * @return API响应
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<?>> handleDataIntegrityViolationException(
+            DataIntegrityViolationException e, HttpServletRequest request) {
+        log.error("数据完整性异常: {}, URI: {}", e.getMessage(), request.getRequestURI(), e);
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ErrorCode.VALIDATION_ERROR.getCode(), "数据完整性约束违反"));
+    }
+    
+    /**
+     * 处理数据库访问异常
+     * 
+     * @param e 数据库访问异常
+     * @param request HTTP请求
+     * @return API响应
+     */
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ApiResponse<?>> handleDataAccessException(
+            DataAccessException e, HttpServletRequest request) {
+        log.error("数据库访问异常: {}, URI: {}", e.getMessage(), request.getRequestURI(), e);
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(ErrorCode.SYSTEM_ERROR.getCode(), "系统繁忙，请稍后重试"));
     }
     
     // ==================== 系统异常 ====================

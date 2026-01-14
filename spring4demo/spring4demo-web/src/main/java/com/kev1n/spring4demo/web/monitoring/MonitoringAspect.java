@@ -228,11 +228,6 @@ public class MonitoringAspect {
 
             return result;
 
-        } catch (org.springframework.cache.CacheException e) {
-            customMetrics.recordCacheMiss(joinPoint.getTarget().getClass().getSimpleName());
-            customMetrics.recordApiResponseTime(sample, "cache", "access");
-            log.warn("Cache operation error: {} - {}", joinPoint.getTarget().getClass().getSimpleName(), e.getMessage());
-            throw e;
         } catch (RuntimeException e) {
             customMetrics.recordCacheMiss(joinPoint.getTarget().getClass().getSimpleName());
             customMetrics.recordApiResponseTime(sample, "cache", "access");

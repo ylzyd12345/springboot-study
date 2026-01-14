@@ -2,7 +2,6 @@ package com.kev1n.spring4demo.core.integration;
 
 import com.influxdb.v3.client.InfluxDBClient;
 import com.influxdb.v3.client.Point;
-import com.influxdb.v3.client.query.QueryOptions;
 import com.kev1n.spring4demo.test.config.TestContainersConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;

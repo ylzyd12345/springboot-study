@@ -56,9 +56,6 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             log.info("文件上传成功: {}", objectKey);
             return objectKey;
-        } catch (IOException e) {
-            log.error("文件上传失败(IO异常): {}", fileName, e);
-            throw new BusinessException("文件上传失败: IO异常 - " + e.getMessage());
         } catch (S3Exception e) {
             log.error("文件上传失败(S3异常): {}", fileName, e);
             throw new BusinessException("文件上传失败: S3异常 - " + e.getMessage());

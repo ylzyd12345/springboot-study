@@ -25,21 +25,29 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.*;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 /**
  * Kafka 集成测试
@@ -91,9 +99,9 @@ class KafkaIntegrationTest {
             configProps.put(org.apache.kafka.clients.producer.ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                     bootstrapServers);
             configProps.put(org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                    JsonSerializer.class);
+                    JacksonJsonDeserializer.class);
             configProps.put(org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                    JsonSerializer.class);
+                    JacksonJsonSerializer.class);
             configProps.put(org.apache.kafka.clients.producer.ProducerConfig.ACKS_CONFIG, "all");
             configProps.put(org.apache.kafka.clients.producer.ProducerConfig.RETRIES_CONFIG, 3);
             return new DefaultKafkaProducerFactory<>(configProps);
@@ -121,18 +129,18 @@ class KafkaIntegrationTest {
                     bootstrapServers);
             props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "test-consumer-group");
             props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                    JsonDeserializer.class);
+                    JacksonJsonDeserializer.class);
             props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                    JsonDeserializer.class);
+                    JacksonJsonDeserializer.class);
             props.put(org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
             props.put(org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
             // 信任所有包
-            props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-            props.put(JsonDeserializer.TYPE_MAPPINGS, "test:java.lang.String");
+            props.put(JacksonJsonDeserializer.TRUSTED_PACKAGES, "*");
+            props.put(JacksonJsonDeserializer.TYPE_MAPPINGS, "test:java.lang.String");
             // 错误处理
             props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
                     ErrorHandlingDeserializer.class);
-            props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
+            props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JacksonJsonDeserializer.class.getName());
 
             return new DefaultKafkaConsumerFactory<>(props);
         }
@@ -265,9 +273,6 @@ class KafkaIntegrationTest {
         } catch (java.util.concurrent.ExecutionException e) {
             log.error("创建 Topic 测试失败: 执行异常", e);
             fail("创建 Topic 测试失败: 执行异常: " + e.getMessage());
-        } catch (java.util.concurrent.TimeoutException e) {
-            log.error("创建 Topic 测试失败: 超时异常", e);
-            fail("创建 Topic 测试失败: 超时异常: " + e.getMessage());
         } catch (org.apache.kafka.common.KafkaException e) {
             log.error("创建 Topic 测试失败: Kafka异常", e);
             fail("创建 Topic 测试失败: Kafka异常: " + e.getMessage());
