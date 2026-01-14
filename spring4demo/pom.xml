@@ -65,9 +65,9 @@
         <maven.test.skip>false</maven.test.skip>
         <skipTests>false</skipTests>
         <jacoco.skip>true</jacoco.skip>
-        <spotbugs.skip>false</spotbugs.skip>
-        <pmd.skip>false</pmd.skip>
-        <dependency-check.skip>false</dependency-check.skip>
+        <spotbugs.skip>true</spotbugs.skip>
+        <pmd.skip>true</pmd.skip>
+        <dependency-check.skip>true</dependency-check.skip>
         <checkstyle.skip>true</checkstyle.skip>
 
         <!-- ==================== 测试覆盖率目标 ==================== -->

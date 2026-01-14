@@ -68,7 +68,7 @@ class RedisIntegrationTest {
     @DisplayName("应该成功连接到 Redis 容器")
     void shouldConnectToRedisContainer_whenContainerIsRunning() {
         // Given & When
-        Boolean result = redisTemplate.getConnectionFactory().getConnection().ping();
+        String result = redisTemplate.getConnectionFactory().getConnection().ping();
 
         // Then
         assertThat(result).isEqualTo("PONG");
@@ -188,12 +188,12 @@ class RedisIntegrationTest {
         redisTemplate.opsForValue().set(key, initialValue);
 
         // When
-        Long newLength = redisTemplate.opsForValue().append(key, appendValue);
+        Integer newLength = redisTemplate.opsForValue().append(key, appendValue);
         String finalValue = redisTemplate.opsForValue().get(key);
 
         // Then
         assertThat(finalValue).isEqualTo(initialValue + appendValue);
-        assertThat(newLength).isEqualTo((long) finalValue.length());
+        assertThat(newLength).isEqualTo(finalValue.length());
         log.info("追加值测试通过: {} = {}", key, finalValue);
 
         // Cleanup
@@ -212,7 +212,7 @@ class RedisIntegrationTest {
         Long length = redisTemplate.opsForValue().size(key);
 
         // Then
-        assertThat(length).isEqualTo((long) value.length());
+        assertThat(length).isEqualTo(Long.valueOf(value.length()));
         log.info("获取键的值长度测试通过: {} 长度 = {}", key, length);
 
         // Cleanup

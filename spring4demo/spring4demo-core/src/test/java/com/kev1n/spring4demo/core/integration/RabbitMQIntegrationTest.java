@@ -250,14 +250,14 @@ class RabbitMQIntegrationTest {
         List<String> receivedMessages = new ArrayList<>();
 
         // 创建消费者
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+        DeliverCallback deliverCallback = (tag, delivery) -> {
             String receivedMessage = new String(delivery.getBody(), StandardCharsets.UTF_8);
             receivedMessages.add(receivedMessage);
             log.info("消费者收到消息: {}", receivedMessage);
             latch.countDown();
         };
 
-        String consumerTag = rabbitMQChannel.basicConsume(TEST_QUEUE, true, deliverCallback, consumerTag -> {});
+        String consumerTag = rabbitMQChannel.basicConsume(TEST_QUEUE, true, deliverCallback, cancelTag -> {});
 
         // When
         rabbitMQChannel.basicPublish("", TEST_QUEUE, null, message.getBytes(StandardCharsets.UTF_8));
@@ -284,7 +284,7 @@ class RabbitMQIntegrationTest {
         List<String> receivedMessages = new ArrayList<>();
 
         // 创建消费者（关闭自动确认）
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+        DeliverCallback deliverCallback = (tag, delivery) -> {
             String receivedMessage = new String(delivery.getBody(), StandardCharsets.UTF_8);
             receivedMessages.add(receivedMessage);
             log.info("消费者收到消息: {}, deliveryTag = {}", receivedMessage, delivery.getEnvelope().getDeliveryTag());
@@ -294,7 +294,7 @@ class RabbitMQIntegrationTest {
             latch.countDown();
         };
 
-        String consumerTag = rabbitMQChannel.basicConsume(TEST_QUEUE, false, deliverCallback, consumerTag -> {});
+        String consumerTag = rabbitMQChannel.basicConsume(TEST_QUEUE, false, deliverCallback, cancelTag -> {});
 
         // When
         rabbitMQChannel.basicPublish("", TEST_QUEUE, null, message.getBytes(StandardCharsets.UTF_8));
@@ -321,7 +321,7 @@ class RabbitMQIntegrationTest {
         List<String> receivedMessages = new ArrayList<>();
 
         // 创建消费者（关闭自动确认）
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+        DeliverCallback deliverCallback = (tag, delivery) -> {
             String receivedMessage = new String(delivery.getBody(), StandardCharsets.UTF_8);
             receivedMessages.add(receivedMessage);
             log.info("消费者收到消息: {}, deliveryTag = {}", receivedMessage, delivery.getEnvelope().getDeliveryTag());
@@ -331,7 +331,7 @@ class RabbitMQIntegrationTest {
             latch.countDown();
         };
 
-        String consumerTag = rabbitMQChannel.basicConsume(TEST_QUEUE, false, deliverCallback, consumerTag -> {});
+        String consumerTag = rabbitMQChannel.basicConsume(TEST_QUEUE, false, deliverCallback, cancelTag -> {});
 
         // When
         rabbitMQChannel.basicPublish("", TEST_QUEUE, null, message.getBytes(StandardCharsets.UTF_8));

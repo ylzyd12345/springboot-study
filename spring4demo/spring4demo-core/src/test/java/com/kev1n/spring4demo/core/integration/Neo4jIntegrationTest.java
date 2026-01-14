@@ -42,11 +42,7 @@ class Neo4jIntegrationTest {
 
         // 创建 Neo4j 驱动连接
         neo4jDriver = GraphDatabase.driver(
-                TestContainersConfig.getNeo4jBoltUrl(),
-                AuthTokens.basic(
-                        TestContainersConfig.getNeo4jPassword(),
-                        TestContainersConfig.getNeo4jPassword()
-                )
+                TestContainersConfig.getNeo4jBoltUrl()
         );
 
         log.info("Neo4j 连接初始化完成");
@@ -144,7 +140,7 @@ class Neo4jIntegrationTest {
             );
 
             // Then
-            List<Record> records = result.list();
+            List<org.neo4j.driver.Record> records = result.list();
             assertThat(records).hasSize(2);
             log.info("查询节点测试通过: 找到 {} 个节点", records.size());
             records.forEach(record -> {
@@ -169,7 +165,7 @@ class Neo4jIntegrationTest {
             );
 
             // Then
-            List<Record> records = result.list();
+            List<org.neo4j.driver.Record> records = result.list();
             assertThat(records).hasSize(2);
             log.info("查询关系测试通过: 找到 {} 条 KNOWS 关系", records.size());
             records.forEach(record -> {
@@ -262,8 +258,8 @@ class Neo4jIntegrationTest {
                             "ORDER BY name"
             );
 
-            // Then
-            List<Record> records = result.list();
+// Then
+            List<org.neo4j.driver.Record> records = result.list();
             assertThat(records).hasSize(3); // Bob, Charlie, David
             log.info("复杂查询测试通过: Alice 的朋友和朋友的朋友有 {} 人", records.size());
             records.forEach(record -> {
@@ -305,7 +301,7 @@ class Neo4jIntegrationTest {
     void shouldExecuteTransaction_whenMultipleOperationsArePerformed() {
         // Given & When
         try (Session session = neo4jDriver.session()) {
-            session.writeTransaction(tx -> {
+            Integer count = session.executeWrite(tx -> {
                 // 创建节点
                 tx.run("CREATE (:Person {name: '事务测试1'})");
                 tx.run("CREATE (:Person {name: '事务测试2'})");
@@ -317,6 +313,8 @@ class Neo4jIntegrationTest {
             });
 
             // Then
+            assertThat(count).isEqualTo(2);
+
             Result verifyResult = session.run(
                     "MATCH (p:Person) WHERE p.name STARTS WITH '事务测试' RETURN count(p) AS count"
             );

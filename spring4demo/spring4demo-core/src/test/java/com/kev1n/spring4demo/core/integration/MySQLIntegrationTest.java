@@ -161,7 +161,9 @@ class MySQLIntegrationTest {
 
             // Then
             assertThat(affectedRows).hasSize(3);
-            assertThat(affectedRows).allMatch(rows -> rows == 1);
+            for (int rows : affectedRows) {
+                assertThat(rows).isEqualTo(1);
+            }
             log.info("插入多条数据测试通过: 插入 {} 条记录", affectedRows.length);
         }
     }
@@ -488,7 +490,9 @@ class MySQLIntegrationTest {
 
             // Then
             assertThat(affectedRows).hasSize(5);
-            assertThat(affectedRows).allMatch(rows -> rows == 1);
+            for (int rows : affectedRows) {
+                assertThat(rows).isEqualTo(1);
+            }
             log.info("批量操作测试通过: 批量插入 {} 条记录", affectedRows.length);
         }
     }
