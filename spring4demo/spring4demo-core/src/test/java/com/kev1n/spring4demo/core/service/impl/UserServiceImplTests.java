@@ -1,10 +1,8 @@
 package com.kev1n.spring4demo.core.service.impl;
 
-import com.kev1n.spring4demo.api.dto.UserCreateDTO;
 import com.kev1n.spring4demo.api.enums.UserStatus;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.mapper.UserMapper;
-import com.kev1n.spring4demo.core.repository.UserReactiveRepository;
 import com.kev1n.spring4demo.core.service.UserAsyncService;
 import com.kev1n.spring4demo.core.service.UserCacheService;
 import com.kev1n.spring4demo.core.service.UserDistributedService;
@@ -25,10 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
