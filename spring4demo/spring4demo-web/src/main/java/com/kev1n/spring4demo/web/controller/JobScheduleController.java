@@ -1,5 +1,7 @@
 package com.kev1n.spring4demo.web.controller;
 
+import com.kev1n.spring4demo.common.exception.BusinessException;
+import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.core.service.JobScheduleService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,6 +51,15 @@ public class JobScheduleController {
             } else {
                 return ResponseEntity.ok(ApiResponse.error("任务触发失败"));
             }
+        } catch (IllegalArgumentException e) {
+            log.error("任务参数错误: jobId={}", jobId, e);
+            return ResponseEntity.ok(ApiResponse.error("任务参数错误"));
+        } catch (BusinessException e) {
+            log.error("任务触发失败: jobId={}, error={}", jobId, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: jobId={}", jobId, e);
+            return ResponseEntity.ok(ApiResponse.error("系统异常，任务触发失败"));
         } catch (Exception e) {
             log.error("手动触发任务失败: jobId={}", jobId, e);
             return ResponseEntity.ok(ApiResponse.error("系统异常，任务触发失败"));
@@ -75,6 +86,15 @@ public class JobScheduleController {
             } else {
                 return ResponseEntity.ok(ApiResponse.error("任务停止失败"));
             }
+        } catch (IllegalArgumentException e) {
+            log.error("任务参数错误: jobId={}", jobId, e);
+            return ResponseEntity.ok(ApiResponse.error("任务参数错误"));
+        } catch (BusinessException e) {
+            log.error("任务停止失败: jobId={}, error={}", jobId, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: jobId={}", jobId, e);
+            return ResponseEntity.ok(ApiResponse.error("系统异常，任务停止失败"));
         } catch (Exception e) {
             log.error("停止任务失败: jobId={}", jobId, e);
             return ResponseEntity.ok(ApiResponse.error("系统异常，任务停止失败"));
@@ -101,6 +121,15 @@ public class JobScheduleController {
             } else {
                 return ResponseEntity.ok(ApiResponse.error("任务启动失败"));
             }
+        } catch (IllegalArgumentException e) {
+            log.error("任务参数错误: jobId={}", jobId, e);
+            return ResponseEntity.ok(ApiResponse.error("任务参数错误"));
+        } catch (BusinessException e) {
+            log.error("任务启动失败: jobId={}, error={}", jobId, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: jobId={}", jobId, e);
+            return ResponseEntity.ok(ApiResponse.error("系统异常，任务启动失败"));
         } catch (Exception e) {
             log.error("启动任务失败: jobId={}", jobId, e);
             return ResponseEntity.ok(ApiResponse.error("系统异常，任务启动失败"));
@@ -125,6 +154,15 @@ public class JobScheduleController {
         try {
             String logContent = jobScheduleService.getJobLog(logId, logDateTim);
             return ResponseEntity.ok(ApiResponse.success(logContent));
+        } catch (IllegalArgumentException e) {
+            log.error("日志参数错误: logId={}, logDateTim={}", logId, logDateTim, e);
+            return ResponseEntity.ok(ApiResponse.error("日志参数错误"));
+        } catch (BusinessException e) {
+            log.error("获取任务执行日志失败: logId={}, error={}", logId, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: logId={}", logId, e);
+            return ResponseEntity.ok(ApiResponse.error("系统异常，获取日志失败"));
         } catch (Exception e) {
             log.error("获取任务执行日志失败: logId={}", logId, e);
             return ResponseEntity.ok(ApiResponse.error("系统异常，获取日志失败"));

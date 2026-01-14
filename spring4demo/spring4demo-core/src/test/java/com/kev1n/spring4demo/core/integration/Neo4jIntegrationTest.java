@@ -54,8 +54,10 @@ class Neo4jIntegrationTest {
             // 清理所有测试数据
             session.run("MATCH (n) DETACH DELETE n");
             log.info("Neo4j 测试数据已清理");
+        } catch (org.neo4j.driver.exceptions.Neo4jException e) {
+            log.error("清理 Neo4j 测试数据失败: Neo4j异常", e);
         } catch (Exception e) {
-            log.error("清理 Neo4j 测试数据失败", e);
+            log.error("清理 Neo4j 测试数据失败: 未知异常", e);
         } finally {
             if (neo4jDriver != null) {
                 neo4jDriver.close();

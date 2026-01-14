@@ -70,32 +70,44 @@ public class SqlInjectionFilter implements Filter {
      * @return 是否包含SQL注入
      */
     private boolean containsSqlInjection(HttpServletRequest request) {
+        boolean hasInjection = false;
+
         // 检查所有请求参数
-        request.getParameterMap().forEach((key, values) -> {
-            for (String value : values) {
+        for (java.util.Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+            for (String value : entry.getValue()) {
                 if (checkForSqlInjection(value)) {
-                    throw new SecurityException("检测到SQL注入: " + key + "=" + value);
+                    log.warn("检测到SQL注入: {}={}", entry.getKey(), value);
+                    hasInjection = true;
+                    break;
                 }
             }
-        });
+            if (hasInjection) break;
+        }
 
-        // 检查请求头
-        java.util.Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String headerValue = request.getHeader(headerName);
-            if (checkForSqlInjection(headerValue)) {
-                throw new SecurityException("检测到SQL注入: " + headerName + "=" + headerValue);
+        if (!hasInjection) {
+            // 检查请求头
+            java.util.Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                String headerValue = request.getHeader(headerName);
+                if (checkForSqlInjection(headerValue)) {
+                    log.warn("检测到SQL注入: {}={}", headerName, headerValue);
+                    hasInjection = true;
+                    break;
+                }
             }
         }
 
-        // 检查请求路径
-        String requestUri = request.getRequestURI();
-        if (checkForSqlInjection(requestUri)) {
-            throw new SecurityException("检测到SQL注入: " + requestUri);
+        if (!hasInjection) {
+            // 检查请求路径
+            String requestUri = request.getRequestURI();
+            if (checkForSqlInjection(requestUri)) {
+                log.warn("检测到SQL注入: {}", requestUri);
+                hasInjection = true;
+            }
         }
 
-        return false;
+        return hasInjection;
     }
 
     /**

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Seata 分布式事务示例服务
@@ -82,9 +83,12 @@ public class SeataExampleService {
             }
 
             log.info("分布式事务执行成功");
+        } catch (RuntimeException e) {
+            log.error("分布式事务执行失败(运行时异常)，Seata将自动回滚，错误信息：{}", e.getMessage(), e);
+            throw e; // 运行时异常直接向上抛出
         } catch (Exception e) {
-            log.error("分布式事务执行失败，触发回滚", e);
-            throw e;
+            log.error("分布式事务执行失败(未知异常)，Seata将自动回滚，错误信息：{}", e.getMessage(), e);
+            throw new RuntimeException("分布式事务执行失败: " + e.getMessage(), e);
         }
     }
 

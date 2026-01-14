@@ -48,25 +48,31 @@ public class QuartzJobDemo {
         
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
-            log.info("[Quartz Job] 每日清理任务开始执行 - 时间: {}", 
+            log.info("[Quartz Job] 每日清理任务开始执行 - 时间: {}",
                     LocalDateTime.now().format(FORMATTER));
-            
+
             // 获取Job参数
             JobDataMap dataMap = context.getJobDetail().getJobDataMap();
             String cleanupType = dataMap.getString("cleanupType");
             int retentionDays = dataMap.getInt("retentionDays");
-            
+
             log.info("[Quartz Job] 清理类型: {}, 保留天数: {}", cleanupType, retentionDays);
-            
+
             try {
                 // 执行清理逻辑
                 performCleanup(cleanupType, retentionDays);
-                
-                log.info("[Quartz Job] 每日清理任务执行完成 - 时间: {}", 
+
+                log.info("[Quartz Job] 每日清理任务执行完成 - 时间: {}",
                         LocalDateTime.now().format(FORMATTER));
+            } catch (IllegalArgumentException e) {
+                log.error("[Quartz Job] 参数错误，无法执行清理: {}", e.getMessage());
+                throw new JobExecutionException("参数错误", e);
+            } catch (RuntimeException e) {
+                log.error("[Quartz Job] 每日清理任务执行时发生运行时异常: {}", e.getMessage());
+                throw new JobExecutionException("运行时异常", e);
             } catch (Exception e) {
-                log.error("[Quartz Job] 每日清理任务执行失败", e);
-                throw new JobExecutionException(e);
+                log.error("[Quartz Job] 每日清理任务执行时发生未知异常", e);
+                throw new JobExecutionException("未知异常", e);
             }
         }
         
@@ -87,24 +93,30 @@ public class QuartzJobDemo {
         
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
-            log.info("[Quartz Job] 报表生成任务开始执行 - 时间: {}", 
+            log.info("[Quartz Job] 报表生成任务开始执行 - 时间: {}",
                     LocalDateTime.now().format(FORMATTER));
-            
+
             JobDataMap dataMap = context.getJobDetail().getJobDataMap();
             String reportType = dataMap.getString("reportType");
             String recipient = dataMap.getString("recipient");
-            
+
             log.info("[Quartz Job] 报表类型: {}, 接收人: {}", reportType, recipient);
-            
+
             try {
                 // 生成报表
                 generateReport(reportType, recipient);
-                
-                log.info("[Quartz Job] 报表生成任务执行完成 - 时间: {}", 
+
+                log.info("[Quartz Job] 报表生成任务执行完成 - 时间: {}",
                         LocalDateTime.now().format(FORMATTER));
+            } catch (IllegalArgumentException e) {
+                log.error("[Quartz Job] 参数错误，无法生成报表: {}", e.getMessage());
+                throw new JobExecutionException("参数错误", e);
+            } catch (RuntimeException e) {
+                log.error("[Quartz Job] 报表生成任务执行时发生运行时异常: {}", e.getMessage());
+                throw new JobExecutionException("运行时异常", e);
             } catch (Exception e) {
-                log.error("[Quartz Job] 报表生成任务执行失败", e);
-                throw new JobExecutionException(e);
+                log.error("[Quartz Job] 报表生成任务执行时发生未知异常", e);
+                throw new JobExecutionException("未知异常", e);
             }
         }
         

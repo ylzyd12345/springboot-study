@@ -79,8 +79,12 @@ class RabbitMQIntegrationTest {
             }
 
             log.info("RabbitMQ 连接已关闭");
+        } catch (IOException e) {
+            log.error("关闭 RabbitMQ 连接失败: IO异常", e);
+        } catch (TimeoutException e) {
+            log.error("关闭 RabbitMQ 连接失败: 超时异常", e);
         } catch (Exception e) {
-            log.error("关闭 RabbitMQ 连接失败", e);
+            log.error("关闭 RabbitMQ 连接失败: 未知异常", e);
         }
     }
 

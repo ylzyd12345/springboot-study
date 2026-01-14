@@ -6,7 +6,13 @@ import com.kev1n.spring4demo.core.mapper.UserMapper;
 import com.kev1n.spring4demo.core.service.UserCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.PersistJobDataAfterExecution;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -84,9 +90,21 @@ public class CacheRefreshJob implements Job {
             log.info("[CacheRefreshJob] 缓存刷新任务执行完成 - 时间: {}",
                     LocalDateTime.now().format(FORMATTER));
 
+        } catch (DataAccessException e) {
+            log.error("[CacheRefreshJob] 数据库访问失败，无法刷新缓存: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("缓存刷新任务失败", "数据库访问失败: " + e.getMessage());
+            throw new JobExecutionException("数据库访问失败", e);
+        } catch (RuntimeException e) {
+            log.error("[CacheRefreshJob] 缓存刷新任务执行时发生运行时异常: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("缓存刷新任务失败", "运行时异常: " + e.getMessage());
+            throw new JobExecutionException("运行时异常", e);
         } catch (Exception e) {
-            log.error("[CacheRefreshJob] 缓存刷新任务执行失败", e);
-            throw new JobExecutionException(e);
+            log.error("[CacheRefreshJob] 缓存刷新任务执行时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("缓存刷新任务失败", "未知异常: " + e.getMessage());
+            throw new JobExecutionException("未知异常", e);
         }
     }
 
@@ -117,15 +135,25 @@ public class CacheRefreshJob implements Job {
                     // 将用户放入缓存
                     userCacheService.putUserToCache(user);
                     refreshedCount++;
+                } catch (RuntimeException e) {
+                    log.error("[CacheRefreshJob] 预热用户缓存失败: userId={}, 错误: {}", user.getId(), e.getMessage());
                 } catch (Exception e) {
-                    log.error("[CacheRefreshJob] 预热用户缓存失败: userId={}", user.getId(), e);
+                    log.error("[CacheRefreshJob] 预热用户缓存时发生未知异常: userId={}", user.getId(), e);
                 }
             }
 
             log.info("[CacheRefreshJob] 用户缓存刷新完成: {} 个用户", refreshedCount);
 
+        } catch (DataAccessException e) {
+            log.error("[CacheRefreshJob] 数据库访问失败，无法刷新用户缓存: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户缓存刷新失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[CacheRefreshJob] 参数错误，无法刷新用户缓存: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[CacheRefreshJob] 刷新用户缓存失败", e);
+            log.error("[CacheRefreshJob] 刷新用户缓存时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("用户缓存刷新失败", "未知异常: " + e.getMessage());
         }
     }
 
@@ -160,8 +188,14 @@ public class CacheRefreshJob implements Job {
                 log.info("[CacheRefreshJob] 没有配置缓存需要刷新");
             }
 
+        } catch (RuntimeException e) {
+            log.error("[CacheRefreshJob] Redis操作失败，无法刷新配置缓存: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("配置缓存刷新失败", "Redis操作失败: " + e.getMessage());
         } catch (Exception e) {
-            log.error("[CacheRefreshJob] 刷新配置缓存失败", e);
+            log.error("[CacheRefreshJob] 刷新配置缓存时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("配置缓存刷新失败", "未知异常: " + e.getMessage());
         }
     }
 
@@ -205,8 +239,14 @@ public class CacheRefreshJob implements Job {
 
             log.info("[CacheRefreshJob] 过期缓存清理完成");
 
+        } catch (RuntimeException e) {
+            log.error("[CacheRefreshJob] Redis操作失败，无法清理过期缓存: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("过期缓存清理失败", "Redis操作失败: " + e.getMessage());
         } catch (Exception e) {
-            log.error("[CacheRefreshJob] 清理过期缓存失败", e);
+            log.error("[CacheRefreshJob] 清理过期缓存时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("过期缓存清理失败", "未知异常: " + e.getMessage());
         }
     }
 
@@ -244,5 +284,18 @@ public class CacheRefreshJob implements Job {
         // 3. 缓存命中率
         // 4. 缓存大小
         return stats;
+    }
+
+    /**
+     * 发送告警通知
+     *
+     * @param title 告警标题
+     * @param message 告警消息
+     */
+    private void sendAlert(String title, String message) {
+        log.warn("[CacheRefreshJob] 告警通知 - 标题: {}, 消息: {}", title, message);
+        // TODO: 待实现告警模块后启用
+        // 1. 创建告警消息
+        // 2. 发送到告警系统（邮件、短信、钉钉等）
     }
 }

@@ -80,9 +80,18 @@ public class BeanCopyUtil {
                     BeanCopier.create(sourceClass, targetClass, false));
 
             copier.copy(source, target, null);
+        } catch (BeansException e) {
+            log.error("对象属性拷贝失败: BeanUtils异常", e);
+            throw new RuntimeException("对象属性拷贝失败: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            log.error("对象属性拷贝失败: 参数非法", e);
+            throw new RuntimeException("对象属性拷贝失败: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            log.error("对象属性拷贝失败: 运行时异常", e);
+            throw new RuntimeException("对象属性拷贝失败: " + e.getMessage(), e);
         } catch (Exception e) {
-            log.error("对象属性拷贝失败", e);
-            throw new RuntimeException("对象属性拷贝失败", e);
+            log.error("对象属性拷贝失败: 未知异常", e);
+            throw new RuntimeException("对象属性拷贝失败: " + e.getMessage(), e);
         }
         return target;
     }
@@ -104,9 +113,21 @@ public class BeanCopyUtil {
         try {
             T target = targetClass.getDeclaredConstructor().newInstance();
             return copyProperties(source, target);
+        } catch (NoSuchMethodException e) {
+            log.error("创建目标对象失败: 目标类缺少无参构造函数: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 目标类缺少无参构造函数: " + targetClass.getName(), e);
+        } catch (InstantiationException e) {
+            log.error("创建目标对象失败: 无法实例化目标类: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 无法实例化目标类: " + targetClass.getName(), e);
+        } catch (IllegalAccessException e) {
+            log.error("创建目标对象失败: 无法访问目标类构造函数: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 无法访问目标类构造函数: " + targetClass.getName(), e);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            log.error("创建目标对象失败: 目标类构造函数执行失败: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 目标类构造函数执行失败: " + targetClass.getName(), e);
         } catch (Exception e) {
-            log.error("创建目标对象失败", e);
-            throw new RuntimeException("创建目标对象失败", e);
+            log.error("创建目标对象失败: 未知异常: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: " + e.getMessage(), e);
         }
     }
 
@@ -127,9 +148,21 @@ public class BeanCopyUtil {
         try {
             T target = targetClass.getDeclaredConstructor().newInstance();
             return copyPropertiesWithCopier(source, target);
+        } catch (NoSuchMethodException e) {
+            log.error("创建目标对象失败: 目标类缺少无参构造函数: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 目标类缺少无参构造函数: " + targetClass.getName(), e);
+        } catch (InstantiationException e) {
+            log.error("创建目标对象失败: 无法实例化目标类: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 无法实例化目标类: " + targetClass.getName(), e);
+        } catch (IllegalAccessException e) {
+            log.error("创建目标对象失败: 无法访问目标类构造函数: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 无法访问目标类构造函数: " + targetClass.getName(), e);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            log.error("创建目标对象失败: 目标类构造函数执行失败: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: 目标类构造函数执行失败: " + targetClass.getName(), e);
         } catch (Exception e) {
-            log.error("创建目标对象失败", e);
-            throw new RuntimeException("创建目标对象失败", e);
+            log.error("创建目标对象失败: 未知异常: {}", targetClass.getName(), e);
+            throw new RuntimeException("创建目标对象失败: " + e.getMessage(), e);
         }
     }
 

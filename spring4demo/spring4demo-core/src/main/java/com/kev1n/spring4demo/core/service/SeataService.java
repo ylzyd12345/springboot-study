@@ -1,8 +1,11 @@
 package com.kev1n.spring4demo.core.service;
 
+import com.kev1n.spring4demo.common.exception.BusinessException;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Seata 分布式事务服务封装类
@@ -33,9 +36,15 @@ public class SeataService {
             action.run();
             log.info("分布式事务执行成功，事务名称：{}", name);
             return true;
+        } catch (BusinessException e) {
+            log.error("分布式事务执行失败(业务异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage());
+            throw e; // 业务异常直接向上抛出，保留原始异常类型
+        } catch (RuntimeException e) {
+            log.error("分布式事务执行失败(运行时异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
+            throw e; // 运行时异常直接向上抛出
         } catch (Exception e) {
-            log.error("分布式事务执行失败，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
-            throw e;
+            log.error("分布式事务执行失败(未知异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
+            throw new RuntimeException("分布式事务执行失败: " + name, e);
         }
     }
 
@@ -55,9 +64,18 @@ public class SeataService {
             T result = action.get();
             log.info("分布式事务执行成功，事务名称：{}，返回结果：{}", name, result);
             return result;
+        } catch (BusinessException e) {
+            log.error("分布式事务执行失败(业务异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage());
+            throw e; // 业务异常直接向上抛出，保留原始异常类型
+        } catch (TimeoutException e) {
+            log.error("分布式事务执行失败(超时异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
+            throw new RuntimeException("分布式事务超时: " + name, e);
+        } catch (RuntimeException e) {
+            log.error("分布式事务执行失败(运行时异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
+            throw e; // 运行时异常直接向上抛出
         } catch (Exception e) {
-            log.error("分布式事务执行失败，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
-            throw e;
+            log.error("分布式事务执行失败(未知异常)，Seata将自动回滚，事务名称：{}，错误信息：{}", name, e.getMessage(), e);
+            throw new RuntimeException("分布式事务执行失败: " + name, e);
         }
     }
 

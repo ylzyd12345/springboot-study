@@ -71,8 +71,14 @@ public class DocumentPreviewServiceImpl implements DocumentPreviewService {
             log.debug("生成预览 URL: {} -> {}", fileUrl, previewUrl);
             return previewUrl.toString();
 
+        } catch (IllegalArgumentException e) {
+            log.error("生成预览 URL 失败(参数异常): {}", fileUrl, e);
+            throw new IllegalArgumentException("生成预览 URL 失败: 参数错误 - " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            log.error("生成预览 URL 失败(编码异常): {}", fileUrl, e);
+            throw new RuntimeException("生成预览 URL 失败: 编码错误 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("生成预览 URL 失败: {}", fileUrl, e);
+            log.error("生成预览 URL 失败(未知异常): {}", fileUrl, e);
             throw new RuntimeException("生成预览 URL 失败: " + e.getMessage());
         }
     }
@@ -116,8 +122,14 @@ public class DocumentPreviewServiceImpl implements DocumentPreviewService {
             log.debug("生成带水印的预览 URL: {} -> {}", fileUrl, previewUrl);
             return previewUrl.toString();
 
+        } catch (IllegalArgumentException e) {
+            log.error("生成带水印的预览 URL 失败(参数异常): {}", fileUrl, e);
+            throw new IllegalArgumentException("生成带水印的预览 URL 失败: 参数错误 - " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            log.error("生成带水印的预览 URL 失败(编码异常): {}", fileUrl, e);
+            throw new RuntimeException("生成带水印的预览 URL 失败: 编码错误 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("生成带水印的预览 URL 失败: {}", fileUrl, e);
+            log.error("生成带水印的预览 URL 失败(未知异常): {}", fileUrl, e);
             throw new RuntimeException("生成带水印的预览 URL 失败: " + e.getMessage());
         }
     }
@@ -150,8 +162,14 @@ public class DocumentPreviewServiceImpl implements DocumentPreviewService {
             log.debug("生成带 Token 的预览 URL: {} -> {}", fileUrl, previewUrl);
             return previewUrl.toString();
 
+        } catch (IllegalArgumentException e) {
+            log.error("生成带 Token 的预览 URL 失败(参数异常): {}", fileUrl, e);
+            throw new IllegalArgumentException("生成带 Token 的预览 URL 失败: 参数错误 - " + e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            log.error("生成带 Token 的预览 URL 失败(编码异常): {}", fileUrl, e);
+            throw new RuntimeException("生成带 Token 的预览 URL 失败: 编码错误 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("生成带 Token 的预览 URL 失败: {}", fileUrl, e);
+            log.error("生成带 Token 的预览 URL 失败(未知异常): {}", fileUrl, e);
             throw new RuntimeException("生成带 Token 的预览 URL 失败: " + e.getMessage());
         }
     }

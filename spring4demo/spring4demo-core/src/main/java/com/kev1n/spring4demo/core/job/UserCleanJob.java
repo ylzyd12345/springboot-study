@@ -5,7 +5,13 @@ import com.kev1n.spring4demo.core.mapper.UserMapper;
 import com.kev1n.spring4demo.core.service.UserCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.PersistJobDataAfterExecution;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -76,9 +82,21 @@ public class UserCleanJob implements Job {
             log.info("[UserCleanJob] 用户清理任务执行完成 - 时间: {}",
                     LocalDateTime.now().format(FORMATTER));
 
+        } catch (DataAccessException e) {
+            log.error("[UserCleanJob] 数据库访问失败，无法执行用户清理: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户清理任务失败", "数据库访问失败: " + e.getMessage());
+            throw new JobExecutionException("数据库访问失败", e);
+        } catch (RuntimeException e) {
+            log.error("[UserCleanJob] 用户清理任务执行时发生运行时异常: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户清理任务失败", "运行时异常: " + e.getMessage());
+            throw new JobExecutionException("运行时异常", e);
         } catch (Exception e) {
-            log.error("[UserCleanJob] 用户清理任务执行失败", e);
-            throw new JobExecutionException(e);
+            log.error("[UserCleanJob] 用户清理任务执行时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("用户清理任务失败", "未知异常: " + e.getMessage());
+            throw new JobExecutionException("未知异常", e);
         }
     }
 
@@ -122,8 +140,16 @@ public class UserCleanJob implements Job {
 
             log.info("[UserCleanJob] 过期用户清理功能待实现，需要User实体增加lastLoginTime字段");
 
+        } catch (DataAccessException e) {
+            log.error("[UserCleanJob] 数据库访问失败，无法清理过期用户: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("过期用户清理失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[UserCleanJob] 参数错误，无法清理过期用户: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[UserCleanJob] 清理过期用户失败", e);
+            log.error("[UserCleanJob] 清理过期用户时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("过期用户清理失败", "未知异常: " + e.getMessage());
         }
     }
 
@@ -168,8 +194,16 @@ public class UserCleanJob implements Job {
 
             log.info("[UserCleanJob] 离线用户清理功能待实现，需要User实体增加lastLoginTime字段");
 
+        } catch (DataAccessException e) {
+            log.error("[UserCleanJob] 数据库访问失败，无法清理离线用户: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("离线用户清理失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[UserCleanJob] 参数错误，无法清理离线用户: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[UserCleanJob] 清理离线用户失败", e);
+            log.error("[UserCleanJob] 清理离线用户时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("离线用户清理失败", "未知异常: " + e.getMessage());
         }
     }
 
@@ -203,8 +237,16 @@ public class UserCleanJob implements Job {
 
             log.info("[UserCleanJob] 无效用户清理功能待实现");
 
+        } catch (DataAccessException e) {
+            log.error("[UserCleanJob] 数据库访问失败，无法清理无效用户: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("无效用户清理失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[UserCleanJob] 参数错误，无法清理无效用户: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[UserCleanJob] 清理无效用户失败", e);
+            log.error("[UserCleanJob] 清理无效用户时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("无效用户清理失败", "未知异常: " + e.getMessage());
         }
     }
 
@@ -230,5 +272,18 @@ public class UserCleanJob implements Job {
         // TODO: 待实现文件模块后启用
         // 1. 查询超过指定天数的临时文件
         // 2. 删除临时文件
+    }
+
+    /**
+     * 发送告警通知
+     *
+     * @param title 告警标题
+     * @param message 告警消息
+     */
+    private void sendAlert(String title, String message) {
+        log.warn("[UserCleanJob] 告警通知 - 标题: {}, 消息: {}", title, message);
+        // TODO: 待实现告警模块后启用
+        // 1. 创建告警消息
+        // 2. 发送到告警系统（邮件、短信、钉钉等）
     }
 }

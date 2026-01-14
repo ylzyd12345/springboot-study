@@ -184,13 +184,15 @@ public class DynamicDataSourceProperties {
 
         /**
          * 监控统计登录用户名
+         * 必须从配置文件或环境变量中设置，不能使用默认值
          */
-        private String statViewServletLoginUsername = "admin";
+        private String statViewServletLoginUsername;
 
         /**
          * 监控统计登录密码
+         * 必须从配置文件或环境变量中设置，不能使用默认值
          */
-        private String statViewServletLoginPassword = "admin";
+        private String statViewServletLoginPassword;
 
         /**
          * 是否启用 Web-JDBC 关联监控

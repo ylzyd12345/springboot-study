@@ -12,4 +12,12 @@
 
     <artifactId>spring4demo-build-tools</artifactId>
 
+    <properties>
+        <!-- build-tools 模块只包含配置文件，不需要质量检查 -->
+        <checkstyle.skip>true</checkstyle.skip>
+        <spotbugs.skip>true</spotbugs.skip>
+        <pmd.skip>true</pmd.skip>
+        <dependency-check.skip>true</dependency-check.skip>
+    </properties>
+
 </project>

@@ -3,6 +3,7 @@ package com.kev1n.spring4demo.core.service;
 import cn.dev33.satoken.stp.StpUtil;
 import com.kev1n.spring4demo.api.dto.AuthResult;
 import com.kev1n.spring4demo.api.dto.UserDTO;
+import com.kev1n.spring4demo.common.exception.BusinessException;
 import com.kev1n.spring4demo.core.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,11 +81,29 @@ public class AuthService {
                 .message("登录成功")
                 .build();
 
-        } catch (Exception e) {
-            log.error("用户登录失败: {}", e.getMessage());
+        } catch (BusinessException e) {
+            log.error("用户登录失败(业务异常): username={}, error={}", username, e.getMessage(), e);
             return AuthResult.builder()
                 .success(false)
-                .message("登录失败")
+                .message("登录失败: " + e.getMessage())
+                .build();
+        } catch (IllegalArgumentException e) {
+            log.error("用户登录失败(参数异常): username={}, error={}", username, e.getMessage(), e);
+            return AuthResult.builder()
+                .success(false)
+                .message("登录失败: 参数错误 - " + e.getMessage())
+                .build();
+        } catch (RuntimeException e) {
+            log.error("用户登录失败(运行时异常): username={}, error={}", username, e.getMessage(), e);
+            return AuthResult.builder()
+                .success(false)
+                .message("登录失败: " + e.getMessage())
+                .build();
+        } catch (Exception e) {
+            log.error("用户登录失败(未知异常): username={}", username, e);
+            return AuthResult.builder()
+                .success(false)
+                .message("登录失败: 系统错误")
                 .build();
         }
     }

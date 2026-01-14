@@ -75,11 +75,13 @@ class SnowflakeIdGeneratorTests {
                             SnowflakeIdGenerator.class.getDeclaredConstructor(long.class);
                     constructor.setAccessible(true);
                     constructor.newInstance(-1L);
-                } catch (Exception e) {
+                } catch (java.lang.reflect.InvocationTargetException e) {
                     if (e.getCause() instanceof IllegalArgumentException) {
                         throw (IllegalArgumentException) e.getCause();
                     }
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("反射调用失败", e.getCause());
+                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException("反射访问失败", e);
                 }
             }).isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("工作机器ID范围");
@@ -92,11 +94,13 @@ class SnowflakeIdGeneratorTests {
                             SnowflakeIdGenerator.class.getDeclaredConstructor(long.class);
                     constructor.setAccessible(true);
                     constructor.newInstance(1024L);
-                } catch (Exception e) {
+                } catch (java.lang.reflect.InvocationTargetException e) {
                     if (e.getCause() instanceof IllegalArgumentException) {
                         throw (IllegalArgumentException) e.getCause();
                     }
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("反射调用失败", e.getCause());
+                } catch (NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException("反射访问失败", e);
                 }
             }).isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("工作机器ID范围");

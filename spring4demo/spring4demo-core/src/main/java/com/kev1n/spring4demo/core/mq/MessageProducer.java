@@ -54,9 +54,21 @@ public class MessageProducer {
                     message
             );
             log.info("发送用户创建消息到RabbitMQ成功: userId={}, username={}", userId, username);
-        } catch (Exception e) {
-            log.error("发送用户创建消息到RabbitMQ失败: userId={}, error={}", userId, e.getMessage(), e);
-            throw new RuntimeException("发送用户创建消息失败", e);
+        } catch (org.springframework.amqp.AmqpConnectException e) {
+            log.error("RabbitMQ连接失败，无法发送用户创建消息: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("RabbitMQ连接失败", e);
+        } catch (org.springframework.amqp.AmqpTimeoutException e) {
+            log.error("RabbitMQ发送超时，无法发送用户创建消息: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("RabbitMQ发送超时", e);
+        } catch (org.springframework.amqp.AmqpException e) {
+            log.error("RabbitMQ发送用户创建消息失败: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("RabbitMQ发送失败", e);
+        } catch (IllegalArgumentException e) {
+            log.error("用户创建消息参数验证失败: userId={}, error={}", userId, e.getMessage());
+            throw e;
+        } catch (NullPointerException e) {
+            log.error("用户创建消息对象为空: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("消息对象为空", e);
         }
     }
 
@@ -86,9 +98,21 @@ public class MessageProducer {
                     message
             );
             log.info("发送通知消息到RabbitMQ成功: userId={}, type={}, title={}", userId, type, title);
-        } catch (Exception e) {
-            log.error("发送通知消息到RabbitMQ失败: userId={}, type={}, error={}", userId, type, e.getMessage(), e);
-            throw new RuntimeException("发送通知消息失败", e);
+        } catch (org.springframework.amqp.AmqpConnectException e) {
+            log.error("RabbitMQ连接失败，无法发送通知消息: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("RabbitMQ连接失败", e);
+        } catch (org.springframework.amqp.AmqpTimeoutException e) {
+            log.error("RabbitMQ发送超时，无法发送通知消息: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("RabbitMQ发送超时", e);
+        } catch (org.springframework.amqp.AmqpException e) {
+            log.error("RabbitMQ发送通知消息失败: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("RabbitMQ发送失败", e);
+        } catch (IllegalArgumentException e) {
+            log.error("通知消息参数验证失败: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw e;
+        } catch (NullPointerException e) {
+            log.error("通知消息对象为空: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("消息对象为空", e);
         }
     }
 
@@ -127,12 +151,24 @@ public class MessageProducer {
                 } else {
                     log.error("发送用户创建消息到Kafka失败: topic={}, key={}, userId={}, error={}",
                             topic, key, userId, ex.getMessage(), ex);
-                    throw new RuntimeException("发送用户创建消息到Kafka失败", ex);
+                    throw new com.kev1n.spring4demo.common.exception.BusinessException("发送用户创建消息到Kafka失败", ex);
                 }
             });
-        } catch (Exception e) {
-            log.error("发送用户创建消息到Kafka失败: userId={}, error={}", userId, e.getMessage(), e);
-            throw new RuntimeException("发送用户创建消息到Kafka失败", e);
+        } catch (org.apache.kafka.common.errors.SerializationException e) {
+            log.error("Kafka序列化失败，无法发送用户创建消息: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("Kafka序列化失败", e);
+        } catch (org.apache.kafka.common.errors.TimeoutException e) {
+            log.error("Kafka发送超时，无法发送用户创建消息: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("Kafka发送超时", e);
+        } catch (org.apache.kafka.common.KafkaException e) {
+            log.error("Kafka发送用户创建消息失败: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("Kafka发送失败", e);
+        } catch (IllegalArgumentException e) {
+            log.error("用户创建消息参数验证失败: userId={}, error={}", userId, e.getMessage());
+            throw e;
+        } catch (NullPointerException e) {
+            log.error("用户创建消息对象为空: userId={}, error={}", userId, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("消息对象为空", e);
         }
     }
 
@@ -171,12 +207,24 @@ public class MessageProducer {
                 } else {
                     log.error("发送通知消息到Kafka失败: topic={}, key={}, userId={}, type={}, error={}",
                             topic, key, userId, type, ex.getMessage(), ex);
-                    throw new RuntimeException("发送通知消息到Kafka失败", ex);
+                    throw new com.kev1n.spring4demo.common.exception.BusinessException("发送通知消息到Kafka失败", ex);
                 }
             });
-        } catch (Exception e) {
-            log.error("发送通知消息到Kafka失败: userId={}, type={}, error={}", userId, type, e.getMessage(), e);
-            throw new RuntimeException("发送通知消息到Kafka失败", e);
+        } catch (org.apache.kafka.common.errors.SerializationException e) {
+            log.error("Kafka序列化失败，无法发送通知消息: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("Kafka序列化失败", e);
+        } catch (org.apache.kafka.common.errors.TimeoutException e) {
+            log.error("Kafka发送超时，无法发送通知消息: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("Kafka发送超时", e);
+        } catch (org.apache.kafka.common.KafkaException e) {
+            log.error("Kafka发送通知消息失败: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("Kafka发送失败", e);
+        } catch (IllegalArgumentException e) {
+            log.error("通知消息参数验证失败: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw e;
+        } catch (NullPointerException e) {
+            log.error("通知消息对象为空: userId={}, type={}, error={}", userId, type, e.getMessage());
+            throw new com.kev1n.spring4demo.common.exception.BusinessException("消息对象为空", e);
         }
     }
 }

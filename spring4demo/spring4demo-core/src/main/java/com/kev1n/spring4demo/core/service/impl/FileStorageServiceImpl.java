@@ -10,6 +10,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -55,8 +56,17 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             log.info("文件上传成功: {}", objectKey);
             return objectKey;
+        } catch (IOException e) {
+            log.error("文件上传失败(IO异常): {}", fileName, e);
+            throw new BusinessException("文件上传失败: IO异常 - " + e.getMessage());
+        } catch (S3Exception e) {
+            log.error("文件上传失败(S3异常): {}", fileName, e);
+            throw new BusinessException("文件上传失败: S3异常 - " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("文件上传失败(参数异常): {}", fileName, e);
+            throw new BusinessException("文件上传失败: 参数错误 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("文件上传失败", e);
+            log.error("文件上传失败(未知异常): {}", fileName, e);
             throw new BusinessException("文件上传失败: " + e.getMessage());
         }
     }
@@ -70,8 +80,17 @@ public class FileStorageServiceImpl implements FileStorageService {
                     .build();
 
             return s3Client.getObject(getObjectRequest).readAllBytes();
+        } catch (NoSuchKeyException e) {
+            log.error("文件下载失败(文件不存在): {}", fileName, e);
+            throw new BusinessException("文件不存在: " + fileName);
+        } catch (IOException e) {
+            log.error("文件下载失败(IO异常): {}", fileName, e);
+            throw new BusinessException("文件下载失败: IO异常 - " + e.getMessage());
+        } catch (S3Exception e) {
+            log.error("文件下载失败(S3异常): {}", fileName, e);
+            throw new BusinessException("文件下载失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("文件下载失败: {}", fileName, e);
+            log.error("文件下载失败(未知异常): {}", fileName, e);
             throw new BusinessException("文件下载失败: " + e.getMessage());
         }
     }
@@ -85,8 +104,14 @@ public class FileStorageServiceImpl implements FileStorageService {
                     .build();
 
             return s3Client.getObject(getObjectRequest);
+        } catch (NoSuchKeyException e) {
+            log.error("文件下载失败(文件不存在): {}", fileName, e);
+            throw new BusinessException("文件不存在: " + fileName);
+        } catch (S3Exception e) {
+            log.error("文件下载失败(S3异常): {}", fileName, e);
+            throw new BusinessException("文件下载失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("文件下载失败: {}", fileName, e);
+            log.error("文件下载失败(未知异常): {}", fileName, e);
             throw new BusinessException("文件下载失败: " + e.getMessage());
         }
     }
@@ -101,8 +126,11 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             s3Client.deleteObject(deleteObjectRequest);
             log.info("文件删除成功: {}", fileName);
+        } catch (S3Exception e) {
+            log.error("文件删除失败(S3异常): {}", fileName, e);
+            throw new BusinessException("文件删除失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("文件删除失败: {}", fileName, e);
+            log.error("文件删除失败(未知异常): {}", fileName, e);
             throw new BusinessException("文件删除失败: " + e.getMessage());
         }
     }
@@ -121,8 +149,14 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             s3Client.deleteObjects(deleteObjectsRequest);
             log.info("批量删除文件成功，数量: {}", fileNames.size());
+        } catch (S3Exception e) {
+            log.error("批量删除文件失败(S3异常)", e);
+            throw new BusinessException("批量删除文件失败: S3异常 - " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("批量删除文件失败(参数异常)", e);
+            throw new BusinessException("批量删除文件失败: 参数错误 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("批量删除文件失败", e);
+            log.error("批量删除文件失败(未知异常)", e);
             throw new BusinessException("批量删除文件失败: " + e.getMessage());
         }
     }
@@ -139,8 +173,11 @@ public class FileStorageServiceImpl implements FileStorageService {
             return true;
         } catch (NoSuchKeyException e) {
             return false;
+        } catch (S3Exception e) {
+            log.error("检查文件存在性失败(S3异常): {}", fileName, e);
+            return false;
         } catch (Exception e) {
-            log.error("检查文件存在性失败: {}", fileName, e);
+            log.error("检查文件存在性失败(未知异常): {}", fileName, e);
             return false;
         }
     }
@@ -165,9 +202,12 @@ public class FileStorageServiceImpl implements FileStorageService {
             return fileInfo;
         } catch (NoSuchKeyException e) {
             log.warn("文件不存在: {}", fileName);
-            throw new BusinessException("文件不存在: {}", fileName);
+            throw new BusinessException("文件不存在: " + fileName);
+        } catch (S3Exception e) {
+            log.error("获取文件信息失败(S3异常): {}", fileName, e);
+            throw new BusinessException("获取文件信息失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("获取文件信息失败: {}", fileName, e);
+            log.error("获取文件信息失败(未知异常): {}", fileName, e);
             throw new BusinessException("获取文件信息失败: " + e.getMessage());
         }
     }
@@ -197,8 +237,11 @@ public class FileStorageServiceImpl implements FileStorageService {
             }
 
             return files;
+        } catch (S3Exception e) {
+            log.error("列出文件失败(S3异常)", e);
+            throw new BusinessException("列出文件失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("列出文件失败", e);
+            log.error("列出文件失败(未知异常)", e);
             throw new BusinessException("列出文件失败: " + e.getMessage());
         }
     }
@@ -220,8 +263,14 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             s3Client.copyObject(copyObjectRequest);
             log.info("文件复制成功: {} -> {}", sourceFileName, targetFileName);
+        } catch (NoSuchKeyException e) {
+            log.error("文件复制失败(源文件不存在): {} -> {}", sourceFileName, targetFileName, e);
+            throw new BusinessException("文件复制失败: 源文件不存在 - " + sourceFileName);
+        } catch (S3Exception e) {
+            log.error("文件复制失败(S3异常): {} -> {}", sourceFileName, targetFileName, e);
+            throw new BusinessException("文件复制失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("文件复制失败: {} -> {}", sourceFileName, targetFileName, e);
+            log.error("文件复制失败(未知异常): {} -> {}", sourceFileName, targetFileName, e);
             throw new BusinessException("文件复制失败: " + e.getMessage());
         }
     }
@@ -232,8 +281,11 @@ public class FileStorageServiceImpl implements FileStorageService {
             copyFile(sourceFileName, targetFileName);
             deleteFile(sourceFileName);
             log.info("文件移动成功: {} -> {}", sourceFileName, targetFileName);
+        } catch (BusinessException e) {
+            log.error("文件移动失败(业务异常): {} -> {}", sourceFileName, targetFileName, e);
+            throw e; // 业务异常直接向上抛出
         } catch (Exception e) {
-            log.error("文件移动失败: {} -> {}", sourceFileName, targetFileName, e);
+            log.error("文件移动失败(未知异常): {} -> {}", sourceFileName, targetFileName, e);
             throw new BusinessException("文件移动失败: " + e.getMessage());
         }
     }
@@ -251,8 +303,11 @@ public class FileStorageServiceImpl implements FileStorageService {
         } catch (NoSuchBucketException e) {
             log.info("存储桶不存在，创建存储桶: {}", rustFSProperties.getBucketName());
             createBucket();
+        } catch (S3Exception e) {
+            log.error("检查存储桶失败(S3异常)", e);
+            throw new BusinessException("检查存储桶失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("检查存储桶失败", e);
+            log.error("检查存储桶失败(未知异常)", e);
             throw new BusinessException("检查存储桶失败: " + e.getMessage());
         }
     }
@@ -268,8 +323,11 @@ public class FileStorageServiceImpl implements FileStorageService {
 
             s3Client.createBucket(createBucketRequest);
             log.info("存储桶创建成功: {}", rustFSProperties.getBucketName());
+        } catch (S3Exception e) {
+            log.error("创建存储桶失败(S3异常)", e);
+            throw new BusinessException("创建存储桶失败: S3异常 - " + e.getMessage());
         } catch (Exception e) {
-            log.error("创建存储桶失败", e);
+            log.error("创建存储桶失败(未知异常)", e);
             throw new BusinessException("创建存储桶失败: " + e.getMessage());
         }
     }

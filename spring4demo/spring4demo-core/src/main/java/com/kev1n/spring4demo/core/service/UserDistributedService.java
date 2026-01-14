@@ -1,7 +1,7 @@
 package com.kev1n.spring4demo.core.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kev1n.spring4demo.api.dto.UserCreateDTO;
+import com.kev1n.spring4demo.common.exception.BusinessException;
 import com.kev1n.spring4demo.core.entity.User;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
@@ -70,8 +70,16 @@ public class UserDistributedService {
             log.info("用户注册分布式事务提交成功: userId={}", user.getId());
             return user;
 
+        } catch (BusinessException e) {
+            log.error("用户注册分布式事务失败(业务异常)，Seata将自动回滚: username={}, error={}",
+                    dto.getUsername(), e.getMessage());
+            throw e; // 业务异常直接向上抛出，保留原始异常类型
+        } catch (RuntimeException e) {
+            log.error("用户注册分布式事务失败(运行时异常)，Seata将自动回滚: username={}, error={}",
+                    dto.getUsername(), e.getMessage(), e);
+            throw new RuntimeException("用户注册失败: " + e.getMessage(), e);
         } catch (Exception e) {
-            log.error("用户注册分布式事务失败，Seata将自动回滚: username={}",
+            log.error("用户注册分布式事务失败(未知异常)，Seata将自动回滚: username={}",
                     dto.getUsername(), e);
             throw new RuntimeException("用户注册失败: " + e.getMessage(), e);
         }
@@ -127,8 +135,20 @@ public class UserDistributedService {
             log.info("用户信息更新分布式事务提交成功: userId={}", userId);
             return user;
 
+        } catch (BusinessException e) {
+            log.error("用户信息更新分布式事务失败(业务异常)，Seata将自动回滚: userId={}, error={}",
+                    userId, e.getMessage());
+            throw e; // 业务异常直接向上抛出，保留原始异常类型
+        } catch (IllegalArgumentException e) {
+            log.error("用户信息更新分布式事务失败(参数异常)，Seata将自动回滚: userId={}, error={}",
+                    userId, e.getMessage());
+            throw new IllegalArgumentException("用户信息更新参数错误: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            log.error("用户信息更新分布式事务失败(运行时异常)，Seata将自动回滚: userId={}, error={}",
+                    userId, e.getMessage(), e);
+            throw new RuntimeException("用户信息更新失败: " + e.getMessage(), e);
         } catch (Exception e) {
-            log.error("用户信息更新分布式事务失败，Seata将自动回滚: userId={}", userId, e);
+            log.error("用户信息更新分布式事务失败(未知异常)，Seata将自动回滚: userId={}", userId, e);
             throw new RuntimeException("用户信息更新失败: " + e.getMessage(), e);
         }
     }
@@ -178,8 +198,20 @@ public class UserDistributedService {
             log.info("用户状态变更分布式事务提交成功: userId={}, status={}", userId, status);
             return user;
 
+        } catch (BusinessException e) {
+            log.error("用户状态变更分布式事务失败(业务异常)，Seata将自动回滚: userId={}, status={}, error={}",
+                    userId, status, e.getMessage());
+            throw e; // 业务异常直接向上抛出，保留原始异常类型
+        } catch (IllegalArgumentException e) {
+            log.error("用户状态变更分布式事务失败(参数异常)，Seata将自动回滚: userId={}, status={}, error={}",
+                    userId, status, e.getMessage());
+            throw new IllegalArgumentException("用户状态变更参数错误: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            log.error("用户状态变更分布式事务失败(运行时异常)，Seata将自动回滚: userId={}, status={}, error={}",
+                    userId, status, e.getMessage(), e);
+            throw new RuntimeException("用户状态变更失败: " + e.getMessage(), e);
         } catch (Exception e) {
-            log.error("用户状态变更分布式事务失败，Seata将自动回滚: userId={}, status={}", userId, status, e);
+            log.error("用户状态变更分布式事务失败(未知异常)，Seata将自动回滚: userId={}, status={}", userId, status, e);
             throw new RuntimeException("用户状态变更失败: " + e.getMessage(), e);
         }
     }
@@ -226,8 +258,20 @@ public class UserDistributedService {
             log.info("用户删除分布式事务提交成功: userId={}", userId);
             return true;
 
+        } catch (BusinessException e) {
+            log.error("用户删除分布式事务失败(业务异常)，Seata将自动回滚: userId={}, error={}",
+                    userId, e.getMessage());
+            throw e; // 业务异常直接向上抛出，保留原始异常类型
+        } catch (IllegalArgumentException e) {
+            log.error("用户删除分布式事务失败(参数异常)，Seata将自动回滚: userId={}, error={}",
+                    userId, e.getMessage());
+            throw new IllegalArgumentException("用户删除参数错误: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            log.error("用户删除分布式事务失败(运行时异常)，Seata将自动回滚: userId={}, error={}",
+                    userId, e.getMessage(), e);
+            throw new RuntimeException("用户删除失败: " + e.getMessage(), e);
         } catch (Exception e) {
-            log.error("用户删除分布式事务失败，Seata将自动回滚: userId={}", userId, e);
+            log.error("用户删除分布式事务失败(未知异常)，Seata将自动回滚: userId={}", userId, e);
             throw new RuntimeException("用户删除失败: " + e.getMessage(), e);
         }
     }

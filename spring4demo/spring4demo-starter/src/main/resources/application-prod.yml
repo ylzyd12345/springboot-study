@@ -13,7 +13,7 @@ spring:
         master:
           url: ${DATASOURCE_MASTER_URL:jdbc:mysql://mysql-prod:3306/spring4demo?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
           username: ${DATASOURCE_MASTER_USERNAME:spring4demo}
-          password: ${DATASOURCE_MASTER_PASSWORD:password}
+          password: ${DATASOURCE_MASTER_PASSWORD}
           driver-class-name: com.mysql.cj.jdbc.Driver
           druid:
             initial-size: 10
@@ -37,7 +37,7 @@ spring:
         slave:
           url: ${DATASOURCE_SLAVE_URL:jdbc:mysql://mysql-slave:3306/spring4demo?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
           username: ${DATASOURCE_SLAVE_USERNAME:spring4demo}
-          password: ${DATASOURCE_SLAVE_PASSWORD:password}
+          password: ${DATASOURCE_SLAVE_PASSWORD}
           driver-class-name: com.mysql.cj.jdbc.Driver
           druid:
             initial-size: 10

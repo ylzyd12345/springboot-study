@@ -1,5 +1,7 @@
 package com.kev1n.spring4demo.web.controller;
 
+import com.kev1n.spring4demo.common.exception.BusinessException;
+import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.core.service.SeataExampleService;
 import com.kev1n.spring4demo.core.service.SeataService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +47,16 @@ public class SeataController {
             result.put("status", "success");
             result.put("message", "分布式事务执行成功");
 
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "分布式事务执行失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "分布式事务执行失败: " + e.getMessage());
         }
@@ -69,7 +80,16 @@ public class SeataController {
             result.put("status", "success");
             result.put("message", "跨数据源分布式事务执行成功");
 
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "跨数据源分布式事务执行失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "跨数据源分布式事务执行失败: " + e.getMessage());
         }
@@ -93,7 +113,18 @@ public class SeataController {
             result.put("status", "success");
             result.put("message", "分布式事务执行成功");
 
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "rollback");
+            result.put("message", "业务异常并回滚: " + e.getMessage());
+            result.put("expected", "这是预期的回滚行为");
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "rollback");
+            result.put("message", "分布式事务执行失败并回滚: " + e.getMessage());
+            result.put("expected", "这是预期的回滚行为");
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "rollback");
             result.put("message", "分布式事务执行失败并回滚: " + e.getMessage());
             result.put("expected", "这是预期的回滚行为");
@@ -118,7 +149,16 @@ public class SeataController {
             result.put("status", "success");
             result.put("message", "使用 SeataService 的分布式事务执行成功");
 
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "分布式事务执行失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "分布式事务执行失败: " + e.getMessage());
         }
@@ -142,7 +182,16 @@ public class SeataController {
             result.put("status", "success");
             result.put("message", "嵌套分布式事务执行成功");
 
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "嵌套分布式事务执行失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "嵌套分布式事务执行失败: " + e.getMessage());
         }
@@ -166,7 +215,18 @@ public class SeataController {
             result.put("status", "success");
             result.put("message", "分布式事务执行成功");
 
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "timeout");
+            result.put("message", "业务异常超时: " + e.getMessage());
+            result.put("expected", "这是预期的超时行为");
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "timeout");
+            result.put("message", "分布式事务执行超时: " + e.getMessage());
+            result.put("expected", "这是预期的超时行为");
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "timeout");
             result.put("message", "分布式事务执行超时: " + e.getMessage());
             result.put("expected", "这是预期的超时行为");
@@ -205,7 +265,20 @@ public class SeataController {
                 result.put("message", "自定义分布式事务执行失败");
             }
 
+        } catch (IllegalArgumentException e) {
+            log.error("参数错误: name={}, timeout={}", name, timeout, e);
+            result.put("status", "error");
+            result.put("message", "参数错误: " + e.getMessage());
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "自定义分布式事务执行失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "自定义分布式事务执行失败: " + e.getMessage());
         }
@@ -231,7 +304,20 @@ public class SeataController {
             result.put("message", "事务状态查询成功");
             result.put("xid", xid);
 
+        } catch (IllegalArgumentException e) {
+            log.error("参数错误: xid={}", xid, e);
+            result.put("status", "error");
+            result.put("message", "参数错误: " + e.getMessage());
+        } catch (BusinessException e) {
+            log.error("业务异常: xid={}", xid, e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: xid={}", xid, e);
+            result.put("status", "error");
+            result.put("message", "事务状态查询失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: xid={}", xid, e);
             result.put("status", "error");
             result.put("message", "事务状态查询失败: " + e.getMessage());
         }
@@ -256,7 +342,16 @@ public class SeataController {
             result.put("status", "up");
             result.put("message", "Seata 服务正常");
 
+        } catch (BusinessException e) {
+            log.error("Seata 健康检查失败: {}", e.getMessage(), e);
+            result.put("status", "down");
+            result.put("message", "Seata 服务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("Seata 健康检查失败: {}", e.getMessage(), e);
+            result.put("status", "down");
+            result.put("message", "Seata 服务异常: " + e.getMessage());
         } catch (Exception e) {
+            log.error("Seata 健康检查失败: {}", e.getMessage(), e);
             result.put("status", "down");
             result.put("message", "Seata 服务异常: " + e.getMessage());
         }

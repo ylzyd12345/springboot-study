@@ -1,5 +1,6 @@
 package com.kev1n.spring4demo.core.service;
 
+import com.influxdb.v3.client.InfluxDBApiException;
 import com.influxdb.v3.client.InfluxDBClient;
 import com.influxdb.v3.client.Point;
 import com.kev1n.spring4demo.core.entity.User;
@@ -48,8 +49,11 @@ public class UserMetricsService {
         try {
             influxDBClient.writePoint(point);
             log.info("用户登录指标记录成功: userId={}", user.getId());
+        } catch (InfluxDBApiException e) {
+            log.error("记录用户登录指标失败(InfluxDB异常): userId={}, error={}", user.getId(), e.getMessage(), e);
+            // 指标记录失败不影响主业务流程，记录日志即可
         } catch (Exception e) {
-            log.error("记录用户登录指标失败: userId={}, error={}", user.getId(), e.getMessage(), e);
+            log.error("记录用户登录指标失败(未知异常): userId={}", user.getId(), e);
         }
     }
 
@@ -73,8 +77,11 @@ public class UserMetricsService {
         try {
             influxDBClient.writePoint(point);
             log.info("用户操作指标记录成功: userId={}, operation={}", user.getId(), operation);
+        } catch (InfluxDBApiException e) {
+            log.error("记录用户操作指标失败(InfluxDB异常): userId={}, operation={}, error={}", user.getId(), operation, e.getMessage(), e);
+            // 指标记录失败不影响主业务流程，记录日志即可
         } catch (Exception e) {
-            log.error("记录用户操作指标失败: userId={}, operation={}, error={}", user.getId(), operation, e.getMessage(), e);
+            log.error("记录用户操作指标失败(未知异常): userId={}, operation={}", user.getId(), operation, e);
         }
     }
 
@@ -101,8 +108,11 @@ public class UserMetricsService {
                     .map(row -> ((Number) row[0]).longValue())
                     .findFirst()
                     .orElse(0L);
+        } catch (InfluxDBApiException e) {
+            log.error("查询用户登录次数失败(InfluxDB异常): userId={}, error={}", userId, e.getMessage(), e);
+            return 0;
         } catch (Exception e) {
-            log.error("查询用户登录次数失败: userId={}, error={}", userId, e.getMessage(), e);
+            log.error("查询用户登录次数失败(未知异常): userId={}", userId, e);
             return 0;
         }
     }
@@ -132,8 +142,11 @@ public class UserMetricsService {
                     .map(row -> ((Number) row[0]).longValue())
                     .findFirst()
                     .orElse(0L);
+        } catch (InfluxDBApiException e) {
+            log.error("查询用户操作次数失败(InfluxDB异常): userId={}, operation={}, error={}", userId, operation, e.getMessage(), e);
+            return 0;
         } catch (Exception e) {
-            log.error("查询用户操作次数失败: userId={}, operation={}, error={}", userId, operation, e.getMessage(), e);
+            log.error("查询用户操作次数失败(未知异常): userId={}, operation={}", userId, operation, e);
             return 0;
         }
     }
@@ -168,8 +181,10 @@ public class UserMetricsService {
                     results.add(result);
                 }
             });
+        } catch (InfluxDBApiException e) {
+            log.error("查询用户操作趋势失败(InfluxDB异常): userId={}, error={}", userId, e.getMessage(), e);
         } catch (Exception e) {
-            log.error("查询用户操作趋势失败: userId={}, error={}", userId, e.getMessage(), e);
+            log.error("查询用户操作趋势失败(未知异常): userId={}", userId, e);
         }
         return results;
     }
@@ -202,8 +217,10 @@ public class UserMetricsService {
                     results.add(result);
                 }
             });
+        } catch (InfluxDBApiException e) {
+            log.error("查询活跃用户数失败(InfluxDB异常): error={}", e.getMessage(), e);
         } catch (Exception e) {
-            log.error("查询活跃用户数失败: error={}", e.getMessage(), e);
+            log.error("查询活跃用户数失败(未知异常)", e);
         }
         return results;
     }

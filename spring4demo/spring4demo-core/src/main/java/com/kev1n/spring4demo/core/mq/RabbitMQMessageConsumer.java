@@ -35,9 +35,24 @@ public class RabbitMQMessageConsumer {
         try {
             handleUserCreatedEvent(message);
             log.info("处理用户创建事件成功: userId={}", message.getUserId());
-        } catch (Exception e) {
-            log.error("处理用户创建事件失败: userId={}, error={}", message.getUserId(), e.getMessage(), e);
-            throw e; // 抛出异常以触发重试机制
+        } catch (NullPointerException e) {
+            log.error("用户创建消息为空: error={}", e.getMessage());
+            throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("消息为空，拒绝重试", e);
+        } catch (IllegalArgumentException e) {
+            log.error("用户创建消息参数验证失败: userId={}, error={}", message.getUserId(), e.getMessage());
+            throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("消息参数验证失败，拒绝重试", e);
+        } catch (com.kev1n.spring4demo.common.exception.BusinessException e) {
+            log.error("处理用户创建事件时发生业务异常: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // 业务异常，拒绝重试，避免无限重试
+            throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("业务异常，拒绝重试", e);
+        } catch (org.springframework.amqp.AmqpException e) {
+            log.error("处理用户创建事件时发生RabbitMQ异常: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // RabbitMQ异常，触发重试机制
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("处理用户创建事件时发生运行时异常: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // 运行时异常，触发重试机制
+            throw e;
         }
     }
 
@@ -54,10 +69,24 @@ public class RabbitMQMessageConsumer {
         try {
             handleNotificationEvent(message);
             log.info("处理通知消息成功: userId={}, type={}", message.getUserId(), message.getType());
-        } catch (Exception e) {
-            log.error("处理通知消息失败: userId={}, type={}, error={}",
-                    message.getUserId(), message.getType(), e.getMessage(), e);
-            throw e; // 抛出异常以触发重试机制
+        } catch (NullPointerException e) {
+            log.error("通知消息为空: error={}", e.getMessage());
+            throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("消息为空，拒绝重试", e);
+        } catch (IllegalArgumentException e) {
+            log.error("通知消息参数验证失败: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage());
+            throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("消息参数验证失败，拒绝重试", e);
+        } catch (com.kev1n.spring4demo.common.exception.BusinessException e) {
+            log.error("处理通知消息时发生业务异常: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage(), e);
+            // 业务异常，拒绝重试，避免无限重试
+            throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("业务异常，拒绝重试", e);
+        } catch (org.springframework.amqp.AmqpException e) {
+            log.error("处理通知消息时发生RabbitMQ异常: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage(), e);
+            // RabbitMQ异常，触发重试机制
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("处理通知消息时发生运行时异常: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage(), e);
+            // 运行时异常，触发重试机制
+            throw e;
         }
     }
 

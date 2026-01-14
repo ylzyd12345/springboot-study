@@ -81,8 +81,12 @@ class ElasticsearchIntegrationTest {
                 elasticsearchClient.indices().delete(d -> d.index(TEST_INDEX));
                 log.info("测试索引 {} 已删除", TEST_INDEX);
             }
+        } catch (co.elastic.clients.elasticsearch._types.ElasticsearchException e) {
+            log.error("删除测试索引失败: Elasticsearch异常", e);
+        } catch (IOException e) {
+            log.error("删除测试索引失败: IO异常", e);
         } catch (Exception e) {
-            log.error("删除测试索引失败", e);
+            log.error("删除测试索引失败: 未知异常", e);
         } finally {
             if (restClient != null) {
                 restClient.close();

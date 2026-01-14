@@ -34,19 +34,19 @@ public class CustomHealthIndicator implements HealthIndicator {
             boolean databaseHealthy = checkDatabaseConnection();
             details.put("database", databaseHealthy ? "UP" : "DOWN");
 
-            // 检查内存使用情
+            // 检查内存使用情况
             Map<String, Object> memoryInfo = getMemoryInfo();
             details.put("memory", memoryInfo);
 
-            // 检查线程状
+            // 检查线程状态
             Map<String, Object> threadInfo = getThreadInfo();
             details.put("threads", threadInfo);
 
-            // 检查系统负
+            // 检查系统负载
             double systemLoadAverage = getSystemLoadAverage();
             details.put("systemLoadAverage", systemLoadAverage);
 
-            // 综合健康状态判
+            // 综合健康状态判断
             boolean isHealthy = databaseHealthy && isMemoryHealthy(memoryInfo) && isSystemLoadHealthy(systemLoadAverage);
 
             if (isHealthy) {
@@ -59,9 +59,31 @@ public class CustomHealthIndicator implements HealthIndicator {
                         .build();
             }
 
-        } catch (Exception e) {
-            log.error("Health check failed", e);
+        } catch (java.sql.SQLException e) {
+            log.error("Database health check failed", e);
             details.put("error", e.getMessage());
+            details.put("errorType", "SQLException");
+            return Health.down()
+                    .withDetails(details)
+                    .build();
+        } catch (NumberFormatException e) {
+            log.error("Health check parsing error", e);
+            details.put("error", e.getMessage());
+            details.put("errorType", "NumberFormatException");
+            return Health.down()
+                    .withDetails(details)
+                    .build();
+        } catch (RuntimeException e) {
+            log.error("Health check runtime error", e);
+            details.put("error", e.getMessage());
+            details.put("errorType", e.getClass().getSimpleName());
+            return Health.down()
+                    .withDetails(details)
+                    .build();
+        } catch (Exception e) {
+            log.error("Health check unexpected error", e);
+            details.put("error", e.getMessage());
+            details.put("errorType", "UnexpectedException");
             return Health.down()
                     .withDetails(details)
                     .build();
@@ -74,6 +96,15 @@ public class CustomHealthIndicator implements HealthIndicator {
     private boolean checkDatabaseConnection() {
         try (Connection connection = dataSource.getConnection()) {
             return connection.isValid(5); // 5秒
+        } catch (java.sql.SQLException e) {
+            log.warn("Database SQL health check failed", e);
+            return false;
+        } catch (org.springframework.dao.DataAccessException e) {
+            log.warn("Database data access health check failed", e);
+            return false;
+        } catch (RuntimeException e) {
+            log.warn("Database runtime health check failed", e);
+            return false;
         } catch (Exception e) {
             log.warn("Database health check failed", e);
             return false;

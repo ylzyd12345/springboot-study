@@ -35,8 +35,8 @@ spring:
             connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
             stat-view-servlet-enabled: true
             stat-view-servlet-url-pattern: /druid/*
-            stat-view-servlet-login-username: ${DRUID_STAT_USERNAME:admin}
-            stat-view-servlet-login-password: ${DRUID_STAT_PASSWORD:admin}
+            stat-view-servlet-login-username: ${DRUID_STAT_USERNAME}
+            stat-view-servlet-login-password: ${DRUID_STAT_PASSWORD}
             web-stat-filter-enabled: true
             web-stat-filter-url-pattern: /*
             web-stat-filter-exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
@@ -66,8 +66,8 @@ spring:
             connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
             stat-view-servlet-enabled: true
             stat-view-servlet-url-pattern: /druid/*
-            stat-view-servlet-login-username: ${DRUID_STAT_USERNAME:admin}
-            stat-view-servlet-login-password: ${DRUID_STAT_PASSWORD:admin}
+            stat-view-servlet-login-username: ${DRUID_STAT_USERNAME}
+            stat-view-servlet-login-password: ${DRUID_STAT_PASSWORD}
             web-stat-filter-enabled: true
             web-stat-filter-url-pattern: /*
             web-stat-filter-exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'

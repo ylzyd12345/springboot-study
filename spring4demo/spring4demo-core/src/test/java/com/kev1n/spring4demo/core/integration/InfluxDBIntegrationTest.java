@@ -57,8 +57,10 @@ class InfluxDBIntegrationTest {
             try {
                 influxDBClient.close();
                 log.info("InfluxDB 连接已关闭");
+            } catch (IOException e) {
+                log.error("关闭 InfluxDB 连接失败: IO异常", e);
             } catch (Exception e) {
-                log.error("关闭 InfluxDB 连接失败", e);
+                log.error("关闭 InfluxDB 连接失败: 未知异常", e);
             }
         }
     }

@@ -6,6 +6,7 @@ import com.kev1n.spring4demo.core.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -82,9 +83,24 @@ public class UserStatsJob implements Job {
             log.info("[UserStatsJob] 用户统计任务执行完成 - 时间: {}",
                     LocalDateTime.now().format(FORMATTER));
 
+        } catch (DataAccessException e) {
+            log.error("[UserStatsJob] 数据库访问失败，无法计算用户统计: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户统计任务失败", "数据库访问失败: " + e.getMessage());
+            throw new JobExecutionException("数据库访问失败", e);
+        } catch (JobExecutionException e) {
+            log.error("[UserStatsJob] 任务执行异常: {}", e.getMessage());
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("[UserStatsJob] 用户统计任务执行时发生运行时异常: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户统计任务失败", "运行时异常: " + e.getMessage());
+            throw new JobExecutionException("运行时异常", e);
         } catch (Exception e) {
-            log.error("[UserStatsJob] 用户统计任务执行失败", e);
-            throw new JobExecutionException(e);
+            log.error("[UserStatsJob] 用户统计任务执行时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("用户统计任务失败", "未知异常: " + e.getMessage());
+            throw new JobExecutionException("未知异常", e);
         }
     }
 
@@ -127,8 +143,16 @@ public class UserStatsJob implements Job {
             log.info("[UserStatsJob] 用户数量统计完成: 总数={}, 今日新增={}, 本周新增={}, 本月新增={}",
                     totalCount, todayCount, weekCount, monthCount);
 
+        } catch (DataAccessException e) {
+            log.error("[UserStatsJob] 数据库访问失败，无法统计用户数量: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户数量统计失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[UserStatsJob] 参数错误，无法统计用户数量: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[UserStatsJob] 统计用户数量失败", e);
+            log.error("[UserStatsJob] 统计用户数量时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("用户数量统计失败", "未知异常: " + e.getMessage());
         }
 
         return stats;
@@ -178,8 +202,16 @@ public class UserStatsJob implements Job {
             log.info("[UserStatsJob] 用户活跃度统计完成: 日活跃={}, 周活跃={}, 月活跃={}",
                     dailyActiveCount, activeCount, monthlyActiveCount);
 
+        } catch (DataAccessException e) {
+            log.error("[UserStatsJob] 数据库访问失败，无法统计用户活跃度: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户活跃度统计失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[UserStatsJob] 参数错误，无法统计用户活跃度: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[UserStatsJob] 统计用户活跃度失败", e);
+            log.error("[UserStatsJob] 统计用户活跃度时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("用户活跃度统计失败", "未知异常: " + e.getMessage());
         }
 
         return stats;
@@ -217,8 +249,16 @@ public class UserStatsJob implements Job {
             log.info("[UserStatsJob] 用户状态统计完成: 正常={}, 禁用={}, 删除={}",
                     normalCount, disabledCount, deletedCount);
 
+        } catch (DataAccessException e) {
+            log.error("[UserStatsJob] 数据库访问失败，无法统计用户状态: {}", e.getMessage());
+            // 发送告警通知
+            sendAlert("用户状态统计失败", "数据库访问失败: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("[UserStatsJob] 参数错误，无法统计用户状态: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("[UserStatsJob] 统计用户状态失败", e);
+            log.error("[UserStatsJob] 统计用户状态时发生未知异常", e);
+            // 发送告警通知
+            sendAlert("用户状态统计失败", "未知异常: " + e.getMessage());
         }
 
         return stats;
@@ -285,5 +325,18 @@ public class UserStatsJob implements Job {
         // TODO: 待实现消息队列模块后启用
         // 1. 创建UserStatsMessage消息
         // 2. 发送消息到RabbitMQ或Kafka
+    }
+
+    /**
+     * 发送告警通知
+     *
+     * @param title 告警标题
+     * @param message 告警消息
+     */
+    private void sendAlert(String title, String message) {
+        log.warn("[UserStatsJob] 告警通知 - 标题: {}, 消息: {}", title, message);
+        // TODO: 待实现告警模块后启用
+        // 1. 创建告警消息
+        // 2. 发送到告警系统（邮件、短信、钉钉等）
     }
 }

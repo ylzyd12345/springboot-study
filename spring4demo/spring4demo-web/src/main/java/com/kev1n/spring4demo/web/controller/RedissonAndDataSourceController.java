@@ -1,11 +1,14 @@
 package com.kev1n.spring4demo.web.controller;
 
+import com.kev1n.spring4demo.common.exception.BusinessException;
+import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.core.service.DynamicDataSourceService;
 import com.kev1n.spring4demo.core.service.RedissonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -152,7 +155,20 @@ public class RedissonAndDataSourceController {
             result.put("message", "数据已写入主库 (master)");
             result.put("datasource", "master");
 
+        } catch (DataAccessException e) {
+            log.error("数据库写入失败", e);
+            result.put("status", "error");
+            result.put("message", "数据库写入失败: " + e.getMessage());
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "写入失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "写入失败: " + e.getMessage());
         }
@@ -181,7 +197,20 @@ public class RedissonAndDataSourceController {
             result.put("dataCount", data.size());
             result.put("data", data);
 
+        } catch (DataAccessException e) {
+            log.error("数据库读取失败", e);
+            result.put("status", "error");
+            result.put("message", "数据库读取失败: " + e.getMessage());
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "读取失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "读取失败: " + e.getMessage());
         }
@@ -209,7 +238,20 @@ public class RedissonAndDataSourceController {
             result.put("writeDatasource", "master");
             result.put("readDatasource", "slave");
 
+        } catch (DataAccessException e) {
+            log.error("数据库操作失败", e);
+            result.put("status", "error");
+            result.put("message", "数据库操作失败: " + e.getMessage());
+        } catch (BusinessException e) {
+            log.error("业务异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "业务异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("运行时异常: {}", e.getMessage(), e);
+            result.put("status", "error");
+            result.put("message", "操作失败: " + e.getMessage());
         } catch (Exception e) {
+            log.error("未知异常: {}", e.getMessage(), e);
             result.put("status", "error");
             result.put("message", "操作失败: " + e.getMessage());
         }

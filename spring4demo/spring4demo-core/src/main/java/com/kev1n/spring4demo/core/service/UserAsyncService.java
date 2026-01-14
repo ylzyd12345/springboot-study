@@ -1,5 +1,6 @@
 package com.kev1n.spring4demo.core.service;
 
+import com.kev1n.spring4demo.common.exception.BusinessException;
 import com.kev1n.spring4demo.core.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 用户异步服务
@@ -53,9 +55,15 @@ public class UserAsyncService {
             } else {
                 log.warn("用户不存在，无法发送欢迎邮件: userId={}", userId);
             }
+        } catch (BusinessException e) {
+            log.error("发送欢迎邮件失败(业务异常): userId={}, error={}", userId, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
+        } catch (RuntimeException e) {
+            log.error("发送欢迎邮件失败(运行时异常): userId={}, error={}", userId, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
         } catch (Exception e) {
-            log.error("发送欢迎邮件失败: userId={}", userId, e);
-            throw e;
+            log.error("发送欢迎邮件失败(未知异常): userId={}", userId, e);
+            // 异步操作失败不影响主流程，记录日志即可
         }
         log.info("异步发送欢迎邮件完成: userId={}", userId);
         return CompletableFuture.completedFuture(null);
@@ -98,9 +106,18 @@ public class UserAsyncService {
             } else {
                 log.warn("用户不存在，无法发送验证码: userId={}", userId);
             }
+        } catch (BusinessException e) {
+            log.error("发送验证码失败(业务异常): userId={}, type={}, error={}", userId, type, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
+        } catch (IllegalArgumentException e) {
+            log.error("发送验证码失败(参数异常): userId={}, type={}, error={}", userId, type, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
+        } catch (RuntimeException e) {
+            log.error("发送验证码失败(运行时异常): userId={}, type={}, error={}", userId, type, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
         } catch (Exception e) {
-            log.error("发送验证码失败: userId={}, type={}", userId, type, e);
-            throw e;
+            log.error("发送验证码失败(未知异常): userId={}, type={}", userId, type, e);
+            // 异步操作失败不影响主流程，记录日志即可
         }
         log.info("异步发送验证码完成: userId={}", userId);
         return CompletableFuture.completedFuture(null);
@@ -127,9 +144,15 @@ public class UserAsyncService {
         try {
             userLogService.logUserAction(userId, username, action, details, ipAddress, userAgent);
             log.debug("异步记录用户操作日志成功: userId={}, action={}", userId, action);
+        } catch (BusinessException e) {
+            log.error("记录用户操作日志失败(业务异常): userId={}, action={}, error={}", userId, action, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
+        } catch (RuntimeException e) {
+            log.error("记录用户操作日志失败(运行时异常): userId={}, action={}, error={}", userId, action, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
         } catch (Exception e) {
-            log.error("记录用户操作日志失败: userId={}, action={}", userId, action, e);
-            throw e;
+            log.error("记录用户操作日志失败(未知异常): userId={}, action={}", userId, action, e);
+            // 异步操作失败不影响主流程，记录日志即可
         }
         return CompletableFuture.completedFuture(null);
     }
@@ -166,9 +189,15 @@ public class UserAsyncService {
             } else {
                 log.warn("用户不存在，无法发送通知: userId={}", userId);
             }
+        } catch (BusinessException e) {
+            log.error("发送通知失败(业务异常): userId={}, title={}, error={}", userId, title, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
+        } catch (RuntimeException e) {
+            log.error("发送通知失败(运行时异常): userId={}, title={}, error={}", userId, title, e.getMessage(), e);
+            // 异步操作失败不影响主流程，记录日志即可
         } catch (Exception e) {
-            log.error("发送通知失败: userId={}, title={}", userId, title, e);
-            throw e;
+            log.error("发送通知失败(未知异常): userId={}, title={}", userId, title, e);
+            // 异步操作失败不影响主流程，记录日志即可
         }
         log.info("异步发送通知完成: userId={}", userId);
         return CompletableFuture.completedFuture(null);
@@ -191,8 +220,15 @@ public class UserAsyncService {
             try {
                 sendWelcomeEmailAsync(userId).get();
                 successCount++;
+            } catch (ExecutionException e) {
+                log.error("批量发送欢迎邮件失败(执行异常): userId={}, error={}", userId, e.getMessage(), e);
+                // 批量操作中单个失败不影响其他用户，继续处理
+            } catch (InterruptedException e) {
+                log.error("批量发送欢迎邮件失败(中断异常): userId={}", userId, e);
+                Thread.currentThread().interrupt(); // 恢复中断状态
             } catch (Exception e) {
-                log.error("批量发送欢迎邮件失败: userId={}", userId, e);
+                log.error("批量发送欢迎邮件失败(未知异常): userId={}", userId, e);
+                // 批量操作中单个失败不影响其他用户，继续处理
             }
         }
         log.info("异步批量发送欢迎邮件完成: total={}, success={}", userIds.size(), successCount);

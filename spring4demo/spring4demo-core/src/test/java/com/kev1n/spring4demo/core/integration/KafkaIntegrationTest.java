@@ -258,9 +258,22 @@ class KafkaIntegrationTest {
 
             // 取消订阅
             kafkaConsumer.unsubscribe();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("创建 Topic 测试失败: 测试被中断", e);
+            fail("创建 Topic 测试失败: 测试被中断: " + e.getMessage());
+        } catch (java.util.concurrent.ExecutionException e) {
+            log.error("创建 Topic 测试失败: 执行异常", e);
+            fail("创建 Topic 测试失败: 执行异常: " + e.getMessage());
+        } catch (java.util.concurrent.TimeoutException e) {
+            log.error("创建 Topic 测试失败: 超时异常", e);
+            fail("创建 Topic 测试失败: 超时异常: " + e.getMessage());
+        } catch (org.apache.kafka.common.KafkaException e) {
+            log.error("创建 Topic 测试失败: Kafka异常", e);
+            fail("创建 Topic 测试失败: Kafka异常: " + e.getMessage());
         } catch (Exception e) {
-            log.error("创建 Topic 测试失败", e);
-            throw new RuntimeException(e);
+            log.error("创建 Topic 测试失败: 未知异常", e);
+            fail("创建 Topic 测试失败: 未知异常: " + e.getMessage());
         }
     }
 

@@ -40,44 +40,52 @@ public class MetricsInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, 
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                Object handler, Exception ex) {
         try {
             // 计算请求处理时间
             Long startTime = (Long) request.getAttribute(START_TIME_ATTR);
             if (startTime != null) {
                 long duration = System.currentTimeMillis() - startTime;
-                
+
                 String endpoint = request.getRequestURI();
                 String method = request.getMethod();
                 int statusCode = response.getStatus();
                 String userId = (String) request.getAttribute(USER_ID_ATTR);
-                
+
                 // 记录API请求指标
                 customMetrics.recordApiRequest(endpoint, method, statusCode);
-                
+
                 // 记录响应时间指标
-                customMetrics.setCustomGauge("api.response.duration.ms", duration, 
+                customMetrics.setCustomGauge("api.response.duration.ms", duration,
                         "endpoint", endpoint, "method", method);
-                
+
                 // 记录用户相关指标
                 if (userId != null) {
-                    customMetrics.incrementCustomCounter("user.api.request.count", 
+                    customMetrics.incrementCustomCounter("user.api.request.count",
                             "userId", userId, "endpoint", endpoint, "method", method);
                 }
-                
+
                 // 记录异常指标
                 if (ex != null) {
-                    customMetrics.recordBusinessException(ex.getClass().getSimpleName(), 
+                    customMetrics.recordBusinessException(ex.getClass().getSimpleName(),
                             "http_request");
                 }
-                
+
                 // 记录详细日志
-                log.debug("API request completed: {} {} - {}ms - Status: {}", 
+                log.debug("API request completed: {} {} - {}ms - Status: {}",
                         method, endpoint, duration, statusCode);
             }
+        } catch (NullPointerException e) {
+            log.error("Error recording metrics: null pointer", e);
+        } catch (NumberFormatException e) {
+            log.error("Error recording metrics: number format", e);
+        } catch (IllegalArgumentException e) {
+            log.error("Error recording metrics: illegal argument", e);
+        } catch (RuntimeException e) {
+            log.error("Error recording metrics: runtime error", e);
         } catch (Exception e) {
-            log.error("Error recording metrics", e);
+            log.error("Error recording metrics: unexpected error", e);
         }
     }
 

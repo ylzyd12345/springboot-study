@@ -22,13 +22,15 @@ public class RustFSProperties {
 
     /**
      * 访问密钥
+     * 必须从配置文件或环境变量中设置，不能使用默认值
      */
-    private String accessKey = "admin";
+    private String accessKey;
 
     /**
      * 秘密密钥
+     * 必须从配置文件或环境变量中设置，不能使用默认值
      */
-    private String secretKey = "admin123";
+    private String secretKey;
 
     /**
      * 存储桶名称

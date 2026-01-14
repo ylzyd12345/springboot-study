@@ -51,10 +51,35 @@ public class KafkaMessageConsumer {
             // 手动确认消息
             acknowledgment.acknowledge();
             log.info("处理用户创建事件成功并确认: userId={}", message.getUserId());
-        } catch (Exception e) {
-            log.error("处理用户创建事件失败: userId={}, error={}", message.getUserId(), e.getMessage(), e);
-            // 不确认消息，让Kafka重新投递
-            throw new RuntimeException("处理用户创建事件失败", e);
+        } catch (NullPointerException e) {
+            log.error("用户创建消息为空: error={}", e.getMessage());
+            // 消息为空，拒绝重试，手动确认避免阻塞
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
+            throw new RuntimeException("消息为空，拒绝重试", e);
+        } catch (IllegalArgumentException e) {
+            log.error("用户创建消息参数验证失败: userId={}, error={}", message.getUserId(), e.getMessage());
+            // 参数验证失败，拒绝重试，手动确认避免阻塞
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
+            throw new RuntimeException("消息参数验证失败，拒绝重试", e);
+        } catch (com.kev1n.spring4demo.common.exception.BusinessException e) {
+            log.error("处理用户创建事件时发生业务异常: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // 业务异常，拒绝重试，手动确认避免阻塞
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
+            throw new RuntimeException("业务异常，拒绝重试", e);
+        } catch (org.apache.kafka.common.KafkaException e) {
+            log.error("处理用户创建事件时发生Kafka异常: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // Kafka异常，不确认消息，让Kafka重新投递
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("处理用户创建事件时发生运行时异常: userId={}, error={}", message.getUserId(), e.getMessage(), e);
+            // 运行时异常，不确认消息，让Kafka重新投递
+            throw e;
         }
     }
 
@@ -87,11 +112,35 @@ public class KafkaMessageConsumer {
             // 手动确认消息
             acknowledgment.acknowledge();
             log.info("处理通知消息成功并确认: userId={}, type={}", message.getUserId(), message.getType());
-        } catch (Exception e) {
-            log.error("处理通知消息失败: userId={}, type={}, error={}",
-                    message.getUserId(), message.getType(), e.getMessage(), e);
-            // 不确认消息，让Kafka重新投递
-            throw new RuntimeException("处理通知消息失败", e);
+        } catch (NullPointerException e) {
+            log.error("通知消息为空: error={}", e.getMessage());
+            // 消息为空，拒绝重试，手动确认避免阻塞
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
+            throw new RuntimeException("消息为空，拒绝重试", e);
+        } catch (IllegalArgumentException e) {
+            log.error("通知消息参数验证失败: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage());
+            // 参数验证失败，拒绝重试，手动确认避免阻塞
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
+            throw new RuntimeException("消息参数验证失败，拒绝重试", e);
+        } catch (com.kev1n.spring4demo.common.exception.BusinessException e) {
+            log.error("处理通知消息时发生业务异常: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage(), e);
+            // 业务异常，拒绝重试，手动确认避免阻塞
+            if (acknowledgment != null) {
+                acknowledgment.acknowledge();
+            }
+            throw new RuntimeException("业务异常，拒绝重试", e);
+        } catch (org.apache.kafka.common.KafkaException e) {
+            log.error("处理通知消息时发生Kafka异常: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage(), e);
+            // Kafka异常，不确认消息，让Kafka重新投递
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("处理通知消息时发生运行时异常: userId={}, type={}, error={}", message.getUserId(), message.getType(), e.getMessage(), e);
+            // 运行时异常，不确认消息，让Kafka重新投递
+            throw e;
         }
     }
 

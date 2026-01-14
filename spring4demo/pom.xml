@@ -67,11 +67,11 @@
         <maven.test.parallel>true</maven.test.parallel>
         <maven.test.skip>false</maven.test.skip>
         <skipTests>false</skipTests>
-        <jacoco.skip>true</jacoco.skip>
-        <spotbugs.skip>true</spotbugs.skip>
-        <pmd.skip>true</pmd.skip>
-        <dependency-check.skip>true</dependency-check.skip>
-        <checkstyle.skip>true</checkstyle.skip>
+        <jacoco.skip>false</jacoco.skip>
+        <spotbugs.skip>false</spotbugs.skip>
+        <pmd.skip>false</pmd.skip>
+        <dependency-check.skip>false</dependency-check.skip>
+        <checkstyle.skip>false</checkstyle.skip>
 
         <!-- ==================== 测试覆盖率目标 ==================== -->
         <jacoco.coverage.ratio>0.85</jacoco.coverage.ratio>
@@ -736,11 +736,10 @@
                         <failsOnError>true</failsOnError>
                         <configLocation>/checkstyle.xml</configLocation>
                     </configuration>
-                    <!-- 暂时注释掉execution，避免依赖spring4demo-build-tools模块 -->
                     <executions>
                         <execution>
                             <id>validate</id>
-                            <phase>validate</phase>
+                            <phase>compile</phase>
                             <goals>
                                 <goal>check</goal>
                             </goals>

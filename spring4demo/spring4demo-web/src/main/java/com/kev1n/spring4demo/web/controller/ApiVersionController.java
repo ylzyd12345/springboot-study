@@ -1,5 +1,6 @@
 package com.kev1n.spring4demo.web.controller;
 
+import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -69,15 +70,21 @@ public class ApiVersionController {
                     "useInstead", info.getUseInstead()
                 ));
             });
-            
+
             Map<String, Object> response = Map.of(
                 "versions", versions,
                 "current", RECOMMENDED_VERSION,
                 "recommended", RECOMMENDED_VERSION,
                 "total", versions.size()
             );
-            
+
             return ResponseEntity.ok(ApiResponse.success(response));
+        } catch (IllegalArgumentException e) {
+            log.error("参数错误", e);
+            return ResponseEntity.ok(ApiResponse.error("获取版本列表失败: 参数错误"));
+        } catch (RuntimeException e) {
+            log.error("运行时异常", e);
+            return ResponseEntity.ok(ApiResponse.error("获取版本列表失败"));
         } catch (Exception e) {
             log.error("获取API版本列表失败", e);
             return ResponseEntity.ok(ApiResponse.error("获取版本列表失败"));
@@ -127,11 +134,11 @@ public class ApiVersionController {
         
         try {
             String clientVersion = request.getVersion();
-            
+
             if (clientVersion == null || clientVersion.trim().isEmpty()) {
                 return ResponseEntity.ok(ApiResponse.error("客户端版本不能为空"));
             }
-            
+
             VersionInfo versionInfo = SUPPORTED_VERSIONS.get(clientVersion);
             if (versionInfo == null) {
                 CompatibilityResult result = CompatibilityResult.incompatible(
@@ -140,7 +147,7 @@ public class ApiVersionController {
                 );
                 return ResponseEntity.ok(ApiResponse.success(result));
             }
-            
+
             // 根据版本状态返回兼容性结果
             CompatibilityResult result = switch (versionInfo.getStatus()) {
                 case STABLE -> CompatibilityResult.compatible("版本兼容，推荐使用");
@@ -153,9 +160,15 @@ public class ApiVersionController {
                     RECOMMENDED_VERSION
                 );
             };
-            
+
             return ResponseEntity.ok(ApiResponse.success(result));
-            
+
+        } catch (IllegalArgumentException e) {
+            log.error("参数错误", e);
+            return ResponseEntity.ok(ApiResponse.error("兼容性检查失败: 参数错误"));
+        } catch (RuntimeException e) {
+            log.error("运行时异常", e);
+            return ResponseEntity.ok(ApiResponse.error("兼容性检查失败"));
         } catch (Exception e) {
             log.error("版本兼容性检查失败", e);
             return ResponseEntity.ok(ApiResponse.error("兼容性检查失败"));

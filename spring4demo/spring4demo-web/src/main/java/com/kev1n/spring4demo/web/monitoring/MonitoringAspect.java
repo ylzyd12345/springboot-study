@@ -55,30 +55,52 @@ public class MonitoringAspect {
     private Object monitorMethod(ProceedingJoinPoint joinPoint, String layer) throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        
+
         Timer.Sample sample = customMetrics.startApiTimer();
         String[] tags = {"class", className, "method", methodName, "layer", layer};
 
         try {
             Object result = joinPoint.proceed();
-            
+
             // 记录成功指标
             customMetrics.incrementCustomCounter("method.invocation.count", tags);
             customMetrics.stopTimer(sample, "method.execution.time", tags);
-            
+
             log.debug("Method {}.{}, execution time recorded", className, methodName);
             return result;
-            
-        } catch (Exception e) {
-            // 记录异常指标
-            customMetrics.incrementCustomCounter("method.exception.count", 
-                    "class", className, "method", methodName, "layer", layer, 
+
+        } catch (RuntimeException e) {
+            // 记录运行时异常指标
+            customMetrics.incrementCustomCounter("method.exception.count",
+                    "class", className, "method", methodName, "layer", layer,
                     "exception", e.getClass().getSimpleName());
-            
-            customMetrics.incrementCustomCounter("error.count", 
-                    "type", "method_exception", "class", className, "method", methodName);
-            
-            log.error("Method {}.{}, exception recorded: {}", className, methodName, e.getMessage());
+
+            customMetrics.incrementCustomCounter("error.count",
+                    "type", "runtime_exception", "class", className, "method", methodName);
+
+            log.error("Method {}.{}, runtime exception recorded: {}", className, methodName, e.getMessage());
+            throw e;
+        } catch (Error e) {
+            // 记录错误指标
+            customMetrics.incrementCustomCounter("method.exception.count",
+                    "class", className, "method", methodName, "layer", layer,
+                    "exception", e.getClass().getSimpleName());
+
+            customMetrics.incrementCustomCounter("error.count",
+                    "type", "error", "class", className, "method", methodName);
+
+            log.error("Method {}.{}, error recorded: {}", className, methodName, e.getMessage());
+            throw e;
+        } catch (Throwable e) {
+            // 记录其他异常指标
+            customMetrics.incrementCustomCounter("method.exception.count",
+                    "class", className, "method", methodName, "layer", layer,
+                    "exception", e.getClass().getSimpleName());
+
+            customMetrics.incrementCustomCounter("error.count",
+                    "type", "checked_exception", "class", className, "method", methodName);
+
+            log.error("Method {}.{}, checked exception recorded: {}", className, methodName, e.getMessage());
             throw e;
         }
     }
@@ -101,28 +123,45 @@ public class MonitoringAspect {
 
         try {
             Object result = joinPoint.proceed();
-            
+
             // 记录API请求指标
             customMetrics.recordApiRequest(endpoint, method, 200);
             customMetrics.recordApiResponseTime(sample, endpoint, method);
-            
+
             return result;
-            
-        } catch (Exception e) {
-            // 记录错误指标
-            int statusCode = getStatusCodeFromException(e);
+
+        } catch (IllegalArgumentException e) {
+            // 记录参数错误指标
+            customMetrics.recordApiRequest(endpoint, method, 400);
+            customMetrics.recordApiResponseTime(sample, endpoint, method);
+            log.warn("HTTP request parameter error: {} {} - {}", method, endpoint, e.getMessage());
+            throw e;
+        } catch (SecurityException e) {
+            // 记录安全错误指标
+            customMetrics.recordApiRequest(endpoint, method, 403);
+            customMetrics.recordApiResponseTime(sample, endpoint, method);
+            log.warn("HTTP request security error: {} {} - {}", method, endpoint, e.getMessage());
+            throw e;
+        } catch (RuntimeException e) {
+            // 记录运行时异常指标
+            int statusCode = getStatusCodeFromRuntimeException(e);
             customMetrics.recordApiRequest(endpoint, method, statusCode);
             customMetrics.recordApiResponseTime(sample, endpoint, method);
-            
+            log.error("HTTP request runtime error: {} {} - {}", method, endpoint, e.getMessage());
+            throw e;
+        } catch (Throwable e) {
+            // 记录其他异常指标
+            customMetrics.recordApiRequest(endpoint, method, 500);
+            customMetrics.recordApiResponseTime(sample, endpoint, method);
+            log.error("HTTP request error: {} {} - {}", method, endpoint, e.getMessage());
             throw e;
         }
     }
 
     /**
-     * 从异常中获取状态码
+     * 从运行时异常中获取状态码
      */
-    private int getStatusCodeFromException(Exception e) {
-        // 这里可以根据具体的异常类型返回不同的状态码
+    private int getStatusCodeFromRuntimeException(RuntimeException e) {
         if (e instanceof IllegalArgumentException) {
             return 400;
         } else if (e instanceof SecurityException) {
@@ -133,25 +172,41 @@ public class MonitoringAspect {
     }
 
     /**
-     * 监控数据库操*/
+     * 监控数据库操作
+     */
     @Around("execution(* com.kev1n.spring4demo.core.repository.*.*(..))")
     public Object monitorDatabaseOperation(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
-        
+
         Timer.Sample sample = customMetrics.startDatabaseTimer();
 
         try {
             Object result = joinPoint.proceed();
-            
+
             customMetrics.recordDatabaseQueryTime(sample, methodName, className);
-            
+
             return result;
-            
-        } catch (Exception e) {
+
+        } catch (java.sql.SQLException e) {
+            customMetrics.recordDatabaseQueryTime(sample, methodName, className);
+            customMetrics.recordBusinessException("SQLException", "database_operation");
+            log.error("Database operation SQL error: {}.{} - {}", className, methodName, e.getMessage());
+            throw e;
+        } catch (org.springframework.dao.DataAccessException e) {
+            customMetrics.recordDatabaseQueryTime(sample, methodName, className);
+            customMetrics.recordBusinessException("DataAccessException", "database_operation");
+            log.error("Database operation data access error: {}.{} - {}", className, methodName, e.getMessage());
+            throw e;
+        } catch (RuntimeException e) {
             customMetrics.recordDatabaseQueryTime(sample, methodName, className);
             customMetrics.recordBusinessException(e.getClass().getSimpleName(), "database_operation");
-            
+            log.error("Database operation runtime error: {}.{} - {}", className, methodName, e.getMessage());
+            throw e;
+        } catch (Throwable e) {
+            customMetrics.recordDatabaseQueryTime(sample, methodName, className);
+            customMetrics.recordBusinessException(e.getClass().getSimpleName(), "database_operation");
+            log.error("Database operation error: {}.{} - {}", className, methodName, e.getMessage());
             throw e;
         }
     }
@@ -164,19 +219,29 @@ public class MonitoringAspect {
             "@annotation(org.springframework.cache.annotation.CacheEvict)")
     public Object monitorCacheOperation(ProceedingJoinPoint joinPoint) throws Throwable {
         Timer.Sample sample = Timer.start();
-        
+
         try {
             Object result = joinPoint.proceed();
-            
+
             customMetrics.recordCacheHit(joinPoint.getTarget().getClass().getSimpleName());
             customMetrics.recordApiResponseTime(sample, "cache", "access");
-            
+
             return result;
-            
-        } catch (Exception e) {
+
+        } catch (org.springframework.cache.CacheException e) {
             customMetrics.recordCacheMiss(joinPoint.getTarget().getClass().getSimpleName());
             customMetrics.recordApiResponseTime(sample, "cache", "access");
-            
+            log.warn("Cache operation error: {} - {}", joinPoint.getTarget().getClass().getSimpleName(), e.getMessage());
+            throw e;
+        } catch (RuntimeException e) {
+            customMetrics.recordCacheMiss(joinPoint.getTarget().getClass().getSimpleName());
+            customMetrics.recordApiResponseTime(sample, "cache", "access");
+            log.error("Cache operation runtime error: {} - {}", joinPoint.getTarget().getClass().getSimpleName(), e.getMessage());
+            throw e;
+        } catch (Throwable e) {
+            customMetrics.recordCacheMiss(joinPoint.getTarget().getClass().getSimpleName());
+            customMetrics.recordApiResponseTime(sample, "cache", "access");
+            log.error("Cache operation error: {} - {}", joinPoint.getTarget().getClass().getSimpleName(), e.getMessage());
             throw e;
         }
     }

@@ -3,6 +3,8 @@ package com.kev1n.spring4demo.web.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.kev1n.spring4demo.common.enums.ErrorCode;
+import com.kev1n.spring4demo.common.exception.BusinessException;
+import com.kev1n.spring4demo.common.exception.SystemException;
 import com.kev1n.spring4demo.core.service.DocumentPreviewService;
 import com.kev1n.spring4demo.web.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,6 +84,12 @@ public class DocumentPreviewController {
             log.info("生成文件预览 URL 成功: fileName={}", fileName);
             return ResponseEntity.ok(ApiResponse.success(result));
 
+        } catch (BusinessException e) {
+            log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: fileName={}", fileName, e);
+            return ResponseEntity.ok(ApiResponse.error("生成预览 URL 失败: " + e.getMessage()));
         } catch (Exception e) {
             log.error("生成文件预览 URL 失败: fileName={}", fileName, e);
             return ResponseEntity.ok(ApiResponse.error("生成预览 URL 失败: " + e.getMessage()));
@@ -130,6 +138,12 @@ public class DocumentPreviewController {
             log.info("生成带水印的文件预览 URL 成功: fileName={}", fileName);
             return ResponseEntity.ok(ApiResponse.success(result));
 
+        } catch (BusinessException e) {
+            log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: fileName={}", fileName, e);
+            return ResponseEntity.ok(ApiResponse.error("生成预览 URL 失败: " + e.getMessage()));
         } catch (Exception e) {
             log.error("生成带水印的文件预览 URL 失败: fileName={}", fileName, e);
             return ResponseEntity.ok(ApiResponse.error("生成预览 URL 失败: " + e.getMessage()));
@@ -160,6 +174,12 @@ public class DocumentPreviewController {
 
             return ResponseEntity.ok(ApiResponse.success(result));
 
+        } catch (BusinessException e) {
+            log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常: fileName={}", fileName, e);
+            return ResponseEntity.ok(ApiResponse.error("检查失败: " + e.getMessage()));
         } catch (Exception e) {
             log.error("检查文件预览支持失败: fileName={}", fileName, e);
             return ResponseEntity.ok(ApiResponse.error("检查失败: " + e.getMessage()));
@@ -187,6 +207,12 @@ public class DocumentPreviewController {
 
             return ResponseEntity.ok(ApiResponse.success(result));
 
+        } catch (BusinessException e) {
+            log.error("业务异常: error={}", e.getMessage(), e);
+            return ResponseEntity.ok(ApiResponse.error(e.getMessage()));
+        } catch (RuntimeException e) {
+            log.error("运行时异常", e);
+            return ResponseEntity.ok(ApiResponse.error("获取失败: " + e.getMessage()));
         } catch (Exception e) {
             log.error("获取支持的文件类型失败", e);
             return ResponseEntity.ok(ApiResponse.error("获取失败: " + e.getMessage()));
@@ -228,6 +254,12 @@ public class DocumentPreviewController {
                     .header("Location", previewUrl)
                     .build();
 
+        } catch (BusinessException e) {
+            log.error("业务异常: fileName={}, error={}", fileName, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (RuntimeException e) {
+            log.error("运行时异常: fileName={}", fileName, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             log.error("重定向到预览页面失败: fileName={}", fileName, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
