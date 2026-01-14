@@ -12,6 +12,8 @@
 
 **测试覆盖率**：0%（严重问题，需优先解决）
 
+**文档完成度**：100%（23个设计文档全部完成）
+
 ## 技术栈
 
 ### 🔧 核心技术
@@ -42,6 +44,7 @@
 - [x] **Druid** - 高性能数据库连接池 1.2.20
 - [x] **HikariCP** - Spring Boot 默认连接池
 - [x] **Dynamic DataSource** - 动态多数据源 4.3.0
+- [x] **R2DBC MySQL** - 响应式数据库访问 1.4.1
 
 #### NoSQL数据库
 - [x] **MongoDB** - MongoDB文档数据库（已实现）
@@ -115,8 +118,8 @@
 - [x] **MapStruct** - Bean映射框架 1.6.3
 - [x] **Hutool** - Java工具类库 5.8.40
 - [x] **Fastjson2** - JSON处理 2.0.57
-- [x] **Testcontainers** - 集成测试容器支持 1.20.0（依赖引入未使用）
-- [x] **WireMock** - HTTP服务模拟 3.9.0（依赖引入未使用）
+- [x] **Testcontainers** - 集成测试容器支持 2.0.3
+- [x] **WireMock** - HTTP服务模拟 3.9.0
 - [x] **JaCoCo** - 代码覆盖率 0.8.12
 
 ### 🎨 前端技术栈
@@ -149,6 +152,18 @@
 - [x] **Seata** - 分布式事务解决方案 2.5.0（已实现）
 - [x] **Dubbo Seata Filter** - 安全漏洞修复 3.3.1
 
+### 🧪 测试支持
+
+- [x] **Testcontainers** - 容器化集成测试
+  - Testcontainers MySQL
+  - Testcontainers MongoDB
+  - Testcontainers Redis
+  - Testcontainers Elasticsearch
+  - Testcontainers Neo4j
+  - Testcontainers InfluxDB
+  - Testcontainers RabbitMQ
+  - Testcontainers Kafka
+
 ## 项目结构
 
 ### 后端模块结构
@@ -157,11 +172,12 @@
 spring4demo/
 ├── build-tools/              # 构建工具模块 - 代码质量检查配置
 ├── spring4demo-common/       # 公共模块 - 通用工具类、常量、基础配置
+├── spring4demo-test-support/ # 测试支持模块 - Testcontainers 配置和测试工具类
 ├── spring4demo-core/         # 核心业务模块 - 业务逻辑、实体类、数据访问
 ├── spring4demo-web/          # Web应用模块 - Controller层、Web配置
 ├── spring4demo-api/          # API接口模块 - 对外API定义、DTO
 ├── spring4demo-admin/        # 管理后台模块 - 后台管理功能
-├── spring4demo-integration/  # 集成测试模块 - 集成测试
+├── spring4demo-integration/  # 集成测试模块 - 端到端测试、集成测试
 ├── spring4demo-generator/    # 代码生成器模块 - 代码生成工具
 └── spring4demo-starter/      # 启动器模块 - 应用启动入口
 ```
@@ -176,6 +192,14 @@ spring4demo-ui/
 │   └── router/               # 路由配置
 ├── package.json              # 依赖配置
 └── vite.config.ts            # Vite配置
+```
+
+### 开发容器配置
+
+```
+.devcontainer/
+├── devcontainer.json         # VS Code 开发容器配置
+└── docker-compose.yml        # 开发容器 Docker Compose 配置
 ```
 
 ## 构建和运行命令
@@ -211,7 +235,7 @@ mvn test -Pintegration-test
 # 生成测试覆盖率报告
 mvn jacoco:report
 
-# 代码质量检查
+# 代码质量检查（当前已跳过）
 mvn checkstyle:check
 mvn spotbugs:check
 mvn pmd:check
@@ -287,6 +311,7 @@ mvn -Pnative native:compile
     - 开发环境: `application-dev.yml`
     - 测试环境: `application-test.yml`
     - 生产环境: `application-prod.yml`
+    - Docker环境: `application-docker.yml`
 - **应用名称**: spring4demo
 - **默认端口**: 8080
 - **配置格式**: YAML
@@ -490,6 +515,9 @@ mvn spring-boot:run -Ptest
 # 生产环境
 mvn spring-boot:run -Pprod
 
+# Docker环境
+mvn spring-boot:run -Pdocker
+
 # 集成测试
 mvn test -Pintegration-test
 
@@ -503,6 +531,7 @@ mvn clean -Pcache-clean
 
 - **基础包名**: `com.kev1n.spring4demo`
 - **common模块**: 通用工具类、常量、基础配置
+- **test-support模块**: Testcontainers 配置和测试工具类
 - **core模块**: 业务逻辑、实体类、数据访问层
 - **web模块**: Controller层、Web配置
 - **api模块**: 对外API定义、DTO
@@ -574,6 +603,57 @@ mvn spring-boot:run
 - 使用 Spring Boot BOM 管理第三方依赖版本
 - 使用阿里云Maven镜像加速依赖下载
 
+### 使用 Testcontainers
+
+项目提供了完整的 Testcontainers 支持，位于 `spring4demo-test-support` 模块：
+
+```java
+@Testcontainers
+public class MySQLIntegrationTest {
+
+    @Container
+    static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
+        .withDatabaseName("testdb")
+        .withUsername("test")
+        .withPassword("test");
+
+    @Test
+    void testMySQLConnection() {
+        // 测试代码
+    }
+}
+```
+
+支持的 Testcontainers 模块：
+- MySQL
+- MongoDB
+- Redis
+- Elasticsearch
+- Neo4j
+- InfluxDB
+- RabbitMQ
+- Kafka
+
+### 使用开发容器
+
+项目提供了 VS Code 开发容器配置，支持一键启动完整的开发环境：
+
+```bash
+# 使用 VS Code 打开项目
+code .
+
+# 选择 "Reopen in Container"
+# 自动配置开发环境
+```
+
+开发容器包含：
+- Java 25
+- Maven 3.9.12
+- Node.js LTS
+- Docker-in-Docker
+- VS Code 扩展
+- 端口转发配置
+
 ## 常见问题
 
 ### 端口冲突
@@ -600,6 +680,12 @@ mvn spring-boot:run
 1. 检查Docker服务是否正常运行
 2. 检查数据库连接配置
 3. 查看测试日志获取详细信息
+
+### 开发容器无法启动
+
+1. 确保已安装 Docker 和 Docker Compose
+2. 检查 `.devcontainer/devcontainer.json` 配置
+3. 查看容器日志获取详细信息
 
 ## 访问地址
 
@@ -719,17 +805,22 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 | 代码质量 | 70 | 100 | ⚠️ 需改进 |
 | 安全性 | 60 | 100 | ⚠️ 需改进 |
 | 最佳实践 | 75 | 100 | ⚠️ 需改进 |
+| 文档完整性 | 100 | 100 | ✅ 优秀 |
 
 ### 严重问题（P0）
 
 1. **测试覆盖率 0%**
-   - 项目中无任何测试文件
+   - 项目中仅有8个集成测试文件，无单元测试
    - 远低于 85% 目标
    - 影响代码质量和可维护性
 
 2. **硬编码密码**
    - DynamicDataSourceProperties.java 中存在硬编码密码 "admin"
    - 存在安全风险
+
+3. **质量检查工具跳过**
+   - 所有质量检查工具（jacoco, spotbugs, pmd, dependency-check, checkstyle）都设置为跳过
+   - 无法进行有效的代码质量监控
 
 ### 重要问题（P1）
 
@@ -750,6 +841,8 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 - ✅ 架构设计清晰（模块划分合理）
 - ✅ 安全防护完善（SQL 注入、XSS 防护）
 - ✅ API 文档完整（OpenAPI 3 + Knife4j）
+- ✅ 技术文档完整（23个设计文档全部完成）
+- ✅ 开发环境配置完善（开发容器支持）
 
 ## 参考资源
 
@@ -765,12 +858,13 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 - [Promtail 官方文档](https://grafana.com/docs/loki/latest/clients/promtail/)
 - [Seata 官方文档](https://seata.io/zh-cn/)
 - [Redisson 官方文档](https://redisson.org/)
+- [Testcontainers 官方文档](https://www.testcontainers.org/)
 
 ### 项目文档
 
 - 项目 README.md 文件包含详细的模块说明和架构设计
 - HELP.md 文件包含 Spring Boot 各功能模块的参考文档链接
-- docs/ 目录包含完整的技术设计文档
+- docs/ 目录包含完整的技术设计文档（23个文档）
 
 ### 技术社区
 
@@ -784,6 +878,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 - **build-tools模块**: 代码质量检查配置（Checkstyle、SpotBugs、PMD）
 - **common模块**: 只做公共功能（工具类、常量、基础配置），不包含业务逻辑，不依赖其他业务模块
+- **test-support模块**: Testcontainers 配置和测试工具类，提供容器化集成测试支持
 - **core模块**: 核心业务逻辑，包含实体类、数据访问层、业务服务层
 - **web模块**: Web层，包含Controller、Web配置，依赖core模块
 - **api模块**: 对外API定义，包含DTO、API接口定义
@@ -794,7 +889,8 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 ### 依赖原则
 
 - common模块不依赖任何其他业务模块
-- core模块可以依赖common模块
+- test-support模块可以依赖common模块
+- core模块可以依赖common模块和test-support模块
 - web模块依赖core模块和common模块
 - 避免循环依赖
 - 保持模块职责单一
@@ -894,6 +990,37 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
   - 更灵活的配置和控制
   - 完全不依赖 Spring Cloud 生态
 
+### 测试架构
+
+- **Testcontainers**: 容器化集成测试框架
+- **测试支持模块**: spring4demo-test-support 提供统一的 Testcontainers 配置
+- **支持的容器**:
+  - MySQL
+  - MongoDB
+  - Redis
+  - Elasticsearch
+  - Neo4j
+  - InfluxDB
+  - RabbitMQ
+  - Kafka
+- **优势**:
+  - 真实的测试环境
+  - 可重复的测试结果
+  - 易于维护和扩展
+  - 支持并行测试
+
+### 开发环境架构
+
+- **VS Code Dev Container**: 统一的开发环境配置
+- **Docker-in-Docker**: 支持在容器内运行 Docker
+- **预配置扩展**: Java、Spring Boot、Docker、Git 等
+- **端口转发**: 自动转发所有服务端口
+- **优势**:
+  - 一键启动开发环境
+  - 统一的开发体验
+  - 减少环境配置时间
+  - 提高团队协作效率
+
 ## 文档维护
 
 本文档应随项目演进持续更新，包括：
@@ -913,7 +1040,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 ### 当前阶段
 
-**功能完善阶段**：技术栈覆盖率100%，核心组件实现率97.2%。
+**功能完善阶段**：技术栈覆盖率100%，核心组件实现率97.2%，文档完成度100%。
 
 ### 实施计划
 
@@ -956,9 +1083,17 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
    - 将硬编码密码移至配置文件
    - 使用环境变量或配置中心管理敏感信息
 
-3. **更新架构计划文档**（2小时）
+3. **启用质量检查工具**（1天）
+   - 启用 JaCoCo 代码覆盖率检查
+   - 启用 SpotBugs Bug 检测
+   - 启用 PMD 代码质量分析
+   - 启用 Dependency-Check 安全漏洞扫描
+   - 启用 Checkstyle 代码风格检查
+
+4. **更新架构计划文档**（2小时）
    - 更新 GraphQL 实现状态
    - 更新技术栈完成度
+   - 更新测试支持模块说明
 
 #### P1（2-4周）
 
@@ -981,3 +1116,159 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 5. **完善 InfluxDB 查询方法**（2天）
    - 添加时序数据聚合方法
    - 实现复杂查询
+
+6. **完善 Testcontainers 测试**（3天）
+   - 为所有集成测试添加 Testcontainers 支持
+   - 提高测试稳定性和可重复性
+
+#### P2（1-2个月）
+
+1. **性能优化**（5天）
+   - 数据库查询优化
+   - 缓存策略优化
+   - 接口响应时间优化
+
+2. **安全加固**（3天）
+   - 完善安全配置
+   - 添加安全审计日志
+   - 实施安全最佳实践
+
+3. **监控完善**（2天）
+   - 完善监控指标
+   - 添加告警规则
+   - 优化 Grafana 仪表板
+
+## 文档体系
+
+### 技术设计文档（23个）
+
+项目包含完整的技术设计文档体系，位于 `docs/` 目录：
+
+#### 规划设计层（5个）
+1. 产品架构设计
+2. 项目管理
+3. 总体设计
+4. 技术架构设计
+5. 项目结构设计
+
+#### 系统设计层（7个）
+6. 概要设计
+7. 详细设计
+8. 业务架构设计
+9. 功能分解设计
+10. 应用交互设计
+11. 数据架构设计
+12. 接口设计
+
+#### 实施支撑层（3个）
+13. 非功能性设计
+14. 部署架构设计
+15. 实施方案设计
+
+#### 运维支持层（8个）
+16. API文档规范
+17. 数据库详细设计
+18. 安全设计详细文档
+19. 测试设计文档
+20. 运维手册
+21. 用户手册
+22. 开发指南
+23. 版本发布计划
+
+### 文档状态
+
+所有23个设计文档已完成，状态为 ✅ 完成。
+
+### 文档导航
+
+详见 `docs/DOCS_README.md` 获取完整的文档目录和导航。
+
+## 开发环境
+
+### 环境要求
+
+- **Java**: JDK 25+
+- **Node.js**: 18.0.0+
+- **Maven**: 3.9.0+
+- **Docker**: 20.0+
+- **VS Code**: 最新版本（推荐）
+
+### 开发容器
+
+项目提供了 VS Code 开发容器配置，支持一键启动完整的开发环境：
+
+**特性：**
+- Java 25
+- Maven 3.9.12
+- Node.js LTS
+- Docker-in-Docker
+- 预配置的 VS Code 扩展
+- 自动端口转发
+- 统一的开发环境
+
+**使用方法：**
+1. 使用 VS Code 打开项目
+2. 选择 "Reopen in Container"
+3. 等待容器构建完成
+4. 开始开发
+
+### 本地开发
+
+如果不使用开发容器，需要手动安装以下环境：
+
+1. 安装 JDK 25
+2. 安装 Maven 3.9.12
+3. 安装 Node.js 18+
+4. 安装 Docker 和 Docker Compose
+5. 配置 Maven 镜像（可选）
+6. 启动 Docker 服务
+7. 运行 `docker-compose up -d` 启动基础服务
+8. 运行 `mvn spring-boot:run` 启动后端服务
+9. 运行 `npm run dev` 启动前端服务
+
+## 团队协作
+
+### Git 工作流
+
+项目使用 Git 进行版本控制，推荐使用以下工作流：
+
+1. 从主分支创建特性分支
+2. 在特性分支上进行开发
+3. 提交代码并推送
+4. 创建 Pull Request
+5. 代码审查
+6. 合并到主分支
+
+### 代码审查
+
+在创建 Pull Request 之前，请确保：
+
+1. 所有测试通过
+2. 代码符合项目规范
+3. 添加了必要的测试用例
+4. 更新了相关文档
+5. 没有引入安全漏洞
+
+### 问题追踪
+
+使用 GitHub Issues 进行问题追踪：
+
+- Bug 报告
+- 功能请求
+- 改进建议
+- 文档问题
+
+## 许可证
+
+本项目采用 MIT 许可证。
+
+## 联系方式
+
+如有问题或建议，请通过以下方式联系：
+
+- GitHub Issues: https://github.com/ylzyd12345/springboot-study/issues
+- Email: support@spring4demo.com
+
+---
+
+*最后更新时间：2026年1月14日*
