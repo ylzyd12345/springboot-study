@@ -47,9 +47,6 @@ class UserServiceImplTests {
     private UserLogService userLogService;
 
     @Mock
-    private UserReactiveRepository userReactiveRepository;
-
-    @Mock
     private UserSearchService userSearchService;
 
     @Mock

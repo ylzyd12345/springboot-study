@@ -37,7 +37,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final UserMapper userMapper;
     private final UserLogService userLogService;
-    private final UserReactiveRepository userReactiveRepository;
     private final UserSearchService userSearchService;
     private final UserCacheService userCacheService;
     private final UserAsyncService userAsyncService;
