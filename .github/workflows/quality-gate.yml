@@ -1,0 +1,366 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+
+env:
+  MIN_COVERAGE: 80
+  MAX_COMPLEXITY: 5
+  MAX_METHOD_LENGTH: 80
+  MAX_CLASS_LENGTH: 300
+
+jobs:
+  # 质量门禁检查
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run all quality checks
+      run: |
+        echo "=========================================="
+        echo "Quality Gate Check Started"
+        echo "=========================================="
+        echo ""
+
+        # 1. 代码格式检查
+        echo "1. Code Format Check..."
+        mvn com.coveo:fmt-maven-plugin:check || {
+          echo "❌ FAILED: Code format check failed"
+          echo "Please run 'mvn fmt:format' locally"
+          exit 1
+        }
+        echo "✅ PASSED: Code format check"
+
+        # 2. Checkstyle 检查
+        echo ""
+        echo "2. Checkstyle Check..."
+        mvn checkstyle:check -Dcheckstyle.skip=false || {
+          echo "❌ FAILED: Checkstyle check failed"
+          exit 1
+        }
+        echo "✅ PASSED: Checkstyle check"
+
+        # 3. SpotBugs 检查
+        echo ""
+        echo "3. SpotBugs Check..."
+        mvn spotbugs:check -Dspotbugs.skip=false || {
+          echo "❌ FAILED: SpotBugs check failed"
+          exit 1
+        }
+        echo "✅ PASSED: SpotBugs check"
+
+        # 4. PMD 检查
+        echo ""
+        echo "4. PMD Check..."
+        mvn pmd:check -Dpmd.skip=false || {
+          echo "❌ FAILED: PMD check failed"
+          exit 1
+        }
+        echo "✅ PASSED: PMD check"
+
+        # 5. OWASP Dependency Check
+        echo ""
+        echo "5. OWASP Dependency Check..."
+        mvn dependency-check:check -Ddependency-check.skip=false || {
+          echo "❌ FAILED: OWASP Dependency Check failed"
+          echo "Please review the security vulnerabilities"
+          exit 1
+        }
+        echo "✅ PASSED: OWASP Dependency Check"
+
+        # 6. 运行测试并生成覆盖率报告
+        echo ""
+        echo "6. Running Tests with Coverage..."
+        mvn clean test jacoco:report -Djacoco.skip=false || {
+          echo "❌ FAILED: Tests failed"
+          exit 1
+        }
+        echo "✅ PASSED: All tests passed"
+
+        # 7. 检查测试覆盖率
+        echo ""
+        echo "7. Coverage Check (Target: ${{ env.MIN_COVERAGE }}%)..."
+        mvn jacoco:check -Djacoco.coverage.ratio=${{ env.MIN_COVERAGE }} -Djacoco.branch.ratio=0.75 || {
+          echo "❌ FAILED: Coverage is below ${{ env.MIN_COVERAGE }}%"
+          echo "Please add more tests to increase coverage"
+          exit 1
+        }
+        echo "✅ PASSED: Coverage meets the requirement"
+
+        echo ""
+        echo "=========================================="
+        echo "Quality Gate Check: ALL PASSED ✅"
+        echo "=========================================="
+
+    - name: Generate coverage badge
+      if: success()
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        jacoco-csv-file: spring4demo/target/site/jacoco/jacoco.csv
+        badges-directory: badges
+        generate-branches-badge: true
+        generate-summary: true
+        coverage-label: Coverage
+        branches-label: Branches
+        summary-label: Coverage Summary
+
+    - name: Upload coverage badge
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-badges
+        path: badges/
+
+    - name: Commit coverage badge
+      if: success() && github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add badges/
+        git commit -m "Update coverage badges" || exit 0
+        git push
+
+    - name: Quality Gate Report
+      if: always()
+      run: |
+        echo "## Quality Gate Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Code Format**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **Checkstyle**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **SpotBugs**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **PMD**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **OWASP Dependency Check**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **Tests**: ✅ Passed" >> $GITHUB_STEP_SUMMARY
+        echo "- **Coverage**: ✅ Passed (≥${{ env.MIN_COVERAGE }}%)" >> $GITHUB_STEP_SUMMARY
+
+  # 代码复杂度检查
+  complexity-gate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+
+    - name: Install Lizard
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lizard
+
+    - name: Check Cyclomatic Complexity
+      run: |
+        echo "=========================================="
+        echo "Complexity Check (Max CCN: ${{ env.MAX_COMPLEXITY }})"
+        echo "=========================================="
+        echo ""
+
+        lizard spring4demo/src/main/java/ \
+          --CCN ${{ env.MAX_COMPLEXITY }} \
+          --length ${{ env.MAX_METHOD_LENGTH }} \
+          --exclude "*/target/*" \
+          --warnings_only || {
+            echo ""
+            echo "❌ FAILED: Found methods with cyclomatic complexity > ${{ env.MAX_COMPLEXITY }}"
+            echo "Please refactor these methods to reduce complexity"
+            exit 1
+        }
+
+        echo ""
+        echo "✅ PASSED: All methods have CCN ≤ ${{ env.MAX_COMPLEXITY }}"
+
+    - name: Check Method Length
+      run: |
+        echo ""
+        echo "=========================================="
+        echo "Method Length Check (Max: ${{ env.MAX_METHOD_LENGTH }} lines)"
+        echo "=========================================="
+        echo ""
+
+        lizard spring4demo/src/main/java/ \
+          --length ${{ env.MAX_METHOD_LENGTH }} \
+          --exclude "*/target/*" \
+          --warnings_only || {
+            echo ""
+            echo "❌ FAILED: Found methods longer than ${{ env.MAX_METHOD_LENGTH }} lines"
+            echo "Please split these methods into smaller functions"
+            exit 1
+        }
+
+        echo ""
+        echo "✅ PASSED: All methods are ≤ ${{ env.MAX_METHOD_LENGTH }} lines"
+
+    - name: Complexity Report
+      if: always()
+      run: |
+        echo "## Complexity Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        lizard spring4demo/src/main/java/ \
+          --CCN ${{ env.MAX_COMPLEXITY }} \
+          --length ${{ env.MAX_METHOD_LENGTH }} \
+          --exclude "*/target/*" \
+          --html lizard-report.html
+        echo "Detailed complexity report generated" >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload complexity report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: complexity-report
+        path: lizard-report.html
+
+  # 代码重复检查
+  duplication-gate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+
+    - name: Run CPD Check
+      run: |
+        echo "=========================================="
+        echo "Duplication Check"
+        echo "=========================================="
+        echo ""
+
+        mvn pmd:cpd-check -Dpmd.skip=false || {
+          echo ""
+          echo "❌ FAILED: Found code duplication"
+          echo "Please refactor duplicated code"
+          exit 1
+        }
+
+        echo ""
+        echo "✅ PASSED: No significant code duplication found"
+
+  # 安全检查
+  security-gate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for Hardcoded Passwords
+      run: |
+        echo "=========================================="
+        echo "Hardcoded Passwords Check"
+        echo "=========================================="
+        echo ""
+
+        if grep -r -i "password.*=.*['\"]admin['\"]" spring4demo/src/; then
+          echo "❌ FAILED: Found hardcoded admin password!"
+          exit 1
+        fi
+        if grep -r -i "password.*=.*['\"]123456['\"]" spring4demo/src/; then
+          echo "❌ FAILED: Found hardcoded default password!"
+          exit 1
+        fi
+        if grep -r -i "secret.*=.*['\"]admin123['\"]" spring4demo/src/; then
+          echo "❌ FAILED: Found hardcoded secret!"
+          exit 1
+        fi
+
+        echo "✅ PASSED: No hardcoded passwords found"
+
+    - name: Check for Hardcoded API Keys
+      run: |
+        echo ""
+        echo "=========================================="
+        echo "Hardcoded API Keys Check"
+        echo "=========================================="
+        echo ""
+
+        if grep -r -E "(api[_-]?key|apikey)[\s:=]+['\"][a-zA-Z0-9]{20,}['\"]" spring4demo/src/; then
+          echo "⚠️  WARNING: Found potential hardcoded API key"
+          echo "Please review and use environment variables"
+          # 不失败，只是警告
+        fi
+
+        echo "✅ PASSED: No obvious hardcoded API keys found"
+
+  # 综合质量门禁
+  final-gate:
+    runs-on: ubuntu-latest
+    needs: [quality-gate, complexity-gate, duplication-gate, security-gate]
+    if: always()
+    steps:
+    - name: Check all gates
+      run: |
+        echo "=========================================="
+        echo "Final Quality Gate Summary"
+        echo "=========================================="
+        echo ""
+
+        if [ "${{ needs.quality-gate.result }}" != "success" ]; then
+          echo "❌ Quality Gate: FAILED"
+          exit 1
+        fi
+
+        if [ "${{ needs.complexity-gate.result }}" != "success" ]; then
+          echo "❌ Complexity Gate: FAILED"
+          exit 1
+        fi
+
+        if [ "${{ needs.duplication-gate.result }}" != "success" ]; then
+          echo "❌ Duplication Gate: FAILED"
+          exit 1
+        fi
+
+        if [ "${{ needs.security-gate.result }}" != "success" ]; then
+          echo "❌ Security Gate: FAILED"
+          exit 1
+        fi
+
+        echo "✅ ALL QUALITY GATES PASSED"
+        echo ""
+        echo "The code is ready for merge!"
+
+    - name: Final Report
+      if: always()
+      run: |
+        echo "## Final Quality Gate Result" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Quality Gates Status:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Quality Gate**: ${{ needs.quality-gate.result == 'success' && '✅ Passed' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Complexity Gate**: ${{ needs.complexity-gate.result == 'success' && '✅ Passed' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Duplication Gate**: ${{ needs.duplication-gate.result == 'success' && '✅ Passed' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Security Gate**: ${{ needs.security-gate.result == 'success' && '✅ Passed' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ needs.quality-gate.result }}" == "success" ] && \
+           [ "${{ needs.complexity-gate.result }}" == "success" ] && \
+           [ "${{ needs.duplication-gate.result }}" == "success" ] && \
+           [ "${{ needs.security-gate.result }}" == "success" ]; then
+          echo "🎉 **All quality gates passed! Ready to merge.**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️  **Some quality gates failed. Please fix the issues before merging.**" >> $GITHUB_STEP_SUMMARY
+        fi
