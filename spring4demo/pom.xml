@@ -25,6 +25,9 @@
         <!-- 测试支持模块 - Testcontainers 配置和测试工具类 -->
         <module>spring4demo-test-support</module>
 
+        <!-- Maven 插件编译支持模块 - checkstyle、等配置 -->
+        <module>spring4demo-build-tools</module>
+
         <!-- API 模块 - DTO、枚举、常量 -->
         <module>spring4demo-api</module>
         
@@ -45,7 +48,7 @@
         
         <!-- 启动模块 - 应用启动入口 -->
         <module>spring4demo-starter</module>
-        <module>build-tools</module>
+
     </modules>
 
     <!-- =========================================================== -->
@@ -196,7 +199,7 @@
             <!-- ==================== 项目模块 ==================== -->
             <dependency>
                 <groupId>com.kev1n</groupId>
-                <artifactId>build-tools</artifactId>
+                <artifactId>spring4demo-build-tools</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -723,7 +726,7 @@
                     <dependencies>
                         <dependency>
                             <groupId>com.kev1n</groupId>
-                            <artifactId>build-tools</artifactId>
+                            <artifactId>spring4demo-build-tools</artifactId>
                             <version>${project.version}</version>
                         </dependency>
                     </dependencies>
@@ -733,7 +736,7 @@
                         <failsOnError>true</failsOnError>
                         <configLocation>/checkstyle.xml</configLocation>
                     </configuration>
-                    <!-- 暂时注释掉execution，避免依赖build-tools模块 -->
+                    <!-- 暂时注释掉execution，避免依赖spring4demo-build-tools模块 -->
                     <executions>
                         <execution>
                             <id>validate</id>
@@ -753,7 +756,7 @@
                     <dependencies>
                         <dependency>
                             <groupId>com.kev1n</groupId>
-                            <artifactId>build-tools</artifactId>
+                            <artifactId>spring4demo-build-tools</artifactId>
                             <version>${project.version}</version>
                         </dependency>
                     </dependencies>

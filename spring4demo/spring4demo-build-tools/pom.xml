@@ -10,6 +10,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>build-tools</artifactId>
+    <artifactId>spring4demo-build-tools</artifactId>
 
 </project>

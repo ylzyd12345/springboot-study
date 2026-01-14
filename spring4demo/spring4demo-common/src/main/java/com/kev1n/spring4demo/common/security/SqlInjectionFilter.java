@@ -1,11 +1,16 @@
 package com.kev1n.spring4demo.common.security;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
@@ -36,16 +41,26 @@ public class SqlInjectionFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        // 检查请求参数
-        if (containsSqlInjection(httpRequest)) {
-            log.warn("检测到SQL注入攻击: URI={}, IP={}", httpRequest.getRequestURI(), httpRequest.getRemoteAddr());
-            httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            httpResponse.setContentType("application/json;charset=UTF-8");
-            httpResponse.getWriter().write("{\"code\":400,\"message\":\"检测到SQL注入攻击\"}");
+        try {
+            // 检查请求参数
+            if (containsSqlInjection(httpRequest)) {
+                handleSqlInjection(httpRequest, httpResponse);
+                return;
+            }
+        } catch (SecurityException e) {
+            handleSqlInjection(httpRequest, httpResponse);
             return;
         }
 
+
         chain.doFilter(request, response);
+    }
+
+    private static void handleSqlInjection(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+        log.warn("检测到SQL注入攻击: URI={}, IP={}", httpRequest.getRequestURI(), httpRequest.getRemoteAddr());
+        httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        httpResponse.setContentType("application/json;charset=UTF-8");
+        httpResponse.getWriter().write("{\"code\":400,\"message\":\"检测到SQL注入攻击\"}");
     }
 
     /**

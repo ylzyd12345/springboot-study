@@ -170,7 +170,7 @@
 
 ```
 spring4demo/
-├── build-tools/              # 构建工具模块 - 代码质量检查配置
+├── spring4demo-build-tools/              # 构建工具模块 - 代码质量检查配置
 ├── spring4demo-common/       # 公共模块 - 通用工具类、常量、基础配置
 ├── spring4demo-test-support/ # 测试支持模块 - Testcontainers 配置和测试工具类
 ├── spring4demo-core/         # 核心业务模块 - 业务逻辑、实体类、数据访问
@@ -876,7 +876,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 ### 模块职责划分
 
-- **build-tools模块**: 代码质量检查配置（Checkstyle、SpotBugs、PMD）
+- **spring4demo-build-tools模块**: 代码质量检查配置（Checkstyle、SpotBugs、PMD）
 - **common模块**: 只做公共功能（工具类、常量、基础配置），不包含业务逻辑，不依赖其他业务模块
 - **test-support模块**: Testcontainers 配置和测试工具类，提供容器化集成测试支持
 - **core模块**: 核心业务逻辑，包含实体类、数据访问层、业务服务层
