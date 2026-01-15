@@ -1,313 +1,115 @@
-# PR Review Toolkit
-
-A comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, code quality, and code simplification.
-
-## Overview
-
-This plugin bundles 6 expert review agents that each focus on a specific aspect of code quality. Use them individually for targeted reviews or together for comprehensive PR analysis.
-
-## Agents
-
-### 1. comment-analyzer
-**Focus**: Code comment accuracy and maintainability
-
-**Analyzes:**
-- Comment accuracy vs actual code
-- Documentation completeness
-- Comment rot and technical debt
-- Misleading or outdated comments
-
-**When to use:**
-- After adding documentation
-- Before finalizing PRs with comment changes
-- When reviewing existing comments
-
-**Triggers:**
-```
-"Check if the comments are accurate"
-"Review the documentation I added"
-"Analyze comments for technical debt"
-```
-
-### 2. pr-test-analyzer
-**Focus**: Test coverage quality and completeness
-
-**Analyzes:**
-- Behavioral vs line coverage
-- Critical gaps in test coverage
-- Test quality and resilience
-- Edge cases and error conditions
-
-**When to use:**
-- After creating a PR
-- When adding new functionality
-- To verify test thoroughness
-
-**Triggers:**
-```
-"Check if the tests are thorough"
-"Review test coverage for this PR"
-"Are there any critical test gaps?"
-```
-
-### 3. silent-failure-hunter
-**Focus**: Error handling and silent failures
-
-**Analyzes:**
-- Silent failures in catch blocks
-- Inadequate error handling
-- Inappropriate fallback behavior
-- Missing error logging
-
-**When to use:**
-- After implementing error handling
-- When reviewing try/catch blocks
-- Before finalizing PRs with error handling
-
-**Triggers:**
-```
-"Review the error handling"
-"Check for silent failures"
-"Analyze catch blocks in this PR"
-```
-
-### 4. type-design-analyzer
-**Focus**: Type design quality and invariants
-
-**Analyzes:**
-- Type encapsulation (rated 1-10)
-- Invariant expression (rated 1-10)
-- Type usefulness (rated 1-10)
-- Invariant enforcement (rated 1-10)
-
-**When to use:**
-- When introducing new types
-- During PR creation with data models
-- When refactoring type designs
-
-**Triggers:**
-```
-"Review the UserAccount type design"
-"Analyze type design in this PR"
-"Check if this type has strong invariants"
-```
-
-### 5. code-reviewer
-**Focus**: General code review for project guidelines
-
-**Analyzes:**
-- CLAUDE.md compliance
-- Style violations
-- Bug detection
-- Code quality issues
-
-**When to use:**
-- After writing or modifying code
-- Before committing changes
-- Before creating pull requests
-
-**Triggers:**
-```
-"Review my recent changes"
-"Check if everything looks good"
-"Review this code before I commit"
-```
-
-### 6. code-simplifier
-**Focus**: Code simplification and refactoring
-
-**Analyzes:**
-- Code clarity and readability
-- Unnecessary complexity and nesting
-- Redundant code and abstractions
-- Consistency with project standards
-- Overly compact or clever code
-
-**When to use:**
-- After writing or modifying code
-- After passing code review
-- When code works but feels complex
-
-**Triggers:**
-```
-"Simplify this code"
-"Make this clearer"
-"Refine this implementation"
-```
-
-**Note**: This agent preserves functionality while improving code structure and maintainability.
-
-## Usage Patterns
-
-### Individual Agent Usage
-
-Simply ask questions that match an agent's focus area, and Claude will automatically trigger the appropriate agent:
-
-```
-"Can you check if the tests cover all edge cases?"
-→ Triggers pr-test-analyzer
-
-"Review the error handling in the API client"
-→ Triggers silent-failure-hunter
-
-"I've added documentation - is it accurate?"
-→ Triggers comment-analyzer
-```
-
-### Comprehensive PR Review
-
-For thorough PR review, ask for multiple aspects:
-
-```
-"I'm ready to create this PR. Please:
-1. Review test coverage
-2. Check for silent failures
-3. Verify code comments are accurate
-4. Review any new types
-5. General code review"
-```
-
-This will trigger all relevant agents to analyze different aspects of your PR.
-
-### Proactive Review
-
-Claude may proactively use these agents based on context:
-
-- **After writing code** → code-reviewer
-- **After adding docs** → comment-analyzer
-- **Before creating PR** → Multiple agents as appropriate
-- **After adding types** → type-design-analyzer
-
-## Installation
-
-Install from your personal marketplace:
-
-```bash
-/plugins
-# Find "pr-review-toolkit"
-# Install
-```
-
-Or add manually to settings if needed.
-
-## Agent Details
-
-### Confidence Scoring
-
-Agents provide confidence scores for their findings:
-
-**comment-analyzer**: Identifies issues with high confidence in accuracy checks
-
-**pr-test-analyzer**: Rates test gaps 1-10 (10 = critical, must add)
-
-**silent-failure-hunter**: Flags severity of error handling issues
-
-**type-design-analyzer**: Rates 4 dimensions on 1-10 scale
-
-**code-reviewer**: Scores issues 0-100 (91-100 = critical)
-
-**code-simplifier**: Identifies complexity and suggests simplifications
-
-### Output Formats
-
-All agents provide structured, actionable output:
-- Clear issue identification
-- Specific file and line references
-- Explanation of why it's a problem
-- Suggestions for improvement
-- Prioritized by severity
-
-## Best Practices
-
-### When to Use Each Agent
-
-**Before Committing:**
-- code-reviewer (general quality)
-- silent-failure-hunter (if changed error handling)
-
-**Before Creating PR:**
-- pr-test-analyzer (test coverage check)
-- comment-analyzer (if added/modified comments)
-- type-design-analyzer (if added/modified types)
-- code-reviewer (final sweep)
-
-**After Passing Review:**
-- code-simplifier (improve clarity and maintainability)
-
-**During PR Review:**
-- Any agent for specific concerns raised
-- Targeted re-review after fixes
-
-### Running Multiple Agents
-
-You can request multiple agents to run in parallel or sequentially:
-
-**Parallel** (faster):
-```
-"Run pr-test-analyzer and comment-analyzer in parallel"
-```
-
-**Sequential** (when one informs the other):
-```
-"First review test coverage, then check code quality"
-```
-
-## Tips
-
-- **Be specific**: Target specific agents for focused review
-- **Use proactively**: Run before creating PRs, not after
-- **Address critical issues first**: Agents prioritize findings
-- **Iterate**: Run again after fixes to verify
-- **Don't over-use**: Focus on changed code, not entire codebase
-
-## Troubleshooting
-
-### Agent Not Triggering
-
-**Issue**: Asked for review but agent didn't run
-
-**Solution**:
-- Be more specific in your request
-- Mention the agent type explicitly
-- Reference the specific concern (e.g., "test coverage")
-
-### Agent Analyzing Wrong Files
-
-**Issue**: Agent reviewing too much or wrong files
-
-**Solution**:
-- Specify which files to focus on
-- Reference the PR number or branch
-- Mention "recent changes" or "git diff"
-
-## Integration with Workflow
-
-This plugin works great with:
-- **build-validator**: Run build/tests before review
-- **Project-specific agents**: Combine with your custom agents
-
-**Recommended workflow:**
-1. Write code → **code-reviewer**
-2. Fix issues → **silent-failure-hunter** (if error handling)
-3. Add tests → **pr-test-analyzer**
-4. Document → **comment-analyzer**
-5. Review passes → **code-simplifier** (polish)
-6. Create PR
-
-## Contributing
-
-Found issues or have suggestions? These agents are maintained in:
-- User agents: `~/.claude/agents/`
-- Project agents: `.claude/agents/` in claude-cli-internal
-
-## License
-
-MIT
-
-## Author
-
-Daisy (daisy@anthropic.com)
-
----
-
-**Quick Start**: Just ask for review and the right agent will trigger automatically!
+# NioPD Guidelines
+
+> Think carefully and implement the most concise solution that changes as little as possible.
+
+## NioPD System Principles
+
+### 1. Command-Driven Workflow
+NioPD operates on a structured, file-based pattern that combines user commands with detailed instructions for the AI. Each command follows a 5-part pattern:
+
+1. **The User Command**: Entry point initiated by the user (e.g., `/niopd:new-initiative "My Feature"`)
+2. **The Command Prompt (.md)**: Detailed instructions for the AI on how to execute the command
+3. **The Agent (.md) (Optional)**: Specialized agents for complex analysis or synthesis tasks
+4. **The Template (.md) (Optional)**: Structured templates for consistent document generation
+5. **The Script (.sh) (Optional)**: Shell scripts for system-level file operations
+
+### 2. Specialized Agent Usage
+NioPD relies on specialized agents to perform complex synthesis tasks. Unlike general-purpose chatbots, NioPD uses agents to transform one type of document into another. When a command requires complex analysis, always invoke the appropriate specialized agent:
+
+- `competitor-analyzer`: For analyzing competitor websites
+- `data-analyst`: For analyzing structured data files
+- `feedback-synthesizer`: For processing raw user feedback
+- `interview-summarizer`: For summarizing user interview transcripts
+- `kpi-tracker`: For tracking initiative KPIs
+- `market-researcher`: For researching market trends
+- `persona-generator`: For creating user personas
+- `presentation-builder`: For creating stakeholder updates
+- `roadmap-generator`: For generating product roadmaps
+
+### 3. File-Based Operations
+All NioPD operations are file-based and follow a strict directory structure:
+- Commands: `{{COMMANDS_DIR}}/`
+- Agents: `{{AGENTS_DIR}}/`
+- Scripts: `{{SCRIPTS_DIR}}/`
+- Templates: `{{TEMPLATES_DIR}}/`
+- Data: `niopd-workspace/` (with subdirectories for initiatives, PRDs, reports, and roadmaps)
+
+Always use the appropriate helper scripts for file operations rather than direct file I/O.
+
+## Product Manager Workflow Guidelines
+
+### 1. Customer-Centric Approach
+Always prioritize the customer's needs and pain points. When analyzing feedback or creating personas, focus on real user problems rather than hypothetical scenarios.
+
+### 2. Data-Driven Decision Making
+Leverage all available data sources:
+- User feedback and interview transcripts
+- Market research and trend analysis
+- Competitor analysis
+- KPI tracking and performance metrics
+
+### 3. Clear Communication
+Ensure all generated documents are clear, concise, and actionable:
+- Use plain language that stakeholders can understand
+- Structure documents with clear sections and headings
+- Include specific, measurable goals and metrics
+
+### 4. Iterative Process
+Product management is an iterative process:
+- Start with minimal viable documentation
+- Gather feedback and refine
+- Update roadmaps and plans as new information becomes available
+
+## Error Handling
+
+- **Fail fast** for critical issues (missing required inputs)
+- **Provide clear guidance** when errors occur
+- **Graceful degradation** when external services unavailable
+- **User-friendly messages** that help PMs understand next steps
+
+## Tone and Behavior
+
+- Be helpful and supportive to product managers
+- Ask clarifying questions when requirements are unclear
+- Provide concise summaries while offering detailed information when needed
+- Maintain a professional but approachable tone
+- Focus on enabling PMs to make better product decisions
+
+## Core Workflows
+
+### Discovery & Research
+When helping PMs with discovery and research tasks:
+- Use the `market-researcher` agent for trend analysis
+- Use the `competitor-analyzer` agent for competitive analysis
+- Use the `interview-summarizer` agent for user interview analysis
+- Always cite sources and provide evidence for claims
+
+### Planning & Definition
+When helping PMs with planning and definition tasks:
+- Use the `feedback-synthesizer` agent to analyze user feedback
+- Use the `persona-generator` agent to create user personas
+- Use templates to ensure consistent document structure
+- Help define clear, measurable success criteria
+
+### Execution & Launch
+When helping PMs with execution and launch tasks:
+- Use the `kpi-tracker` agent to monitor progress
+- Use the `presentation-builder` agent to create stakeholder updates
+- Use the `roadmap-generator` agent to visualize timelines
+- Provide actionable insights and recommendations
+
+## ABSOLUTE RULES:
+
+- NO PARTIAL IMPLEMENTATION
+- NO SIMPLIFICATION : no "//This is simplified stuff for now, complete implementation would blablabla"
+- NO DUPLICATION : check existing work before creating new content
+- NO INCOMPLETE DOCUMENTS : ensure all sections are properly filled out
+- NO INCONSISTENT NAMING - follow existing naming conventions
+- NO OVER-ENGINEERING - keep solutions simple and focused
+- NO MIXED CONCERNS - separate different types of work (research, planning, reporting)
+- NO RESOURCE LEAKS - clean up temporary files and data when done
+
+## Intelligent Slef-Evolution System
+Whenever a task is completed, the system provides personalized prompts based on the task context:
+
+💡 Tip: You just completed the {{task_name}} task, {{opportunity_description}}. It is recommended that you use the "/niopd:org-update-check" command to discover organizational update proposals, or directly use "/niopd:org-update-new-command" to create a new command for {{new_task_name}} based on the context of this task, or use "/niopd:org-update-new-agent" to create a new specialized agent, or use "/niopd:org-update-new-memory" to record personal work habits.

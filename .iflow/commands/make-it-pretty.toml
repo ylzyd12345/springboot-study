@@ -1,0 +1,11 @@
+# Command: make-it-pretty
+# Description: Improve readability without functional changes
+# Category: code-quality
+# Version: 1
+# Author: 10169
+
+description = "Improve readability without functional changes"
+
+prompt = """
+I'll improve code readability and organization without changing functionality. I'll enhance code structure, improve naming clarity, add helpful comments, organize imports, and ensure consistent formatting. I'll focus on making code more maintainable and easier to understand while preserving all existing behavior. This includes extracting complex expressions, clarifying logic flow, and adding documentation where needed.
+"""

@@ -1,0 +1,11 @@
+# Command: mermaid
+# Description: 用于从需求文档中提取mermaid代码，生成图片文件 
+# Category: 文档
+# Version: 3
+# Author: 10010550513
+
+description = "用于从需求文档中提取mermaid代码，生成图片文件 "
+
+prompt = """
+{"detailContext":"## 任务目标\n从需求文档中提取 Mermaid 流程图代码，生成高分辨率、清晰的 PNG 图片并保存到项目目录。\n\n## 核心步骤\n\n### 1. 提取 Mermaid 代码\n- 从文档中找到 ` ```mermaid ` 和 ` ``` ` 之间的代码块\n- 复制完整的 Mermaid 语法内容\n\n### 2. 保存 Mermaid 源文件\n- 创建临时文件 `flowchart.mmd`\n- 将提取的 Mermaid 代码写入该文件\n\n### 3. 生成高分辨率图片\n使用以下命令生成 PNG：\n```bash\nnpx @mermaid-js/mermaid-cli -i flowchart.mmd -o <输出文件名>.png -w 3000 -s 3\n```\n\n**关键参数说明：**\n- `-w 3000`：设置宽度为 3000px（根据流程图复杂度可调整）\n- `-s 3`：设置缩放倍数为 3 倍（确保文字清晰）\n- 最终分辨率约为 7275 x 15609 像素\n\n### 4. 验证图片质量\n```bash\nls -la <输出文件名>.png && file <输出文件名>.png\n```\n检查文件大小（应 >1MB）和分辨率（应 >7000px 宽度）\n\n### 5. 清理临时文件\n```bash\nrm flowchart.mmd\n```\n\n## ⚠️ 常见错误与规避\n\n### 错误 1：使用 generate_mermaid_diagram + write_file 组合\n**问题：** `generate_mermaid_diagram` 返回图片数据，但 `write_file` 无法正确保存二进制数据，导致文件损坏。\n\n**规避：** 始终使用 `@mermaid-js/mermaid-cli` 命令行工具。\n\n### 错误 2：分辨率过低\n**问题：** 默认生成的图片宽度仅几百像素，文字模糊不清。\n\n**规避：** 必须使用 `-w 3000 -s 3` 参数。\n\n### 错误 3：CSS 配置格式错误\n**问题：** 使用 `-c` 参数传入 CSS 文件时，工具期望 JSON 格式而非 CSS 语法。\n\n**规避：** 不使用 `-c` 参数，直接通过 `-w` 和 `-s` 控制质量。\n\n## 完整命令模板\n```bash\n# 1. 创建 mermaid 源文件\nwrite_file(\"flowchart.mmd\", \"<mermaid代码>\")\n\n# 2. 生成高分辨率图片\nrun_shell_command(\"npx @mermaid-js/mermaid-cli -i flowchart.mmd -o <输出文件名>.png -w 3000 -s 3\")\n\n# 3. 验证\nrun_shell_command(\"ls -la <输出文件名>.png && file <输出文件名>.png\")\n\n# 4. 清理\nrun_shell_command(\"rm flowchart.mmd\")\n```\n\n## 输出文件命名建议\n- 业务流程图：`Mermaid-业务流程图-<流程名称>.png`\n- 数据模型图：`Mermaid-数据模型图-<模型名称>.png`\n- 其他图表：`Mermaid-<图表类型>-<描述>.png`","list":[]}
+"""

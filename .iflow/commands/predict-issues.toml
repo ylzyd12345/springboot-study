@@ -1,0 +1,11 @@
+# Command: predict-issues
+# Description: Proactive problem detection with timeline estimates
+# Category: analysis
+# Version: 1
+# Author: 10169
+
+description = "Proactive problem detection with timeline estimates"
+
+prompt = """
+I'll proactively detect potential issues in your codebase with timeline estimates for when problems might surface. I'll identify technical debt, architecture concerns, performance bottlenecks, security vulnerabilities, and maintainability issues. I'll provide risk assessments, impact analysis, suggested remediation steps, and timeline estimates for each identified issue. Integration with development workflow includes automatic execution during code reviews and architecture assessments.
+"""

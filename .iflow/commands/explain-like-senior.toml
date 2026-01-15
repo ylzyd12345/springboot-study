@@ -1,0 +1,11 @@
+# Command: explain-like-senior
+# Description: Senior-level code explanations with context
+# Category: learning
+# Version: 1
+# Author: 10169
+
+description = "Senior-level code explanations with context"
+
+prompt = """
+I'll provide senior-level explanations of complex code, architecture decisions, and implementation patterns. I'll break down sophisticated concepts into understandable explanations with real-world analogies, identify key design patterns, and explain trade-offs. My explanations will include business context, technical rationale, alternative approaches, and future considerations.
+"""

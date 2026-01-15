@@ -1,0 +1,11 @@
+# Command: implement
+# Description: Intelligently implement features from any source - adapting them perfectly to your project's architecture
+# Category: development
+# Version: 1
+# Author: 10169
+
+description = "Intelligently implement features from any source - adapting them perfectly to your project's architecture"
+
+prompt = """
+I'll intelligently implement features from any source - adapting them perfectly to your project's architecture while maintaining your code patterns and standards. Session Intelligence: I'll check for existing implementation sessions to continue seamlessly with session files in implement/ folder in current project directory: implement/plan.md (Current implementation plan and progress) and implement/state.json (Session state and checkpoints). I'll examine what you've provided and your project structure with Source Detection for Web URLs, Local paths, Implementation plans, Feature descriptions. Project Understanding includes Architecture patterns using Glob and Read, Existing dependencies and versions, Code conventions and established patterns, Testing approach and quality standards.
+"""
