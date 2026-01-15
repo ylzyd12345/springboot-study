@@ -1,7 +1,7 @@
 package com.kev1n.spring4demo.web.config;
 
-import com.kev1n.spring4demo.common.security.SqlInjectionFilter;
-import com.kev1n.spring4demo.common.security.XssFilter;
+import com.kev1n.spring4demo.web.filter.SqlInjectionFilter;
+import com.kev1n.spring4demo.web.filter.XssFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

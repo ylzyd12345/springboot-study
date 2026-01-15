@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kev1n.spring4demo.common.enums.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 统一API响应格式.
+ * 统一API响应格式
  * 
  * <p>提供统一的API响应格式，包含响应码、消息、数据和时间戳。
  * 所有Controller接口都应该使用此类作为返回值类型。</p>
@@ -26,25 +27,24 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     
-    /** 响应码. */
+    /** 响应码 */
     private Integer code;
-
-    /** 响应消息. */
+    
+    /** 响应消息 */
     private String message;
-
-    /** 响应数据. */
+    
+    /** 响应数据 */
     private T data;
-
-    /** 响应时间戳. */
+    
+    /** 响应时间戳 */
     private LocalDateTime timestamp;
-
-    /** 请求ID（用于链路追踪）. */
+    
+    /** 请求ID（用于链路追踪） */
     private String traceId;
 
     /**
-     * 成功响应（无数据）.
-     *
-     * @param <T> 响应数据类型
+     * 成功响应（无数据）
+     * 
      * @return 成功响应
      */
     public static <T> ApiResponse<T> success() {
@@ -56,9 +56,8 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 成功响应（带数据）.
-     *
-     * @param <T> 响应数据类型
+     * 成功响应（带数据）
+     * 
      * @param data 响应数据
      * @return 成功响应
      */
@@ -72,9 +71,8 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 成功响应（自定义消息）.
-     *
-     * @param <T> 响应数据类型
+     * 成功响应（自定义消息）
+     * 
      * @param message 响应消息
      * @param data 响应数据
      * @return 成功响应
@@ -89,9 +87,8 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 失败响应.
-     *
-     * @param <T> 响应数据类型
+     * 失败响应
+     * 
      * @param message 错误消息
      * @return 失败响应
      */
@@ -104,9 +101,8 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 失败响应（自定义错误码）.
-     *
-     * @param <T> 响应数据类型
+     * 失败响应（自定义错误码）
+     * 
      * @param code 错误码
      * @param message 错误消息
      * @return 失败响应
@@ -120,9 +116,8 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 失败响应（带数据）.
-     *
-     * @param <T> 响应数据类型
+     * 失败响应（带数据）
+     * 
      * @param code 错误码
      * @param message 错误消息
      * @param data 响应数据
@@ -138,8 +133,38 @@ public class ApiResponse<T> {
     }
 
     /**
-     * 判断响应是否成功.
-     *
+     * 失败响应（使用错误码枚举）
+     * 
+     * @param errorCode 错误码枚举
+     * @return 失败响应
+     */
+    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+        return ApiResponse.<T>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 失败响应（使用错误码枚举，带数据）
+     * 
+     * @param errorCode 错误码枚举
+     * @param data 响应数据
+     * @return 失败响应
+     */
+    public static <T> ApiResponse<T> error(ErrorCode errorCode, T data) {
+        return ApiResponse.<T>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .data(data)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * 判断响应是否成功
+     * 
      * @return 是否成功
      */
     public boolean isSuccess() {

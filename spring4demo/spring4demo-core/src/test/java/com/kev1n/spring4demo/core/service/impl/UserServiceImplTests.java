@@ -9,7 +9,6 @@ import com.kev1n.spring4demo.core.service.UserCacheService;
 import com.kev1n.spring4demo.core.service.UserDistributedService;
 import com.kev1n.spring4demo.core.service.UserLogService;
 import com.kev1n.spring4demo.core.service.UserSearchService;
-import com.kev1n.spring4demo.core.validator.UserValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -61,9 +59,6 @@ class UserServiceImplTests {
     private UserDistributedService userDistributedService;
 
     @Mock
-    private UserValidator userValidator;
-
-    @Mock
     private AsyncExecutorHelper asyncExecutor;
 
     private UserServiceImpl userService;
@@ -90,7 +85,6 @@ class UserServiceImplTests {
                 userCacheService,
                 userAsyncService,
                 userDistributedService,
-                userValidator,
                 asyncExecutor
         );
     }

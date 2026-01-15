@@ -10,10 +10,9 @@ import com.kev1n.spring4demo.core.service.UserAsyncService;
 import com.kev1n.spring4demo.core.service.UserCacheService;
 import com.kev1n.spring4demo.core.service.UserDistributedService;
 import com.kev1n.spring4demo.core.service.UserLogService;
+import com.kev1n.spring4demo.core.service.UserMapperReactiveService;
 import com.kev1n.spring4demo.core.service.UserSearchService;
 import com.kev1n.spring4demo.core.service.UserService;
-import com.kev1n.spring4demo.core.service.UserMapperReactiveService;
-import com.kev1n.spring4demo.core.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserCacheService userCacheService;
     private final UserAsyncService userAsyncService;
     private final UserDistributedService userDistributedService;
-    private final UserValidator userValidator;
     private final AsyncExecutorHelper asyncExecutor;
 
     @Override

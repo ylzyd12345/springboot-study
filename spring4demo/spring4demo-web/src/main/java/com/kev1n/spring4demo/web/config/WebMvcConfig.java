@@ -1,6 +1,5 @@
 package com.kev1n.spring4demo.web.config;
 
-import com.kev1n.spring4demo.web.interceptor.ApiVersionInterceptor;
 import com.kev1n.spring4demo.web.interceptor.MetricsInterceptor;
 import com.kev1n.spring4demo.web.interceptor.SaTokenInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final MetricsInterceptor metricsInterceptor;
-    private final ApiVersionInterceptor apiVersionInterceptor;
     private final SaTokenInterceptor saTokenInterceptor;
 
     @Override
@@ -30,13 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .order(1);
 
-        // 2. API版本拦截器 - 第二优先级
-        registry.addInterceptor(apiVersionInterceptor)
-                .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/public/**", "/api/auth/**", "/api/health/**")
-                .order(2);
-
-        // 3. Metrics拦截器 - 最低优先级
+        // 2. Metrics拦截器 - 最低优先级
         registry.addInterceptor(metricsInterceptor)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/public/**", "/api/auth/**", "/api/version/**")

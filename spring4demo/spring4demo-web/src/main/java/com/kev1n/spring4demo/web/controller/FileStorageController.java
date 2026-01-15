@@ -1,10 +1,10 @@
 package com.kev1n.spring4demo.web.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import com.kev1n.spring4demo.api.dto.ApiResponse;
 import com.kev1n.spring4demo.common.enums.ErrorCode;
 import com.kev1n.spring4demo.common.exception.BusinessException;
 import com.kev1n.spring4demo.core.service.FileStorageService;
-import com.kev1n.spring4demo.web.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

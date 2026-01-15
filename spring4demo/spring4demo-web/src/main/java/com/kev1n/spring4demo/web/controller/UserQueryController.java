@@ -3,11 +3,11 @@ package com.kev1n.spring4demo.web.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kev1n.spring4demo.api.dto.ApiResponse;
+import com.kev1n.spring4demo.api.dto.UserQueryRequest;
 import com.kev1n.spring4demo.core.annotation.RateLimit;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.service.UserService;
-import com.kev1n.spring4demo.web.dto.ApiResponse;
-import com.kev1n.spring4demo.web.dto.UserQueryRequest;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 用户查询控制器

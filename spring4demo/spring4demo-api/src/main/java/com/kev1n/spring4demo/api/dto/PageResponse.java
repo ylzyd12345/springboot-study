@@ -69,7 +69,7 @@ public class PageResponse<T> {
             size = 100; // 限制最大分页大小
         }
         
-        int pages = size > 0 ? (int) Math.ceil((double) total / size) : 0;
+        int pages = (int) Math.ceil((double) total / size);
         return PageResponse.<T>builder()
                 .records(records)
                 .total(total)

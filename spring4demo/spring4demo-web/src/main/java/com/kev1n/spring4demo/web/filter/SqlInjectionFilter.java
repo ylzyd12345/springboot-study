@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.common.security;
+package com.kev1n.spring4demo.web.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;

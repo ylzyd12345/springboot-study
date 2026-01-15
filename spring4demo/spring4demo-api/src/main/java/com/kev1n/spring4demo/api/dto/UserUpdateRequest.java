@@ -1,4 +1,4 @@
-package com.kev1n.spring4demo.web.dto;
+package com.kev1n.spring4demo.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
