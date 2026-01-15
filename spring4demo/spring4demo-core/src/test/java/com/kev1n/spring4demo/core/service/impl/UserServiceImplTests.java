@@ -1,6 +1,7 @@
 package com.kev1n.spring4demo.core.service.impl;
 
 import com.kev1n.spring4demo.api.enums.UserStatus;
+import com.kev1n.spring4demo.common.helper.AsyncExecutorHelper;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.mapper.UserMapper;
 import com.kev1n.spring4demo.core.service.UserAsyncService;
@@ -8,15 +9,16 @@ import com.kev1n.spring4demo.core.service.UserCacheService;
 import com.kev1n.spring4demo.core.service.UserDistributedService;
 import com.kev1n.spring4demo.core.service.UserLogService;
 import com.kev1n.spring4demo.core.service.UserSearchService;
+import com.kev1n.spring4demo.core.validator.UserValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +60,12 @@ class UserServiceImplTests {
     @Mock
     private UserDistributedService userDistributedService;
 
-    @InjectMocks
+    @Mock
+    private UserValidator userValidator;
+
+    @Mock
+    private AsyncExecutorHelper asyncExecutor;
+
     private UserServiceImpl userService;
 
     private User testUser;
@@ -74,6 +81,18 @@ class UserServiceImplTests {
         testUser.setStatus(UserStatus.ACTIVE.getValue());
         testUser.setCreatedAt(LocalDateTime.now());
         testUser.setUpdatedAt(LocalDateTime.now());
+
+        // 手动创建UserServiceImpl实例
+        userService = new UserServiceImpl(
+                userMapper,
+                userLogService,
+                userSearchService,
+                userCacheService,
+                userAsyncService,
+                userDistributedService,
+                userValidator,
+                asyncExecutor
+        );
     }
 
     @Nested

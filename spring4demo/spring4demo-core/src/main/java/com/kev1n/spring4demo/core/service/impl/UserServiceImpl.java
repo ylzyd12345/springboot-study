@@ -2,8 +2,8 @@ package com.kev1n.spring4demo.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kev1n.spring4demo.api.dto.UserCreateDTO;
-import com.kev1n.spring4demo.api.enums.UserStatus;
 import com.kev1n.spring4demo.common.helper.AsyncExecutorHelper;
+import com.kev1n.spring4demo.common.util.SpringContextUtil;
 import com.kev1n.spring4demo.core.entity.User;
 import com.kev1n.spring4demo.core.mapper.UserMapper;
 import com.kev1n.spring4demo.core.service.UserAsyncService;
@@ -12,20 +12,31 @@ import com.kev1n.spring4demo.core.service.UserDistributedService;
 import com.kev1n.spring4demo.core.service.UserLogService;
 import com.kev1n.spring4demo.core.service.UserSearchService;
 import com.kev1n.spring4demo.core.service.UserService;
+import com.kev1n.spring4demo.core.service.UserMapperReactiveService;
+import com.kev1n.spring4demo.core.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * 用户服务实现类
+ *
+ * <p>负责处理同步用户操作，包括：
+ * <ul>
+ *   <li>用户查询操作</li>
+ *   <li>用户创建、更新、删除操作</li>
+ *   <li>用户缓存管理</li>
+ *   <li>用户日志记录</li>
+ * </ul>
+ * </p>
+ *
+ * <p>响应式编程相关操作已迁移至 {@link UserReactiveServiceImpl}</p>
  *
  * @author spring4demo
  * @version 1.0.0
@@ -41,6 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserCacheService userCacheService;
     private final UserAsyncService userAsyncService;
     private final UserDistributedService userDistributedService;
+    private final UserValidator userValidator;
     private final AsyncExecutorHelper asyncExecutor;
 
     @Override
@@ -48,24 +60,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.findByUsername(username);
     }
 
-    /**
-     * 根据ID查询用户（使用缓存）
-     *
-     * @param id 用户ID
-     * @return 用户对象
-     */
     @Override
     public User getById(Long id) {
-        // 先从缓存中获取
         User user = userCacheService.getUserFromCache(id);
         if (user != null) {
             return user;
         }
 
-        // 缓存未命中，从数据库查询
         user = super.getById(id);
 
-        // 将用户放入缓存
         if (user != null) {
             userCacheService.putUserToCache(user);
         }
@@ -103,15 +106,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.findRecentActiveUsers();
     }
 
-    /**
-     * 记录用户操作日志
-     *
-     * @param user 用户对象
-     * @param action 操作类型（CREATE, UPDATE, DELETE等）
-     * @param details 操作详情（JSON格式）
-     * @param ipAddress IP地址
-     * @param userAgent 用户代理
-     */
     @Override
     public void logUserAction(User user, String action, String details, String ipAddress, String userAgent) {
         if (user != null) {
@@ -126,55 +120,124 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
-    /**
-     * 创建用户（重写父类方法，添加日志记录和异步处理）
-     *
-     * @param user 用户对象
-     * @return 是否成功
-     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean save(User user) {
         boolean result = super.save(user);
         if (result) {
-            // 将用户放入缓存
-            userCacheService.putUserToCache(user);
-            log.info("用户已放入缓存: userId={}", user.getId());
-
-            // 同步记录用户操作日志
-            logUserAction(user, "CREATE", null, null, null);
-
-            // 异步发送欢迎邮件
-            asyncExecutor.executeAsync("发送欢迎邮件", 
-                () -> userAsyncService.sendWelcomeEmailAsync(user.getId()));
-
-            // 索引用户到Elasticsearch
-            asyncExecutor.executeAsync("索引用户到Elasticsearch", 
-                () -> userSearchService.indexUser(user.getId()));
+            handleSaveSuccess(user);
         }
         return result;
     }
 
-    /**
-     * 更新用户（重写父类方法，添加日志记录和异步处理）
-     *
-     * @param user 用户对象
-     * @return 是否成功
-     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateById(User user) {
         boolean result = super.updateById(user);
         if (result) {
-            // 更新缓存
-            userCacheService.updateUserInCache(user);
-            log.info("用户缓存已更新: userId={}", user.getId());
+            handleUpdateSuccess(user);
+        }
+        return result;
+    }
 
-            // 同步记录用户操作日志
-            logUserAction(user, "UPDATE", null, null, null);
+    @Transactional(rollbackFor = Exception.class)
+    public boolean removeById(Long id) {
+        User user = this.getById(id);
+        boolean result = super.removeById(id);
+        if (result && user != null) {
+            handleRemoveSuccess(user);
+        }
+        return result;
+    }
 
-            // 异步记录用户操作日志（额外记录详细信息）
-            asyncExecutor.executeAsync("记录用户操作日志", 
+    // ==================== 响应式编程方法实现（委托给UserReactiveService）====================
+
+    @Override
+    public Flux<User> listUsersReactive() {
+        return getReactiveService().listUsersReactive();
+    }
+
+    @Override
+    public Mono<User> getUserByIdReactive(Long id) {
+        return getReactiveService().getUserByIdReactive(id);
+    }
+
+    @Override
+    public Mono<User> getUserByUsernameReactive(String username) {
+        return getReactiveService().getUserByUsernameReactive(username);
+    }
+
+    @Override
+    public Mono<User> getUserByEmailReactive(String email) {
+        return getReactiveService().getUserByEmailReactive(email);
+    }
+
+    @Override
+    public Flux<User> getUsersByStatusReactive(Integer status) {
+        return getReactiveService().getUsersByStatusReactive(status);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Mono<User> createUserReactive(UserCreateDTO dto) {
+        return getReactiveService().createUserReactive(dto);
+    }
+
+    @Override
+    public Mono<Long> countByStatusReactive(Integer status) {
+        return getReactiveService().countByStatusReactive(status);
+    }
+
+    @Override
+    public Flux<User> streamUsersReactive() {
+        return getReactiveService().streamUsersReactive();
+    }
+
+    // ==================== 分布式事务方法实现 ====================
+
+    @Override
+    public User registerUserDistributed(UserCreateDTO dto) {
+        log.info("调用用户注册分布式事务: username={}", dto.getUsername());
+        return userDistributedService.registerUser(dto);
+    }
+
+    // ==================== 私有辅助方法 ====================
+
+    /**
+     * 获取响应式服务实例
+     *
+     * @return UserMapperReactiveService实例
+     */
+    private UserMapperReactiveService getReactiveService() {
+        return SpringContextUtil.getBean(UserMapperReactiveService.class);
+    }
+
+    /**
+     * 处理用户保存成功后的操作
+     *
+     * @param user 保存的用户
+     */
+    private void handleSaveSuccess(User user) {
+        userCacheService.putUserToCache(user);
+        log.info("用户已放入缓存: userId={}", user.getId());
+
+        logUserAction(user, "CREATE", null, null, null);
+
+        executeAsyncTasks(user);
+    }
+
+    /**
+     * 处理用户更新成功后的操作
+     *
+     * @param user 更新的用户
+     */
+    private void handleUpdateSuccess(User user) {
+        userCacheService.updateUserInCache(user);
+        log.info("用户缓存已更新: userId={}", user.getId());
+
+        logUserAction(user, "UPDATE", null, null, null);
+
+        asyncExecutor.executeAsync("记录用户操作日志",
                 () -> userAsyncService.logUserActionAsync(
                         user.getId(),
                         user.getUsername(),
@@ -184,175 +247,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         null
                 ));
 
-            // 更新Elasticsearch索引
-            asyncExecutor.executeAsync("更新用户Elasticsearch索引", 
+        asyncExecutor.executeAsync("更新用户Elasticsearch索引",
                 () -> userSearchService.syncUserToEs(user.getId()));
-        }
-        return result;
     }
 
     /**
-     * 删除用户（重写父类方法，添加日志记录）
+     * 处理用户删除成功后的操作
      *
-     * @param id 用户ID
-     * @return 是否成功
+     * @param user 删除的用户
      */
-    @Transactional(rollbackFor = Exception.class)
-    public boolean removeById(Long id) {
-        User user = this.getById(id);
-        boolean result = super.removeById(id);
-        if (result && user != null) {
-            // 删除缓存
-            userCacheService.deleteUserFromCache(id);
-            log.info("用户缓存已删除: userId={}", id);
+    private void handleRemoveSuccess(User user) {
+        userCacheService.deleteUserFromCache(user.getId());
+        log.info("用户缓存已删除: userId={}", user.getId());
 
-            logUserAction(user, "DELETE", null, null, null);
-            // 删除Elasticsearch索引
-            asyncExecutor.executeAsync("删除用户Elasticsearch索引", 
-                () -> userSearchService.deleteUserIndex(id));
-        }
-        return result;
+        logUserAction(user, "DELETE", null, null, null);
+
+        asyncExecutor.executeAsync("删除用户Elasticsearch索引",
+                () -> userSearchService.deleteUserIndex(user.getId()));
     }
-
-    // ==================== 响应式编程方法实现 ====================
-
-    @Override
-    public Flux<User> listUsersReactive() {
-        log.debug("响应式查询所有用户");
-        return Flux.defer(() -> Flux.fromIterable(userMapper.selectList(null)))
-                .timeout(Duration.ofSeconds(30))
-                .onErrorResume(throwable -> {
-                    log.error("响应式查询所有用户失败", throwable);
-                    return Flux.empty();
-                });
-    }
-
-    @Override
-    public Mono<User> getUserByIdReactive(Long id) {
-        log.debug("响应式根据ID查询用户: {}", id);
-        return Mono.fromCallable(() -> userMapper.selectById(id))
-                .timeout(Duration.ofSeconds(10))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + id)))
-                .onErrorResume(throwable -> {
-                    log.error("响应式根据ID查询用户失败: {}", id, throwable);
-                    return Mono.error(throwable);
-                });
-    }
-
-    @Override
-    public Mono<User> getUserByUsernameReactive(String username) {
-        log.debug("响应式根据用户名查询用户: {}", username);
-        return Mono.fromCallable(() -> userMapper.findByUsername(username).orElse(null))
-                .timeout(Duration.ofSeconds(10))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + username)))
-                .onErrorResume(throwable -> {
-                    log.error("响应式根据用户名查询用户失败: {}", username, throwable);
-                    return Mono.error(throwable);
-                });
-    }
-
-    @Override
-    public Mono<User> getUserByEmailReactive(String email) {
-        log.debug("响应式根据邮箱查询用户: {}", email);
-        return Mono.fromCallable(() -> userMapper.findByEmail(email).orElse(null))
-                .timeout(Duration.ofSeconds(10))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("用户不存在: " + email)))
-                .onErrorResume(throwable -> {
-                    log.error("响应式根据邮箱查询用户失败: {}", email, throwable);
-                    return Mono.error(throwable);
-                });
-    }
-
-    @Override
-    public Flux<User> getUsersByStatusReactive(Integer status) {
-        log.debug("响应式根据状态查询用户列表: {}", status);
-        return Flux.defer(() -> Flux.fromIterable(userMapper.findByStatus(status)))
-                .timeout(Duration.ofSeconds(30))
-                .onErrorResume(throwable -> {
-                    log.error("响应式根据状态查询用户列表失败: {}", status, throwable);
-                    return Flux.empty();
-                });
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Mono<User> createUserReactive(UserCreateDTO dto) {
-        log.info("响应式创建用户: {}", dto.getUsername());
-
-        // 先检查用户名和邮箱是否已存在
-        return Mono.zip(
-                        Mono.fromCallable(() -> userMapper.existsByUsername(dto.getUsername())),
-                        Mono.fromCallable(() -> userMapper.existsByEmail(dto.getEmail()))
-                )
-                .flatMap(tuple -> {
-                    boolean usernameExists = tuple.getT1();
-                    boolean emailExists = tuple.getT2();
-
-                    if (usernameExists) {
-                        return Mono.error(new IllegalArgumentException("用户名已存在: " + dto.getUsername()));
-                    }
-
-                    if (emailExists) {
-                        return Mono.error(new IllegalArgumentException("邮箱已存在: " + dto.getEmail()));
-                    }
-
-                    // 创建用户实体
-                    User user = new User();
-                    BeanUtils.copyProperties(dto, user);
-                    // 设置默认状态
-                    if (user.getStatus() == null) {
-                        user.setStatus(UserStatus.ACTIVE.getValue());
-                    }
-
-                    return Mono.fromCallable(() -> {
-                        userMapper.insert(user);
-                        return user;
-                    });
-                })
-                .timeout(Duration.ofSeconds(30))
-                .doOnSuccess(savedUser -> {
-                    if (savedUser != null) {
-                        log.info("响应式创建用户成功: {}", savedUser.getId());
-                    }else {
-                        log.error("响应式创建用户失败");
-                    }
-                })
-                .doOnError(throwable -> log.error("响应式创建用户失败: {}", dto.getUsername(), throwable));
-    }
-
-    @Override
-    public Mono<Long> countByStatusReactive(Integer status) {
-        log.debug("响应式统计指定状态的用户数量: {}", status);
-        return Mono.fromCallable(() -> userMapper.countByStatus(status))
-                .timeout(Duration.ofSeconds(10))
-                .onErrorResume(throwable -> {
-                    log.error("响应式统计用户数量失败: {}", status, throwable);
-                    return Mono.just(0L);
-                });
-    }
-
-    @Override
-    public Flux<User> streamUsersReactive() {
-        log.debug("响应式流式查询用户数据");
-        return Flux.interval(Duration.ofSeconds(1))
-                .flatMap(tick -> listUsersReactive())
-                .timeout(Duration.ofMinutes(5))
-                .onErrorResume(throwable -> {
-                    log.error("响应式流式查询用户数据失败", throwable);
-                    return Flux.empty();
-                });
-    }
-
-    // ==================== 分布式事务方法实现 ====================
 
     /**
-     * 用户注册（分布式事务）
+     * 执行异步任务
      *
-     * 委托给UserDistributedService处理
+     * @param user 用户对象
      */
-    @Override
-    public User registerUserDistributed(UserCreateDTO dto) {
-        log.info("调用用户注册分布式事务: username={}", dto.getUsername());
-        return userDistributedService.registerUser(dto);
+    private void executeAsyncTasks(User user) {
+        asyncExecutor.executeAsync("发送欢迎邮件",
+                () -> userAsyncService.sendWelcomeEmailAsync(user.getId()));
+
+        asyncExecutor.executeAsync("索引用户到Elasticsearch",
+                () -> userSearchService.indexUser(user.getId()));
     }
 }
