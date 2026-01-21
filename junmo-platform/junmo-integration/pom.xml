@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.junmo</groupId>
+        <artifactId>junmo-platform</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>junmo-integration</artifactId>
+    <packaging>jar</packaging>
+
+    <name>junmo-integration</name>
+    <description>集成测试模块 - 依赖 junmo-core + junmo-test-support</description>
+
+    <dependencies>
+        <!-- 依赖 junmo-core -->
+        <dependency>
+            <groupId>com.junmo</groupId>
+            <artifactId>junmo-core</artifactId>
+        </dependency>
+
+        <!-- 依赖 junmo-test-support -->
+        <dependency>
+            <groupId>com.junmo</groupId>
+            <artifactId>junmo-test-support</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starter Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Maven Failsafe Plugin - 集成测试 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

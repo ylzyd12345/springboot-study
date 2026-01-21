@@ -1,0 +1,280 @@
+# 生产环境配置
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # 数据源配置（生产环境 - 动态数据源 + Druid）
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        master:
+          url: ${DATASOURCE_MASTER_URL:jdbc:mysql://mysql-prod:3306/junmo_platform?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+          username: ${DATASOURCE_MASTER_USERNAME:junmo_platform}
+          password: ${DATASOURCE_MASTER_PASSWORD}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          druid:
+            initial-size: 10
+            min-idle: 10
+            max-active: 50
+            max-wait: 60000
+            time-between-eviction-runs-millis: 60000
+            min-evictable-idle-time-millis: 300000
+            validation-query: SELECT 1
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            filters: stat,wall,slf4j
+            connection-properties: druid.stat.mergeSql=false;druid.stat.slowSqlMillis=2000
+            web-stat-filter:
+              enabled: false
+            stat-view-servlet:
+              enabled: false
+        slave:
+          url: ${DATASOURCE_SLAVE_URL:jdbc:mysql://mysql-slave:3306/junmo_platform?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+          username: ${DATASOURCE_SLAVE_USERNAME:junmo_platform}
+          password: ${DATASOURCE_SLAVE_PASSWORD}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          druid:
+            initial-size: 10
+            min-idle: 10
+            max-active: 50
+            max-wait: 60000
+            time-between-eviction-runs-millis: 60000
+            min-evictable-idle-time-millis: 300000
+            validation-query: SELECT 1
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            filters: stat,wall,slf4j
+            connection-properties: druid.stat.mergeSql=false;druid.stat.slowSqlMillis=2000
+            web-stat-filter:
+              enabled: false
+            stat-view-servlet:
+              enabled: false
+
+  # Redis配置（生产环境 - Lettuce + Redisson，和 dev 一致）
+  data:
+    redis:
+      host: ${REDIS_HOST:redis-prod}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DATABASE:0}
+      lettuce:
+        pool:
+          max-active: 32
+          max-wait: -1ms
+          max-idle: 16
+          min-idle: 8
+        timeout: 10000ms
+    # Redisson 配置（生产环境，和 dev 一致）
+    redisson:
+      address: ${REDIS_ADDRESS:redis://redis-prod:6379}
+      database: ${REDISSON_DATABASE:0}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000
+      connection-pool:
+        connection-pool-size: 64
+        connection-minimum-idle-size: 10
+        idle-connection-timeout: 10000
+        subscription-connection-pool-size: 50
+        subscription-connection-minimum-idle-size: 1
+      threads:
+        thread-pool-size: 16
+        netty-threads: 32
+      single-server-config:
+        connection-idle-timeout: 10000
+        subscription-connection-timeout: 5000
+        monitor-lock-expiration: 30000
+        subscription-connection-pool-size: 50
+        subscription-connection-minimum-idle-size: 1
+        connection-pool-size: 64
+        connection-minimum-idle-size: 10
+        keep-alive: true
+
+  # Thymeleaf 配置（生产环境）
+  thymeleaf:
+    cache: true
+
+# 日志配置（生产环境）
+logging:
+  level:
+    root: warn
+    com.junmo.platform: info
+    org.springframework.web: warn
+    org.springframework.security: error
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{userId:-}] %logger{50} - %msg%n"
+  file:
+    name: /app/logs/junmo-platform-admin-prod.log
+
+# MyBatis-Plus配置（生产环境）
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    call-setters-on-nulls: false
+    jdbc-type-for-null: 'null'
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      table-underline: true
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.junmo.platform.core.entity
+
+# 管理端点配置（生产环境）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus"
+  endpoint:
+    health:
+      show-details: never
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+        descriptions: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: prod
+
+# 服务器配置（生产环境）
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 800
+    min-spare-threads: 100
+    accept-count: 1000
+    connection-timeout: 5000
+
+# 缓存配置（生产环境）
+spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=10000,expireAfterAccess=3600s
+
+# 异步任务配置（生产环境）
+spring:
+  task:
+    execution:
+      pool:
+        core-size: 20
+        max-size: 100
+        queue-capacity: 1000
+        keep-alive: 60s
+        thread-name-prefix: async-task-
+    scheduling:
+      pool:
+        size: 10
+        thread-name-prefix: scheduled-task-
+
+# Seata 分布式事务配置（生产环境）
+seata:
+  enabled: true
+  service:
+    grouplist:
+      default: seata-server:8091
+
+# MongoDB 配置（生产环境）
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://mongodb-prod:27017/junmo_platform}
+      database: ${MONGODB_DATABASE:junmo_platform}
+      auto-index-creation: false
+      auto-time-logs: true
+
+# Elasticsearch 配置（生产环境）
+elasticsearch:
+  host: ${ELASTICSEARCH_HOST:elasticsearch-prod}
+  port: ${ELASTICSEARCH_PORT:9200}
+  username: ${ELASTICSEARCH_USERNAME:elastic}
+  password: ${ELASTICSEARCH_PASSWORD:}
+  protocol: ${ELASTICSEARCH_PROTOCOL:http}
+  ssl:
+    enabled: ${ELASTICSEARCH_SSL_ENABLED:false}
+  connection-timeout: ${ELASTICSEARCH_CONNECTION_TIMEOUT:5000}
+  socket-timeout: ${ELASTICSEARCH_SOCKET_TIMEOUT:30000}
+
+# Quartz 任务调度配置（生产环境）
+quartz:
+  enabled: true
+  instance-name: QuartzScheduler
+  instance-id: AUTO
+  job-store:
+    job-store-class: org.quartz.impl.jdbcjobstore.JobStoreTX
+    driver-delegate-class: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+    table-prefix: QRTZ_
+    is-clustered: true
+    cluster-checkin-interval: 20000
+    use-properties: false
+  thread-pool:
+    thread-pool-class: org.quartz.simpl.SimpleThreadPool
+    thread-count: 10
+    thread-priority: 5
+    inherit-context-class-loader-of-initializing-thread: true
+
+# Sa-Token配置（生产环境）
+sa-token:
+  token-name: satoken
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false
+  is-read-cookie: false
+  is-read-header: true
+  token-prefix: Bearer
+  alone-redis:
+    database: 1
+    host: redis-prod
+    port: 6379
+    password: ${SA_TOKEN_ALONE_REDIS_PASSWORD:}
+    timeout: 10s
+
+# Neo4j 图数据库配置（生产环境）
+spring:
+  data:
+    neo4j:
+      uri: ${NEO4J_URI:bolt://neo4j-prod:7687}
+      authentication:
+        username: ${NEO4J_USERNAME:neo4j}
+        password: ${NEO4J_PASSWORD:}
+      database: ${NEO4J_DATABASE:neo4j}
+
+# InfluxDB3 时序数据库配置（生产环境）
+influxdb:
+  url: ${INFLUXDB_URL:http://influxdb-prod:8181}
+  token: ${INFLUXDB_TOKEN:}
+  database: ${INFLUXDB_DATABASE:junmo_platform_prod}
+  connectTimeout: 10000
+  writeTimeout: 10000
+  readTimeout: 10000
+  logLevel: WARN
+
+# 生产环境安全配置
+security:
+  headers:
+    frame-options: DENY
+    content-type-options: nosniff
+    xss-protection: "1; mode=block"

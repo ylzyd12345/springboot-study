@@ -1,0 +1,51 @@
+# 代码生成器配置
+spring:
+  application:
+    name: junmo-generator
+
+  # 数据源配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/junmo_platform?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    druid:
+      initial-size: 1
+      min-idle: 1
+      max-active: 5
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+
+# 代码生成器配置
+generator:
+  enabled: true
+  author: junmo-platform
+  parent-package: com.junmo.platform
+  module-name: ""
+  output-dir: ./junmo-generator/src/main/java
+  mapper-xml-path: ./junmo-model/src/main/resources/mapper
+  include-tables:
+    - sys_user
+    - sys_role
+    - sys_permission
+    - sys_dept
+    - sys_menu
+  table-prefix:
+    - sys_
+    - t_
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com.junmo.platform.generator: debug
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){cyan} %clr(%logger{50}){yellow} - %msg%n"

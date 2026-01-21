@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- =========================================================== -->
+    <!-- 项目基本信息 -->
+    <!-- =========================================================== -->
+    <groupId>com.junmo</groupId>
+    <artifactId>junmo-platform</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>junmo-platform</name>
+    <description>Junmo Platform - 企业级Spring Boot应用平台</description>
+    <url>https://github.com/junmo/junmo-platform</url>
+
+    <!-- =========================================================== -->
+    <!-- 模块定义 -->
+    <!-- =========================================================== -->
+    <modules>
+        <!-- 构建工具模块 - 代码质量检查配置 -->
+        <module>junmo-build-tools</module>
+
+        <!-- 基础模块 - 最底层，无依赖，纯基础、无业务、public -->
+        <module>junmo-base</module>
+
+        <!-- 公共模块 - 仅依赖 junmo-base，纯对内业务、default权限 -->
+        <module>junmo-common</module>
+
+        <!-- API 模块 - 仅依赖 junmo-base，纯对外契约层 -->
+        <module>junmo-api</module>
+
+        <!-- 模型模块 - 仅依赖 junmo-base，纯对内数据层 -->
+        <module>junmo-model</module>
+
+        <!-- 核心业务模块 - 依赖 junmo-api + junmo-model + junmo-base + junmo-common -->
+        <module>junmo-core</module>
+
+        <!-- 测试支持模块 - 依赖 junmo-base + junmo-common -->
+        <module>junmo-test-support</module>
+
+        <!-- 集成测试模块 - 依赖 junmo-core + junmo-test-support -->
+        <module>junmo-integration</module>
+
+        <!-- 代码生成器模块 - 依赖 junmo-base + junmo-common -->
+        <module>junmo-generator</module>
+
+        <!-- 启动模块 - 仅依赖 junmo-core（front 端） -->
+        <module>junmo-starter</module>
+
+        <!-- 管理后台启动模块 - 仅依赖 junmo-core（admin 端） -->
+        <module>junmo-admin-starter</module>
+    </modules>
+
+    <!-- =========================================================== -->
+    <!-- 全局属性配置 -->
+    <!-- =========================================================== -->
+    <properties>
+        <!-- ==================== 编译配置 ==================== -->
+        <java.version>25</java.version>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- ==================== 构建配置 ==================== -->
+        <maven.test.parallel>true</maven.test.parallel>
+        <maven.test.skip>false</maven.test.skip>
+        <skipTests>false</skipTests>
+        <jacoco.skip>false</jacoco.skip>
+        <spotbugs.skip>false</spotbugs.skip>
+        <pmd.skip>false</pmd.skip>
+        <dependency-check.skip>false</dependency-check.skip>
+        <checkstyle.skip>false</checkstyle.skip>
+
+        <!-- ==================== 测试覆盖率目标 ==================== -->
+        <jacoco.coverage.ratio>0.85</jacoco.coverage.ratio>
+        <jacoco.branch.ratio>0.75</jacoco.branch.ratio>
+
+        <!-- ==================== Spring Boot ==================== -->
+        <spring-boot.version>4.0.1</spring-boot.version>
+
+        <!-- ==================== Spring Cloud ==================== -->
+        <spring-cloud.version>2023.0.4</spring-cloud.version>
+
+        <!-- ==================== 数据库 ==================== -->
+        <mysql.version>9.5.0</mysql.version>
+        <druid.version>1.2.20</druid.version>
+        <mybatis-plus.version>3.5.9</mybatis-plus.version>
+        <pagehelper.version>2.1.1</pagehelper.version>
+        <h2.version>2.4.240</h2.version>
+        <r2dbc-mysql.version>1.4.1</r2dbc-mysql.version>
+
+        <!-- ==================== 缓存 ==================== -->
+        <caffeine.version>3.1.6</caffeine.version>
+        <guava.version>32.1.3-jre</guava.version>
+
+        <!-- ==================== 消息队列 ==================== -->
+        <rabbitmq.version>5.17.0</rabbitmq.version>
+        <kafka.version>3.6.1</kafka.version>
+        <rocketmq.version>5.1.4</rocketmq.version>
+
+        <!-- ==================== 搜索引擎 ==================== -->
+        <elasticsearch.version>8.11.4</elasticsearch.version>
+
+        <!-- ==================== 图数据库 ==================== -->
+        <neo4j.version>5.12.0</neo4j.version>
+
+        <!-- ==================== 时序数据库 ==================== -->
+        <influxdb3-client.version>1.7.0</influxdb3-client.version>
+
+        <!-- ==================== 认证授权 ==================== -->
+        <sa-token.version>1.44.0</sa-token.version>
+
+        <!-- ==================== API 文档 ==================== -->
+        <springdoc.version>2.7.0</springdoc.version>
+        <knife4j.version>4.5.0</knife4j.version>
+
+        <!-- ==================== GraphQL ==================== -->
+        <graphql-java.version>21.3</graphql-java.version>
+        <graphql-spring-boot-starter.version>15.0.0</graphql-spring-boot-starter.version>
+
+        <!-- ==================== 工具类 ==================== -->
+        <lombok.version>1.18.42</lombok.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <hutool.version>5.8.40</hutool.version>
+        <fastjson2.version>2.0.57</fastjson2.version>
+
+        <!-- ==================== 监控运维 ==================== -->
+        <micrometer.version>1.14.0</micrometer.version>
+
+        <!-- ==================== 分布式组件 ==================== -->
+        <redisson.version>3.35.0</redisson.version>
+        <dynamic-datasource.version>4.3.0</dynamic-datasource.version>
+        <seata.version>2.5.0</seata.version>
+        <shardingsphere.version>5.3.2</shardingsphere.version>
+
+        <!-- ==================== 任务调度 ==================== -->
+        <quartz.version>2.3.2</quartz.version>
+        <spring-batch.version>5.1.1</spring-batch.version>
+
+        <!-- ==================== 文件存储 ==================== -->
+        <aws-s3-sdk.version>2.29.29</aws-s3-sdk.version>
+
+        <!-- ==================== 测试 ==================== -->
+        <jacoco.version>0.8.14</jacoco.version>
+        <wiremock.version>3.9.0</wiremock.version>
+        <testcontainers.version>2.0.3</testcontainers.version>
+        <testcontainers-redis-module.version>2.2.4</testcontainers-redis-module.version>
+
+        <!-- ==================== Maven 插件 ==================== -->
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.0</maven-failsafe-plugin.version>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+
+        <!-- ==================== 代码质量 ==================== -->
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <spotbugs-maven-plugin.version>4.9.8.2</spotbugs-maven-plugin.version>
+        <maven-pmd-plugin.version>3.28.0</maven-pmd-plugin.version>
+        <dependency-check-maven.version>12.1.9</dependency-check-maven.version>
+    </properties>
+
+    <!-- =========================================================== -->
+    <!-- 依赖管理 -->
+    <!-- =========================================================== -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- ==================== Spring Boot BOM ==================== -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ==================== Testcontainers BOM ==================== -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ==================== Spring Cloud BOM ==================== -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ==================== 项目模块 ==================== -->
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-build-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-test-support</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-integration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-generator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.junmo</groupId>
+                <artifactId>junmo-admin-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- ==================== 包冲突管理 ==================== -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>4.0.0-M2</version>
+            </dependency>
+
+            <!-- Dubbo Seata Filter - 修复安全漏洞 -->
+            <dependency>
+                <groupId>org.apache.dubbo.extensions</groupId>
+                <artifactId>dubbo-filter-seata</artifactId>
+                <version>3.3.1</version>
+            </dependency>
+
+            <!-- ==================== 数据库 ==================== -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- R2DBC MySQL Driver -->
+            <dependency>
+                <groupId>io.asyncer</groupId>
+                <artifactId>r2dbc-mysql</artifactId>
+                <version>${r2dbc-mysql.version}</version>
+            </dependency>
+
+            <!-- ==================== 缓存 ==================== -->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- ==================== 消息队列 ==================== -->
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>${rabbitmq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-client</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+
+            <!-- ==================== 搜索引擎 ==================== -->
+            <dependency>
+                <groupId>co.elastic.clients</groupId>
+                <artifactId>elasticsearch-java</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <!-- ==================== 图数据库 ==================== -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-neo4j</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!-- ==================== 时序数据库 ==================== -->
+            <dependency>
+                <groupId>com.influxdb</groupId>
+                <artifactId>influxdb3-java</artifactId>
+                <version>${influxdb3-client.version}</version>
+            </dependency>
+
+            <!-- ==================== 认证授权 ==================== -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+
+            <!-- ==================== 工具类 ==================== -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+
+            <!-- ==================== 监控运维 ==================== -->
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>micrometer-core</artifactId>
+                <version>${micrometer.version}</version>
+            </dependency>
+
+            <!-- ==================== 分布式组件 ==================== -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.seata</groupId>
+                <artifactId>seata-spring-boot-starter</artifactId>
+                <version>${seata.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-fileupload</groupId>
+                        <artifactId>commons-fileupload</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.eclipse.jetty.http2</groupId>
+                        <artifactId>http2-common</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- ShardingSphere 分库分表 -->
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc</artifactId>
+                <version>${shardingsphere.version}</version>
+            </dependency>
+
+            <!-- ==================== 任务调度 ==================== -->
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-quartz</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-batch</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!-- ==================== 文件存储 ==================== -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${aws-s3-sdk.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-logging</artifactId>
+                        <groupId>commons-logging</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- ==================== API 文档 ==================== -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <!-- ==================== GraphQL ==================== -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-graphql</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.graphql-java</groupId>
+                <artifactId>graphql-java</artifactId>
+                <version>${graphql-java.version}</version>
+            </dependency>
+
+            <!-- ==================== 测试 ==================== -->
+            <dependency>
+                <groupId>org.wiremock</groupId>
+                <artifactId>wiremock</artifactId>
+                <version>${wiremock.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- ==================== Testcontainers ==================== -->
+            <!-- Testcontainers 核心模块 -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers MySQL -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-mysql</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers MongoDB -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-mongodb</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Redis -->
+            <dependency>
+                <groupId>com.redis</groupId>
+                <artifactId>testcontainers-redis</artifactId>
+                <version>${testcontainers-redis-module.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Elasticsearch -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-elasticsearch</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Neo4j -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-neo4j</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers InfluxDB -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-influxdb</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers RabbitMQ -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-rabbitmq</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testcontainers Kafka -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-kafka</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- =========================================================== -->
+    <!-- 全局依赖 -->
+    <!-- =========================================================== -->
+    <dependencies>
+        <!-- Lombok - 所有模块都需要 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <!-- =========================================================== -->
+    <!-- 构建配置 -->
+    <!-- =========================================================== -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Spring Boot Maven Plugin -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+
+                <!-- Maven Compiler Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <parameters>true</parameters>
+                        <fork>true</fork>
+                        <meminitial>512m</meminitial>
+                        <maxmem>1024m</maxmem>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+
+                <!-- Maven Surefire Plugin - 单元测试 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <parallel>methods</parallel>
+                        <threadCount>4</threadCount>
+                        <perCoreThreadCount>true</perCoreThreadCount>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                        <includes>
+                            <include>**/*Test.java</include>
+                            <include>**/*Tests.java</include>
+                        </includes>
+                        <!-- 在Java 25环境下跳过JaCoCo agent，避免兼容性问题 -->
+                        <!--suppress UnresolvedMavenProperty -->
+                        <argLine>${argLine} -Djdk.attach.allowAttachSelf=true</argLine>
+                    </configuration>
+                </plugin>
+
+                <!-- Maven Failsafe Plugin - 集成测试 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
+                    <configuration>
+                        <parallel>methods</parallel>
+                        <threadCount>4</threadCount>
+                        <perCoreThreadCount>true</perCoreThreadCount>
+                    </configuration>
+                </plugin>
+
+                <!-- JaCoCo Maven Plugin - 代码覆盖率 -->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                    <configuration>
+                        <skip>${jacoco.skip}</skip>
+                        <rules>
+                            <rule>
+                                <element>BUNDLE</element>
+                                <limits>
+                                    <limit>
+                                        <counter>INSTRUCTION</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>${jacoco.coverage.ratio}</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>BRANCH</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>${jacoco.branch.ratio}</minimum>
+                                    </limit>
+                                </limits>
+                            </rule>
+                        </rules>
+                        <!-- 跳过JDK内部类的字节码增强，避免Java 25兼容性问题 -->
+                        <excludes>
+                            <exclude>**/jdk/internal/**/*.class</exclude>
+                            <exclude>**/sun/util/resources/**/*.class</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Flatten Maven Plugin - 多模块支持 -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>${flatten-maven-plugin.version}</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile>
+                        <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>flatten.clean</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Maven Javadoc Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <charset>${project.build.sourceEncoding}</charset>
+                        <docencoding>${project.build.sourceEncoding}</docencoding>
+                        <doclint>none</doclint>
+                    </configuration>
+                </plugin>
+
+                <!-- Checkstyle Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <configuration>
+                        <skip>${checkstyle.skip}</skip>
+                        <configLocation>checkstyle/checkstyle.xml</configLocation>
+                        <suppressionsLocation>checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+                        <consoleOutput>true</consoleOutput>
+                        <failsOnError>true</failsOnError>
+                        <violationSeverity>warning</violationSeverity>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.junmo</groupId>
+                            <artifactId>junmo-build-tools</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- SpotBugs Plugin -->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs-maven-plugin.version}</version>
+                    <configuration>
+                        <skip>${spotbugs.skip}</skip>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <xmlOutput>true</xmlOutput>
+                        <excludeFilterFile>spotbugs/spotbugs-exclude.xml</excludeFilterFile>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.junmo</groupId>
+                            <artifactId>junmo-build-tools</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>spotbugs-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- PMD Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${maven-pmd-plugin.version}</version>
+                    <configuration>
+                        <skip>${pmd.skip}</skip>
+                        <rulesets>
+                            <ruleset>pmd/pmd-ruleset.xml</ruleset>
+                        </rulesets>
+                        <printFailingErrors>true</printFailingErrors>
+                        <failOnViolation>true</failOnViolation>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.junmo</groupId>
+                            <artifactId>junmo-build-tools</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>pmd-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Dependency-Check Plugin -->
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>${dependency-check-maven.version}</version>
+                    <configuration>
+                        <skip>${dependency-check.skip}</skip>
+                        <format>XML</format>
+                        <failBuildOnCVSS>7</failBuildOnCVSS>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>dependency-check</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- Flatten Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <!-- Maven Javadoc Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- =========================================================== -->
+    <!-- 仓库配置 -->
+    <!-- =========================================================== -->
+    <repositories>
+        <repository>
+            <id>aliyun-maven</id>
+            <name>Aliyun Maven Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>aliyun-spring</id>
+            <name>Aliyun Spring Repository</name>
+            <url>https://maven.aliyun.com/repository/spring</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyun-maven</id>
+            <name>Aliyun Maven Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

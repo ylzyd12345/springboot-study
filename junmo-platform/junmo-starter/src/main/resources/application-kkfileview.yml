@@ -1,0 +1,8 @@
+# KKFileView 文档预览配置
+kkfileview:
+  server-url: ${KKFILEVIEW_SERVER_URL:http://localhost:8012}
+  preview-path: /onlinePreview
+  use-cache: false
+  cache-expire-time: 3600
+  current-server-url: http://localhost:8080
+  force-update-cache: true

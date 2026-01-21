@@ -1,0 +1,28 @@
+package ${package.Dto}.response;
+
+import lombok.Data;
+import java.time.LocalDateTime;
+
+/**
+ * ${entity}响应DTO
+ *
+ * @author ${author}
+ * @version 1.0.0
+ */
+@Data
+public class ${entity}Response {
+
+    private ${entity.idType} id;
+
+    private String createBy;
+
+    private LocalDateTime createTime;
+
+    private String updateBy;
+
+    private LocalDateTime updateTime;
+
+    private Integer deleted;
+
+    private Integer version;
+}

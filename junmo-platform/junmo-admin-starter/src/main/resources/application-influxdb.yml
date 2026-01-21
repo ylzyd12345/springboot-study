@@ -1,0 +1,16 @@
+# InfluxDB3 时序数据库配置
+influxdb:
+  # InfluxDB3 服务器地址
+  url: ${INFLUXDB_URL:http://localhost:8181}
+  # 认证令牌
+  token: ${INFLUXDB_TOKEN:}
+  # 数据库名称
+  database: ${INFLUXDB_DATABASE:junmo_platform}
+  # 连接超时时间（毫秒）
+  connectTimeout: ${INFLUXDB_CONNECT_TIMEOUT:10000}
+  # 写超时时间（毫秒）
+  writeTimeout: ${INFLUXDB_WRITE_TIMEOUT:10000}
+  # 读取超时时间（毫秒）
+  readTimeout: ${INFLUXDB_READ_TIMEOUT:10000}
+  # 日志级别
+  logLevel: ${INFLUXDB_LOG_LEVEL:INFO}

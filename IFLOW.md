@@ -1,18 +1,18 @@
-# Spring4demo 项目上下文
+# Junmo Platform 项目上下文
 
 ## 项目概述
 
-这是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级单体应用项目，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，包括 Web 开发、数据存储、消息中间件、安全认证、监控运维等多个领域。项目旨在为开发者提供一个全面、实用的 Spring Boot 生态系统参考实现。
+Junmo Platform 是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级单体应用平台，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，包括 Web 开发、数据存储、消息中间件、安全认证、监控运维等多个领域。项目旨在为开发者提供一个全面、实用的 Spring Boot 生态系统参考实现。
 
-**架构定位**：单体Spring Boot应用（非微服务架构），适用于中小规模业务场景。
+**架构定位**：单体 Spring Boot 应用（非微服务架构），适用于中小规模业务场景。
 
-**项目阶段**：功能完善阶段，技术栈覆盖率100%，核心组件实现率97.2%。
+**项目阶段**：功能完善阶段，技术栈覆盖率 100%，核心组件实现率 97.2%。
 
 **代码质量评分**：57/100（需大幅提升）
 
 **测试覆盖率**：0%（严重问题，需优先解决）
 
-**文档完成度**：100%（23个设计文档全部完成）
+**文档完成度**：100%（23 个设计文档全部完成）
 
 ## 技术栈
 
@@ -120,7 +120,7 @@
 - [x] **Fastjson2** - JSON处理 2.0.57
 - [x] **Testcontainers** - 集成测试容器支持 2.0.3
 - [x] **WireMock** - HTTP服务模拟 3.9.0
-- [x] **JaCoCo** - 代码覆盖率 0.8.12
+- [x] **JaCoCo** - 代码覆盖率 0.8.14
 
 ### 🎨 前端技术栈
 
@@ -169,23 +169,49 @@
 ### 后端模块结构
 
 ```
-spring4demo/
-├── spring4demo-build-tools/              # 构建工具模块 - 代码质量检查配置
-├── spring4demo-common/       # 公共模块 - 通用工具类、常量、基础配置
-├── spring4demo-test-support/ # 测试支持模块 - Testcontainers 配置和测试工具类
-├── spring4demo-core/         # 核心业务模块 - 业务逻辑、实体类、数据访问
-├── spring4demo-web/          # Web应用模块 - Controller层、Web配置
-├── spring4demo-api/          # API接口模块 - 对外API定义、DTO
-├── spring4demo-admin/        # 管理后台模块 - 后台管理功能
-├── spring4demo-integration/  # 集成测试模块 - 端到端测试、集成测试
-├── spring4demo-generator/    # 代码生成器模块 - 代码生成工具
-└── spring4demo-starter/      # 启动器模块 - 应用启动入口
+junmo-platform/
+├── junmo-build-tools/              # 构建工具模块 - 代码质量检查配置
+├── junmo-base/                     # 基础模块 - 最底层，无依赖，纯基础、无业务、public
+├── junmo-common/                   # 公共模块 - 仅依赖 junmo-base，纯对内业务、default权限
+├── junmo-api/                      # API 模块 - 仅依赖 junmo-base，纯对外契约层
+├── junmo-model/                    # 模型模块 - 仅依赖 junmo-base，纯对内数据层
+├── junmo-core/                     # 核心业务模块 - 依赖 junmo-api + junmo-model + junmo-base + junmo-common
+├── junmo-test-support/             # 测试支持模块 - Testcontainers 配置和测试工具类
+├── junmo-integration/              # 集成测试模块 - 端到端测试、集成测试
+├── junmo-generator/                # 代码生成器模块 - 代码生成工具
+├── junmo-starter/                  # 启动模块 - 仅依赖 junmo-core（front 端）
+├── junmo-admin-starter/            # 管理后台启动模块 - 仅依赖 junmo-core（admin 端）
+├── scripts/                        # 脚本目录
+├── docker-compose.yml              # Docker 编排文件
+├── Dockerfile                      # Docker 镜像构建文件
+└── pom.xml                         # Maven 父 POM
+```
+
+### 模块依赖关系
+
+```
+junmo-build-tools (无依赖)
+    ↑
+junmo-base (无依赖)
+    ↑
+junmo-common → 依赖 junmo-base
+junmo-api → 依赖 junmo-base
+junmo-model → 依赖 junmo-base
+    ↑
+junmo-core → 依赖 junmo-api + junmo-model + junmo-base + junmo-common
+    ↑
+junmo-starter → 依赖 junmo-core
+junmo-admin-starter → 依赖 junmo-core
+
+junmo-test-support → 依赖 junmo-base + junmo-common
+junmo-integration → 依赖 junmo-core + junmo-test-support
+junmo-generator → 依赖 junmo-base + junmo-common
 ```
 
 ### 前端项目结构
 
 ```
-spring4demo-ui/
+junmo-ui/
 ├── src/
 │   ├── main.ts               # 应用入口
 │   ├── App.vue               # 根组件
@@ -216,11 +242,14 @@ mvn clean package
 # 跳过测试打包
 mvn clean package -DskipTests
 
-# 运行应用
-mvn spring-boot:run
+# 运行前端应用
+mvn spring-boot:run -pl junmo-starter
+
+# 运行管理后台
+mvn spring-boot:run -pl junmo-admin-starter
 
 # 指定环境运行
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -pl junmo-starter -Dspring-boot.run.profiles=dev
 ```
 
 ### 测试命令
@@ -230,12 +259,12 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 mvn test
 
 # 运行集成测试
-mvn test -Pintegration-test
+mvn verify
 
 # 生成测试覆盖率报告
 mvn jacoco:report
 
-# 代码质量检查（当前已跳过）
+# 代码质量检查（已启用）
 mvn checkstyle:check
 mvn spotbugs:check
 mvn pmd:check
@@ -299,21 +328,35 @@ docker-compose restart app
 mvn -Pnative native:compile
 
 # 运行原生镜像
-./target/spring4demo
+./target/junmo-platform
 ```
 
 ## 配置说明
 
 ### 应用配置
 
-- **主配置文件**: `spring4demo-starter/src/main/resources/application.yml`
+- **主配置文件**: `junmo-starter/src/main/resources/application.yml`
 - **环境配置**:
     - 开发环境: `application-dev.yml`
     - 测试环境: `application-test.yml`
     - 生产环境: `application-prod.yml`
     - Docker环境: `application-docker.yml`
-- **应用名称**: spring4demo
-- **默认端口**: 8080
+- **模块化配置**:
+    - 数据源配置: `application-datasource.yml`
+    - Redis配置: `application-redis.yml`
+    - 消息队列配置: `application-mq.yml`
+    - Seata配置: `application-seata.yml`
+    - 监控配置: `application-monitoring.yml`
+    - MongoDB配置: `application-mongodb.yml`
+    - Elasticsearch配置: `application-elasticsearch.yml`
+    - Quartz配置: `application-quartz.yml`
+    - RustFS配置: `application-rustfs.yml`
+    - KKFileView配置: `application-kkfileview.yml`
+    - Sa-Token配置: `application-satoken.yml`
+    - Neo4j配置: `application-neo4j.yml`
+    - InfluxDB配置: `application-influxdb.yml`
+- **应用名称**: junmo-platform
+- **默认端口**: 8080（前端应用）/ 8081（管理后台）
 - **配置格式**: YAML
 
 ### 数据库配置（Docker Compose）
@@ -392,7 +435,7 @@ rustfs:
   # 秘密密钥
   secret-key: admin123
   # 存储桶名称
-  bucket-name: spring4demo
+  bucket-name: junmo-platform
   # 区域
   region: us-east-1
   # 是否启用路径风格访问
@@ -468,7 +511,7 @@ loki:
   enabled: true
   # 日志标签
   labels:
-    app: spring4demo
+    app: junmo-platform
     env: ${spring.profiles.active:dev}
   # 日志级别
   level: INFO
@@ -507,34 +550,34 @@ nginx:
 
 ```bash
 # 开发环境（默认）
-mvn spring-boot:run -Pdev
+mvn spring-boot:run -pl junmo-starter -Pdev
 
 # 测试环境
-mvn spring-boot:run -Ptest
+mvn spring-boot:run -pl junmo-starter -Ptest
 
 # 生产环境
-mvn spring-boot:run -Pprod
+mvn spring-boot:run -pl junmo-starter -Pprod
 
 # Docker环境
-mvn spring-boot:run -Pdocker
+mvn spring-boot:run -pl junmo-starter -Pdocker
 
 # 集成测试
-mvn test -Pintegration-test
-
-# 清理缓存
-mvn clean -Pcache-clean
+mvn verify -Pintegration-test
 ```
 
 ## 开发约定
 
 ### 包结构
 
-- **基础包名**: `com.kev1n.spring4demo`
-- **common模块**: 通用工具类、常量、基础配置
+- **基础包名**: `com.junmo.platform.{module-name}`
+- **base模块**: 基础模块，最底层，无依赖，纯基础、无业务、public权限
+- **common模块**: 公共模块，仅依赖 junmo-base，纯对内业务、default权限
+- **api模块**: API 模块，仅依赖 junmo-base，纯对外契约层
+- **model模块**: 模型模块，仅依赖 junmo-base，纯对内数据层
+- **core模块**: 核心业务逻辑，依赖 junmo-api + junmo-model + junmo-base + junmo-common
 - **test-support模块**: Testcontainers 配置和测试工具类
-- **core模块**: 业务逻辑、实体类、数据访问层
-- **web模块**: Controller层、Web配置
-- **api模块**: 对外API定义、DTO
+- **starter模块**: 启动模块，仅依赖 junmo-core（front 端）
+- **admin-starter模块**: 管理后台启动模块，仅依赖 junmo-core（admin 端）
 
 ### 代码风格
 
@@ -576,7 +619,7 @@ mvn clean -Pcache-clean
 
 ### 添加新功能
 
-1. 在 `com.kev1n.spring4demo` 包下创建新的模块或包
+1. 在 `com.junmo.platform` 包下创建新的模块或包
 2. 在 `application.yml` 中添加相关配置
 3. 如需数据库支持，创建实体类和Mapper
 4. 编写对应的测试类
@@ -584,11 +627,11 @@ mvn clean -Pcache-clean
 
 ### 代码生成
 
-使用 `spring4demo-generator` 模块生成基础代码：
+使用 `junmo-generator` 模块生成基础代码：
 
 ```bash
-cd spring4demo-generator
-mvn spring-boot:run
+cd junmo-platform
+mvn spring-boot:run -pl junmo-generator
 ```
 
 生成的代码包括：
@@ -605,7 +648,7 @@ mvn spring-boot:run
 
 ### 使用 Testcontainers
 
-项目提供了完整的 Testcontainers 支持，位于 `spring4demo-test-support` 模块：
+项目提供了完整的 Testcontainers 支持，位于 `junmo-test-support` 模块：
 
 ```java
 @Testcontainers
@@ -691,8 +734,8 @@ code .
 
 ### 应用访问
 
-- **后端应用**: http://localhost:8080
-- **前端应用**: http://localhost:3000
+- **前端应用**: http://localhost:8080
+- **管理后台**: http://localhost:8081
 - **健康检查**: http://localhost:8080/actuator/health
 
 ### API文档
@@ -870,28 +913,33 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 - [Spring 官方论坛](https://community.spring.io/)
 - [Stack Overflow - Spring Boot](https://stackoverflow.com/questions/tagged/spring-boot)
-- [GitHub Issues](https://github.com/ylzyd12345/springboot-study/issues)
+- [GitHub Issues](https://github.com/junmo/junmo-platform/issues)
 
 ## 架构决策
 
 ### 模块职责划分
 
-- **spring4demo-build-tools模块**: 代码质量检查配置（Checkstyle、SpotBugs、PMD）
-- **common模块**: 只做公共功能（工具类、常量、基础配置），不包含业务逻辑，不依赖其他业务模块
-- **test-support模块**: Testcontainers 配置和测试工具类，提供容器化集成测试支持
-- **core模块**: 核心业务逻辑，包含实体类、数据访问层、业务服务层
-- **web模块**: Web层，包含Controller、Web配置，依赖core模块
-- **api模块**: 对外API定义，包含DTO、API接口定义
-- **admin模块**: 管理后台功能
-- **generator模块**: 代码生成工具
-- **starter模块**: 应用启动入口，整合所有模块
+- **junmo-build-tools模块**: 代码质量检查配置（Checkstyle、SpotBugs、PMD）
+- **junmo-base模块**: 基础模块，最底层，无依赖，纯基础、无业务、public权限
+- **junmo-common模块**: 公共模块，仅依赖 junmo-base，纯对内业务、default权限
+- **junmo-api模块**: API 模块，仅依赖 junmo-base，纯对外契约层
+- **junmo-model模块**: 模型模块，仅依赖 junmo-base，纯对内数据层
+- **junmo-core模块**: 核心业务逻辑，包含实体类、数据访问层、业务服务层
+- **junmo-test-support模块**: Testcontainers 配置和测试工具类，提供容器化集成测试支持
+- **junmo-starter模块**: 前端启动模块，仅依赖 junmo-core
+- **junmo-admin-starter模块**: 管理后台启动模块，仅依赖 junmo-core
+- **junmo-generator模块**: 代码生成工具
+- **junmo-integration模块**: 集成测试模块
 
 ### 依赖原则
 
-- common模块不依赖任何其他业务模块
-- test-support模块可以依赖common模块
-- core模块可以依赖common模块和test-support模块
-- web模块依赖core模块和common模块
+- junmo-base 模块不依赖任何其他业务模块
+- junmo-common、junmo-api、junmo-model 仅依赖 junmo-base
+- junmo-core 依赖 junmo-api + junmo-model + junmo-base + junmo-common
+- junmo-starter 和 junmo-admin-starter 仅依赖 junmo-core
+- junmo-test-support 依赖 junmo-base + junmo-common
+- junmo-integration 依赖 junmo-core + junmo-test-support
+- junmo-generator 依赖 junmo-base + junmo-common
 - 避免循环依赖
 - 保持模块职责单一
 
@@ -993,7 +1041,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 ### 测试架构
 
 - **Testcontainers**: 容器化集成测试框架
-- **测试支持模块**: spring4demo-test-support 提供统一的 Testcontainers 配置
+- **测试支持模块**: junmo-test-support 提供统一的 Testcontainers 配置
 - **支持的容器**:
   - MySQL
   - MongoDB
@@ -1223,7 +1271,7 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 5. 配置 Maven 镜像（可选）
 6. 启动 Docker 服务
 7. 运行 `docker-compose up -d` 启动基础服务
-8. 运行 `mvn spring-boot:run` 启动后端服务
+8. 运行 `mvn spring-boot:run -pl junmo-starter` 启动后端服务
 9. 运行 `npm run dev` 启动前端服务
 
 ## 团队协作
@@ -1266,9 +1314,9 @@ Promtail 是 Loki 的日志采集代理，用于采集应用日志并推送到 L
 
 如有问题或建议，请通过以下方式联系：
 
-- GitHub Issues: https://github.com/ylzyd12345/springboot-study/issues
-- Email: support@spring4demo.com
+- GitHub Issues: https://github.com/junmo/junmo-platform/issues
+- Email: support@junmo-platform.com
 
 ---
 
-*最后更新时间：2026年1月15日*
+*最后更新时间：2026年1月21日*

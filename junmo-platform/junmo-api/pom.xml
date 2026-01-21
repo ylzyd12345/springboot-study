@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.junmo</groupId>
+        <artifactId>junmo-platform</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>junmo-api</artifactId>
+    <packaging>jar</packaging>
+
+    <name>junmo-api</name>
+    <description>API 模块 - 仅依赖 junmo-base，纯对外契约层</description>
+
+    <dependencies>
+        <!-- 仅依赖 junmo-base -->
+        <dependency>
+            <groupId>com.junmo</groupId>
+            <artifactId>junmo-base</artifactId>
+        </dependency>
+
+        <!-- API 文档支持 -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

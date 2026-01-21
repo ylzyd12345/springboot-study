@@ -1,0 +1,109 @@
+package ${package.Controller};
+
+import ${package.Entity}.${entity};
+import ${package.Service}.${table.serviceName};
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * ${entity}控制器
+ *
+ * @author ${author}
+ * @version 1.0.0
+ */
+@Slf4j
+@RestController
+@RequestMapping("/api/${entityInstanceName}s")
+@RequiredArgsConstructor
+@Tag(name = "${entity}管理", description = "${entity}管理相关接口")
+public class ${entity}Controller {
+
+    private final ${table.serviceName} ${table.serviceName?uncap_first};
+
+    @PostMapping
+    @Operation(summary = "创建${entity}", description = "创建新的${entity}")
+    public ResponseEntity<${entity}> create${entity}(@Valid @RequestBody ${entity} ${entityInstanceName}) {
+        log.info("创建${entity}: {}", ${entityInstanceName});
+        ${entity} saved${entity} = ${table.serviceName?uncap_first}.save(${entityInstanceName});
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved${entity});
+    }
+
+    @GetMapping
+    @Operation(summary = "获取${entity}列表", description = "分页获取${entity}列表")
+    public ResponseEntity<Page<${entity}>> get${entity}s(
+            @Parameter(description = "页码，从0开始") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "排序字段") @RequestParam(defaultValue = "createTime") String sortBy,
+            @Parameter(description = "排序方向") @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<${entity}> ${entityInstanceName}s = ${table.serviceName?uncap_first}.findAll(pageable);
+        return ResponseEntity.ok(${entityInstanceName}s);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "获取${entity}详情", description = "根据ID获取${entity}详情")
+    public ResponseEntity<${entity}> get${entity}ById(
+            @Parameter(description = "${entity}ID") @PathVariable ${entity.idType} id) {
+
+        Optional<${entity}> ${entityInstanceName} = ${table.serviceName?uncap_first}.findById(id);
+        return ${entityInstanceName}.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "更新${entity}", description = "根据ID更新${entity}信息")
+    public ResponseEntity<${entity}> update${entity}(
+            @Parameter(description = "${entity}ID") @PathVariable ${entity.idType} id,
+            @Valid @RequestBody ${entity} ${entityInstanceName}) {
+
+        if (!${table.serviceName?uncap_first}.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ${entityInstanceName}.${entity.setIdMethod}(id);
+        ${entity} updated${entity} = ${table.serviceName?uncap_first}.save(${entityInstanceName});
+        return ResponseEntity.ok(updated${entity});
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "删除${entity}", description = "根据ID删除${entity}")
+    public ResponseEntity<Void> delete${entity}(
+            @Parameter(description = "${entity}ID") @PathVariable ${entity.idType} id) {
+
+        if (!${table.serviceName?uncap_first}.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        ${table.serviceName?uncap_first}.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "搜索${entity}", description = "根据关键词搜索${entity}")
+    public ResponseEntity<Page<${entity}>> search${entity}s(
+            @Parameter(description = "搜索关键词") @RequestParam String keyword,
+            @Parameter(description = "页码，从0开始") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<${entity}> ${entityInstanceName}s = ${table.serviceName?uncap_first}.search(keyword, pageable);
+        return ResponseEntity.ok(${entityInstanceName}s);
+    }
+}
