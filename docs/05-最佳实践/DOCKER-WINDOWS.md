@@ -1,6 +1,6 @@
 # Windows Docker Desktop 快速部署指南
 
-本文档介绍如何在 Windows 系统上使用 Docker Desktop 快速部署 Spring4demo 项目。
+本文档介绍如何在 Windows 系统上使用 Docker Desktop 快速部署 Junmo Platform 项目。
 
 ## 📋 前置要求
 
@@ -32,7 +32,7 @@
 
 ```powershell
 # 进入项目目录
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 
 # 运行部署脚本
 docker-build.bat up
@@ -60,7 +60,7 @@ docker-build.bat status
 #### 2. 打开项目目录
 
 ```powershell
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 ```
 
 #### 3. 使用 Docker Compose 启动
@@ -110,7 +110,7 @@ docker-compose logs -f app
 项目已包含 `docker-compose.yml`，直接在项目目录运行即可：
 
 ```powershell
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 docker-compose up -d
 ```
 
@@ -120,7 +120,7 @@ docker-compose up -d
 2. 点击左侧 **Dev Environments**
 3. 点击 **Create**
 4. 选择 **Local**
-5. 浏览到项目目录：`F:\codes\roadmap\github-project\springboot-study\spring4demo`
+5. 浏览到项目目录：`F:\codes\roadmap\github-project\springboot-study\Junmo Platform`
 6. 点击 **Create**
 
 Docker Desktop 会自动识别 `docker-compose.yml` 并创建开发环境。
@@ -139,7 +139,7 @@ Docker Desktop 会自动识别 `docker-compose.yml` 并创建开发环境。
 
 ```powershell
 # 进入项目目录
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 
 # 启动所有服务
 docker-compose up -d
@@ -160,7 +160,7 @@ docker-compose restart app
 docker stats
 
 # 进入容器
-docker exec -it spring4demo-app sh
+docker exec -it Junmo Platform-app sh
 
 # 重新构建并启动
 docker-compose up -d --build app
@@ -232,19 +232,19 @@ docker-build.bat clean
 
 ### 2. 查看日志
 
-1. 在容器列表中点击 `spring4demo-app`
+1. 在容器列表中点击 `Junmo Platform-app`
 2. 点击 **Logs** 标签
 3. 可以实时查看应用日志
 
 ### 3. 查看资源使用
 
-1. 在容器列表中点击 `spring4demo-app`
+1. 在容器列表中点击 `Junmo Platform-app`
 2. 点击 **Stats** 标签
 3. 可以查看 CPU、内存、网络等资源使用情况
 
 ### 4. 访问终端
 
-1. 在容器列表中点击 `spring4demo-app`
+1. 在容器列表中点击 `Junmo Platform-app`
 2. 点击 **Console** 标签
 3. 点击 **CLI** 按钮可以进入容器终端
 
@@ -365,7 +365,7 @@ docker-compose up -d mysql redis app
 
 ```powershell
 # 1. 进入项目目录
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 
 # 2. 启动所有服务
 docker-build.bat up

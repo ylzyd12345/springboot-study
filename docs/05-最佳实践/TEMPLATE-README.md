@@ -1,4 +1,4 @@
-# Spring4demo 框架模板
+# Junmo Platform 框架模板
 
 ## 📋 模板概述
 
@@ -14,15 +14,15 @@
 
 ### 项目结构
 ```
-spring4demo/
-├── spring4demo-common/         # 公共模块
-├── spring4demo-core/           # 核心业务模块
-├── spring4demo-web/            # Web应用模块
-├── spring4demo-admin/          # 管理后台模块
-├── spring4demo-api/            # API接口模块
-├── spring4demo-integration/    # 集成测试模块
-├── spring4demo-generator/      # 代码生成器模块
-└── spring4demo-starter/        # 启动模块
+Junmo Platform/
+├── Junmo Platform-common/         # 公共模块
+├── Junmo Platform-core/           # 核心业务模块
+├── Junmo Platform-web/            # Web应用模块
+├── Junmo Platform-admin/          # 管理后台模块
+├── Junmo Platform-api/            # API接口模块
+├── Junmo Platform-integration/    # 集成测试模块
+├── Junmo Platform-generator/      # 代码生成器模块
+└── Junmo Platform-starter/        # 启动模块
 ```
 
 ### 启动步骤
@@ -30,22 +30,22 @@ spring4demo/
 1. **克隆项目**
 ```bash
 git clone <repository-url>
-cd spring4demo
+cd Junmo Platform
 ```
 
 2. **配置数据库**
 ```yaml
-# spring4demo-starter/src/main/resources/application-dev.yml
+# Junmo Platform-starter/src/main/resources/application-dev.yml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/spring4demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/Junmo Platform?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: your_password
 ```
 
 3. **启动应用**
 ```bash
-cd spring4demo-starter
+cd Junmo Platform-starter
 mvn spring-boot:run
 ```
 
@@ -102,8 +102,8 @@ mvn spring-boot:run
 ## 🔧 自定义配置
 
 ### 修改包名
-1. 全局搜索替换 `com.kev1n.spring4demo` 为你的包名
-2. 修改 `spring4demo-starter/src/main/resources/application.yml` 中的应用名称
+1. 全局搜索替换 `com.junmo.Junmo Platform` 为你的包名
+2. 修改 `Junmo Platform-starter/src/main/resources/application.yml` 中的应用名称
 
 ### 添加新功能模块
 1. 在相应模块下创建包结构
@@ -231,10 +231,10 @@ mvn jacoco:report
 ### Docker 部署
 ```bash
 # 构建镜像
-docker build -t spring4demo:latest .
+docker build -t Junmo Platform:latest .
 
 # 运行容器
-docker run -p 8080:8080 spring4demo:latest
+docker run -p 8080:8080 Junmo Platform:latest
 ```
 
 ### 生产环境配置
@@ -242,7 +242,7 @@ docker run -p 8080:8080 spring4demo:latest
 # application-prod.yml
 spring:
   datasource:
-    url: jdbc:mysql://prod-db:3306/spring4demo
+    url: jdbc:mysql://prod-db:3306/Junmo Platform
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
@@ -251,7 +251,7 @@ spring:
 
 logging:
   level:
-    com.kev1n.spring4demo: INFO
+    com.junmo.Junmo Platform: INFO
     org.springframework.security: WARN
 ```
 
@@ -283,4 +283,4 @@ A: 集成 Seata 或使用本地消息表实现最终一致性。
 
 ---
 
-**🎉 恭喜！您已经成功配置了 Spring4demo 框架模板！**
+**🎉 恭喜！您已经成功配置了 Junmo Platform 框架模板！**

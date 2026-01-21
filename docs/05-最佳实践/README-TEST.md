@@ -9,41 +9,41 @@
 ### 1. 测试基类
 
 #### BaseTestContainer
-- **位置**: `spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/BaseTestContainer.java`
+- **位置**: `Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/BaseTestContainer.java`
 - **用途**: 提供Testcontainers集成测试的基础设施
 - **支持容器**: MySQL、Redis、RabbitMQ、Kafka、Elasticsearch
 
 #### IntegrationTestBase
-- **位置**: `spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/IntegrationTestBase.java`
+- **位置**: `Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/IntegrationTestBase.java`
 - **用途**: 集成测试基类，继承BaseTestContainer
 - **特性**: MockMvc支持、事务回滚
 
 #### ServiceTestBase
-- **位置**: `spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/ServiceTestBase.java`
+- **位置**: `Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/ServiceTestBase.java`
 - **用途**: Service层测试基类
 - **特性**: 事务回滚、测试环境配置
 
 #### WebTestBase
-- **位置**: `spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/WebTestBase.java`
+- **位置**: `Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/WebTestBase.java`
 - **用途**: Web层测试基类
 - **特性**: MockMvc配置、JSON转换工具
 
 #### MockTestBase
-- **位置**: `spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/MockTestBase.java`
+- **位置**: `Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/MockTestBase.java`
 - **用途**: Mock测试基类
 - **特性**: Mockito初始化、Mock重置
 
 ### 2. 测试工具
 
 #### TestDataFactory
-- **位置**: `spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/TestDataFactory.java`
+- **位置**: `Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/TestDataFactory.java`
 - **用途**: 测试数据生成工具
 - **功能**: 生成测试用户、随机数据等
 
 ## 🔧 测试配置
 
 ### 1. 测试环境配置
-- **文件**: `spring4demo-starter/src/test/resources/application-test.yml`
+- **文件**: `Junmo Platform-starter/src/test/resources/application-test.yml`
 - **特性**: 
   - H2内存数据库
   - 测试专用Redis数据库
@@ -51,7 +51,7 @@
   - 详细的日志配置
 
 ### 2. 测试数据
-- **文件**: `spring4demo-web/src/test/resources/test-data.sql`
+- **文件**: `Junmo Platform-web/src/test/resources/test-data.sql`
 - **用途**: 集成测试的初始数据
 
 ## 📝 测试编写指南
@@ -143,7 +143,7 @@ mvn test
 
 ### 2. 运行特定模块测试
 ```bash
-mvn test -pl spring4demo-core
+mvn test -pl Junmo Platform-core
 ```
 
 ### 3. 运行集成测试
@@ -181,7 +181,7 @@ mvn jacoco:report
 ```yaml
 logging:
   level:
-    com.kev1n.spring4demo: debug
+    com.junmo.Junmo Platform: debug
     org.springframework.web: debug
 ```
 
@@ -211,10 +211,10 @@ mvn test -Dtest=UserControllerTest#shouldCreateUser
 ## 🛠️ 扩展测试框架
 
 ### 1. 添加新的测试基类
-在`spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/`目录下创建新的基类。
+在`Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/`目录下创建新的基类。
 
 ### 2. 添加测试工具
-在`spring4demo-common/src/test/java/com/kev1n/spring4demo/common/test/`目录下添加工具类。
+在`Junmo Platform-common/src/test/java/com/kev1n/Junmo Platform/common/test/`目录下添加工具类。
 
 ### 3. 配置新的Testcontainer
 在`BaseTestContainer`中添加新的容器配置。

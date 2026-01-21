@@ -24,7 +24,7 @@ public class InfluxDBConfig {
     @Value("${influxdb.token:}")
     private String token;
 
-    @Value("${influxdb.database:spring4demo}")
+    @Value("${influxdb.database:junmo-platform}")
     private String database;
 
     /**

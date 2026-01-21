@@ -6,7 +6,7 @@
 
 ## 迁移概要
 
-从 spring4demo-core 模块成功迁移业务逻辑相关的类到 junmo-core 模块。
+从 Junmo Platform-core 模块成功迁移业务逻辑相关的类到 junmo-core 模块。
 
 ## 迁移文件清单
 
@@ -287,7 +287,7 @@ mvn clean compile -pl junmo-core -am
 
 ### 2. 跨模块依赖处理
 
-**问题**：原项目 spring4demo-core 模块同时包含了 Entity、Mapper、Document、Repository 和 Service 类，导致职责不清。
+**问题**：原项目 Junmo Platform-core 模块同时包含了 Entity、Mapper、Document、Repository 和 Service 类，导致职责不清。
 
 **解决方案**：
 - Entity、Mapper、Document、Repository 迁移到 junmo-model

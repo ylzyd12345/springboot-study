@@ -8,7 +8,7 @@
 
 ### 1. 配置数据库连接
 
-修改 `spring4demo-generator/src/main/resources/application-generator.yml`：
+修改 `Junmo Platform-generator/src/main/resources/application-generator.yml`：
 
 ```yaml
 spring:
@@ -22,7 +22,7 @@ spring:
 ### 2. 运行代码生成器
 
 ```bash
-cd spring4demo-generator
+cd Junmo Platform-generator
 mvn spring-boot:run
 ```
 
@@ -64,7 +64,7 @@ FastAutoGenerator.create(url, username, password)
 
 ### Entity 模板
 
-路径：`spring4demo-generator/src/main/resources/templates/entity.java.vm`
+路径：`Junmo Platform-generator/src/main/resources/templates/entity.java.vm`
 
 ```velocity
 package ${package.Entity};
@@ -111,7 +111,7 @@ public class ${Entity} {
 
 ### Mapper 模板
 
-路径：`spring4demo-generator/src/main/resources/templates/mapper.java.vm`
+路径：`Junmo Platform-generator/src/main/resources/templates/mapper.java.vm`
 
 ```velocity
 package ${package.Mapper};
@@ -151,7 +151,7 @@ public interface ${Entity}Mapper extends BaseMapper<${Entity}> {
 
 ### Service 模板
 
-路径：`spring4demo-generator/src/main/resources/templates/service.java.vm`
+路径：`Junmo Platform-generator/src/main/resources/templates/service.java.vm`
 
 ```velocity
 package ${package.Service};
@@ -187,7 +187,7 @@ public interface ${Entity}Service extends IService<${Entity}> {
 
 ### ServiceImpl 模板
 
-路径：`spring4demo-generator/src/main/resources/templates/serviceImpl.java.vm`
+路径：`Junmo Platform-generator/src/main/resources/templates/serviceImpl.java.vm`
 
 ```velocity
 package ${package.Service}.impl;
@@ -221,7 +221,7 @@ public class ${Entity}ServiceImpl extends ServiceImpl<${Entity}Mapper, ${Entity}
 
 ### Controller 模板
 
-路径：`spring4demo-generator/src/main/resources/templates/controller.java.vm`
+路径：`Junmo Platform-generator/src/main/resources/templates/controller.java.vm`
 
 ```velocity
 package ${package.Controller};

@@ -7,8 +7,8 @@
 #### 当前包结构
 
 ```
-spring4demo-core/
-└── com.kev1n.spring4demo.core/
+Junmo Platform-core/
+└── com.junmo.Junmo Platform.core/
     ├── annotation/        # 自定义注解
     ├── aspect/           # 切面
     ├── config/           # 配置类
@@ -29,8 +29,8 @@ spring4demo-core/
     └── service/          # 业务服务
         └── impl/         # 服务实现
 
-spring4demo-web/
-└── com.kev1n.spring4demo.web/
+Junmo Platform-web/
+└── com.junmo.Junmo Platform.web/
     ├── config/           # Web配置
     ├── controller/       # 控制器
     │   ├── UserController.java
@@ -42,8 +42,8 @@ spring4demo-web/
     ├── interceptor/      # 拦截器
     └── monitoring/       # 监控
 
-spring4demo-api/
-└── com.kev1n.spring4demo.api/
+Junmo Platform-api/
+└── com.junmo.Junmo Platform.api/
     ├── dto/              # 所有DTO混在一起
     │   ├── ApiResponse.java
     │   ├── PageResponse.java
@@ -212,8 +212,8 @@ Page<T> {
 #### 推荐的包结构设计
 
 ```
-spring4demo-core/
-└── com.kev1n.spring4demo.core/
+Junmo Platform-core/
+└── com.junmo.Junmo Platform.core/
     ├── annotation/        # 自定义注解
     ├── aspect/           # 切面
     ├── config/           # 配置类
@@ -296,8 +296,8 @@ spring4demo-core/
             └── impl/
                 └── ProductServiceImpl.java
 
-spring4demo-web/
-└── com.kev1n.spring4demo.web/
+Junmo Platform-web/
+└── com.junmo.Junmo Platform.web/
     ├── config/           # Web配置
     ├── controller/       # 控制器（按业务模块分包）
     │   ├── user/
@@ -314,8 +314,8 @@ spring4demo-web/
     ├── interceptor/      # 拦截器
     └── monitoring/       # 监控
 
-spring4demo-api/
-└── com.kev1n.spring4demo.api/
+Junmo Platform-api/
+└── com.junmo.Junmo Platform.api/
     ├── common/           # 通用DTO
     │   ├── ApiResponse.java
     │   └── PageResponse.java
@@ -651,12 +651,12 @@ core.converter/
 ##### 1. UserConverter接口
 
 ```java
-package com.kev1n.spring4demo.core.converter;
+package com.junmo.Junmo Platform.core.converter;
 
-import com.kev1n.spring4demo.api.dto.user.request.UserCreateRequest;
-import com.kev1n.spring4demo.api.dto.user.request.UserUpdateRequest;
-import com.kev1n.spring4demo.api.dto.user.response.UserVO;
-import com.kev1n.spring4demo.core.entity.user.User;
+import com.junmo.Junmo Platform.api.dto.user.request.UserCreateRequest;
+import com.junmo.Junmo Platform.api.dto.user.request.UserUpdateRequest;
+import com.junmo.Junmo Platform.api.dto.user.response.UserVO;
+import com.junmo.Junmo Platform.core.entity.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -670,7 +670,7 @@ import java.util.List;
  *
  * <p>使用MapStruct实现Entity、Request、VO之间的转换</p>
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Mapper(
@@ -986,10 +986,10 @@ public class UserQueryController {
 ##### 1. ApiResponse（已存在，无需修改）
 
 ```java
-package com.kev1n.spring4demo.api.common;
+package com.junmo.Junmo Platform.api.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kev1n.spring4demo.common.enums.ErrorCode;
+import com.junmo.Junmo Platform.common.enums.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -1001,7 +1001,7 @@ import java.time.LocalDateTime;
  * 统一API响应格式
  *
  * @param <T> 响应数据类型
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -1106,7 +1106,7 @@ public class ApiResponse<T> {
 ##### 2. PageResponse（已存在，但需要调整）
 
 ```java
-package com.kev1n.spring4demo.api.common;
+package com.junmo.Junmo Platform.api.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -1120,7 +1120,7 @@ import java.util.List;
  * 分页响应格式
  *
  * @param <T> 数据类型
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Data
@@ -1284,28 +1284,28 @@ public class PageResponse<T> {
 
 ```mermaid
 graph TB
-    subgraph "Controller层 (spring4demo-web)"
+    subgraph "Controller层 (Junmo Platform-web)"
         A1[web/controller/user/UserController]
         A2[web/controller/user/UserQueryController]
         A3[web/controller/user/UserCommandController]
     end
 
-    subgraph "Service层 (spring4demo-core)"
+    subgraph "Service层 (Junmo Platform-core)"
         B1[core/service/user/UserService]
         B2[core/service/user/impl/UserServiceImpl]
         B3[core/converter/UserConverter]
     end
 
-    subgraph "Repository/Mapper层 (spring4demo-core)"
+    subgraph "Repository/Mapper层 (Junmo Platform-core)"
         C1[core/mapper/user/UserMapper]
         C2[core/repository/user/UserRepository]
     end
 
-    subgraph "Entity层 (spring4demo-core)"
+    subgraph "Entity层 (Junmo Platform-core)"
         D1[core/entity/user/User]
     end
 
-    subgraph "DTO层 (spring4demo-api)"
+    subgraph "DTO层 (Junmo Platform-api)"
         E1[api/dto/user/request/UserCreateRequest]
         E2[api/dto/user/request/UserUpdateRequest]
         E3[api/dto/user/response/UserVO]
@@ -1462,10 +1462,10 @@ flowchart TD
 ### 4.1 统一Response接口
 
 ```java
-package com.kev1n.spring4demo.api.common;
+package com.junmo.Junmo Platform.api.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kev1n.spring4demo.common.enums.ErrorCode;
+import com.junmo.Junmo Platform.common.enums.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -1477,7 +1477,7 @@ import java.time.LocalDateTime;
  * 统一API响应格式
  *
  * @param <T> 响应数据类型
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -1582,7 +1582,7 @@ public class ApiResponse<T> {
 ### 4.2 分页Response接口
 
 ```java
-package com.kev1n.spring4demo.api.common;
+package com.junmo.Junmo Platform.api.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -1596,7 +1596,7 @@ import java.util.List;
  * 分页响应格式
  *
  * @param <T> 数据类型
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Data
@@ -1693,7 +1693,7 @@ public class PageResponse<T> {
 #### 错误码枚举（已存在，无需修改）
 
 ```java
-package com.kev1n.spring4demo.common.enums;
+package com.junmo.Junmo Platform.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -1701,7 +1701,7 @@ import lombok.Getter;
 /**
  * 错误码枚举
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Getter
@@ -2089,5 +2089,5 @@ A: 按业务模块分包有以下优势：
 
 **文档版本**: 2.0.0
 **最后更新**: 2026-01-15
-**作者**: spring4demo架构团队
+**作者**: Junmo Platform架构团队
 **审核状态**: 待审核

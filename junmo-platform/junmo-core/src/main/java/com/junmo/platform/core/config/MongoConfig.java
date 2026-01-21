@@ -25,10 +25,10 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories(basePackages = "com.junmo.platform.core.repository.mongo")
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
-    @Value("${spring.data.mongodb.uri:mongodb://localhost:27017/spring4demo}")
+    @Value("${spring.data.mongodb.uri:mongodb://localhost:27017/junmo-platform}")
     private String mongoUri;
 
-    @Value("${spring.data.mongodb.database:spring4demo}")
+    @Value("${spring.data.mongodb.database:junmo-platform}")
     private String databaseName;
 
     /**

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spring4demo Docker 构建和部署脚本
+# Junmo Platform Docker 构建和部署脚本
 
 set -e
 
@@ -11,11 +11,11 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # 项目名称
-PROJECT_NAME="spring4demo"
+PROJECT_NAME="junmo-platform"
 
 # 显示帮助信息
 show_help() {
-    echo "Spring4demo Docker 管理脚本"
+    echo "Junmo Platform Docker 管理脚本"
     echo ""
     echo "用法: ./docker-build.sh [命令]"
     echo ""

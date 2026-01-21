@@ -2,7 +2,7 @@
 
 **分析日期**：2026年1月15日
 **分析人**：Backend Architect
-**项目**：spring4demo
+**项目**：Junmo Platform
 **分析范围**：Spring Boot三层架构数据转换策略
 
 ---
@@ -423,7 +423,7 @@ public UserDashboardVO getUserDashboard(Long userId) {
 
 #### 2.1.1 UserQueryController分析
 
-**文件路径**：`spring4demo-web/src/main/java/com/kev1n/spring4demo/web/controller/UserQueryController.java`
+**文件路径**：`Junmo Platform-web/src/main/java/com/kev1n/Junmo Platform/web/controller/UserQueryController.java`
 
 **当前实现**：
 ```java
@@ -466,7 +466,7 @@ public class UserQueryController {
 
 #### 2.1.2 UserCommandController分析
 
-**文件路径**：`spring4demo-web/src/main/java/com/kev1n/spring4demo/web/controller/UserCommandController.java`
+**文件路径**：`Junmo Platform-web/src/main/java/com/kev1n/Junmo Platform/web/controller/UserCommandController.java`
 
 **当前实现**：
 ```java
@@ -516,7 +516,7 @@ public class UserCommandController {
 
 #### 2.1.3 UserService分析
 
-**文件路径**：`spring4demo-core/src/main/java/com/kev1n/spring4demo/core/service/UserService.java`
+**文件路径**：`Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/service/UserService.java`
 
 **当前实现**：
 ```java
@@ -564,7 +564,7 @@ public interface UserService extends IService<User> {
 
 #### 2.2.1 UserDistributedService分析
 
-**文件路径**：`spring4demo-core/src/main/java/com/kev1n/spring4demo/core/service/UserDistributedService.java`
+**文件路径**：`Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/service/UserDistributedService.java`
 
 **当前实现**：
 ```java
@@ -679,7 +679,7 @@ public User registerUser(UserCreateDTO dto) {
 
 #### 2.2.2 UserMetricsService分析
 
-**文件路径**：`spring4demo-core/src/main/java/com/kev1n/spring4demo/core/service/UserMetricsService.java`
+**文件路径**：`Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/service/UserMetricsService.java`
 
 **当前实现**：
 ```java
@@ -784,7 +784,7 @@ public UserActivityAnalysisVO analyzeUserActivity(
 
 #### 2.2.3 UserGraphService分析
 
-**文件路径**：`spring4demo-core/src/main/java/com/kev1n/spring4demo/core/service/UserGraphService.java`
+**文件路径**：`Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/service/UserGraphService.java`
 
 **当前实现**：
 ```java
@@ -825,7 +825,7 @@ public class UserGraphService {
 
 #### 2.3.1 SeataService分析
 
-**文件路径**：`spring4demo-core/src/main/java/com/kev1n/spring4demo/core/service/SeataService.java`
+**文件路径**：`Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/service/SeataService.java`
 
 **当前实现**：
 ```java
@@ -864,7 +864,7 @@ public class SeataService {
 
 #### 2.3.2 SeataExampleService分析
 
-**文件路径**：`spring4demo-core/src/main/java/com/kev1n/spring4demo/core/service/SeataExampleService.java`
+**文件路径**：`Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/service/SeataExampleService.java`
 
 **当前实现**：
 ```java
@@ -993,7 +993,7 @@ flowchart TD
 **推荐包结构**：
 
 ```
-com.kev1n.spring4demo.core/
+com.junmo.Junmo Platform.core/
 ├── bo/                          # BO包
 │   ├── user/                    # 用户相关BO
 │   │   ├── UserRegistrationBO.java
@@ -1655,10 +1655,10 @@ public class OrderCommandController {
 
 ```bash
 # 创建BO包
-mkdir -p spring4demo-core/src/main/java/com/kev1n/spring4demo/core/bo/user
-mkdir -p spring4demo-core/src/main/java/com/kev1n/spring4demo/core/bo/order
-mkdir -p spring4demo-core/src/main/java/com/kev1n/spring4demo/core/bo/payment
-mkdir -p spring4demo-core/src/main/java/com/kev1n/spring4demo/core/bo/converter
+mkdir -p Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/bo/user
+mkdir -p Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/bo/order
+mkdir -p Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/bo/payment
+mkdir -p Junmo Platform-core/src/main/java/com/kev1n/Junmo Platform/core/bo/converter
 ```
 
 **步骤2：创建BO类**

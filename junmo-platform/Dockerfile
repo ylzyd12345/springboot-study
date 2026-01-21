@@ -9,27 +9,31 @@ ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 
 # 复制 pom 文件（先复制根 pom 和所有模块 pom）
 COPY pom.xml .
-COPY spring4demo-common/pom.xml ./spring4demo-common/
-COPY spring4demo-core/pom.xml ./spring4demo-core/
-COPY spring4demo-web/pom.xml ./spring4demo-web/
-COPY spring4demo-api/pom.xml ./spring4demo-api/
-COPY spring4demo-admin/pom.xml ./spring4demo-admin/
-COPY spring4demo-integration/pom.xml ./spring4demo-integration/
-COPY spring4demo-generator/pom.xml ./spring4demo-generator/
-COPY spring4demo-starter/pom.xml ./spring4demo-starter/
+COPY junmo-common/pom.xml ./junmo-common/
+COPY junmo-core/pom.xml ./junmo-core/
+COPY junmo-starter/pom.xml ./junmo-starter/
+COPY junmo-api/pom.xml ./junmo-api/
+COPY junmo-admin-starter/pom.xml ./junmo-admin-starter/
+COPY junmo-integration/pom.xml ./junmo-integration/
+COPY junmo-generator/pom.xml ./junmo-generator/
+COPY junmo-base/pom.xml ./junmo-base/
+COPY junmo-model/pom.xml ./junmo-model/
+COPY junmo-test-support/pom.xml ./junmo-test-support/
 
 # 下载依赖（利用 Docker 缓存层）
 RUN mvn dependency:go-offline -B -DskipTests
 
 # 复制源代码
-COPY spring4demo-common/src ./spring4demo-common/src
-COPY spring4demo-core/src ./spring4demo-core/src
-COPY spring4demo-web/src ./spring4demo-web/src
-COPY spring4demo-api/src ./spring4demo-api/src
-COPY spring4demo-admin/src ./spring4demo-admin/src
-COPY spring4demo-integration/src ./spring4demo-integration/src
-COPY spring4demo-generator/src ./spring4demo-generator/src
-COPY spring4demo-starter/src ./spring4demo-starter/src
+COPY junmo-common/src ./junmo-common/src
+COPY junmo-core/src ./junmo-core/src
+COPY junmo-starter/src ./junmo-starter/src
+COPY junmo-api/src ./junmo-api/src
+COPY junmo-admin-starter/src ./junmo-admin-starter/src
+COPY junmo-integration/src ./junmo-integration/src
+COPY junmo-generator/src ./junmo-generator/src
+COPY junmo-base/src ./junmo-base/src
+COPY junmo-model/src ./junmo-model/src
+COPY junmo-test-support/src ./junmo-test-support/src
 
 # 构建应用（跳过测试，使用并行构建）
 RUN mvn clean package -DskipTests -Djacoco.skip=true -T 4
@@ -52,7 +56,7 @@ RUN addgroup -S appuser && adduser -S -G appuser appuser
 WORKDIR /app
 
 # 复制 jar 文件（从 starter 模块）
-COPY --from=builder /app/spring4demo-starter/target/spring4demo-*.jar app.jar
+COPY --from=builder /app/junmo-starter/target/junmo-platform-*.jar app.jar
 
 # 创建日志目录
 RUN mkdir -p /app/logs && chown -R appuser:appuser /app

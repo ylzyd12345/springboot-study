@@ -1,10 +1,10 @@
-# Spring4demo 项目架构设计参考文档
+# Junmo Platform 项目架构设计参考文档
 
 ## 📋 文档信息
 
 | 项目 | 内容 |
 |------|------|
-| **文档名称** | Spring4demo 项目架构设计参考文档 |
+| **文档名称** | Junmo Platform 项目架构设计参考文档 |
 | **版本号** | v3.3.0 |
 | **生成日期** | 2026-01-07 |
 | **更新日期** | 2026-01-11 |
@@ -71,7 +71,7 @@
 /**
  * 限流配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -100,7 +100,7 @@ public class RateLimiterConfig {
 /**
  * 限流注解
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Target(ElementType.METHOD)
@@ -127,7 +127,7 @@ public @interface RateLimit {
 /**
  * 限流切面
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Aspect
@@ -168,7 +168,7 @@ public class RateLimiterAspect {
 /**
  * 限流异常
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 public class RateLimitException extends RuntimeException {
@@ -181,7 +181,7 @@ public class RateLimitException extends RuntimeException {
 /**
  * 用户控制器（使用限流）
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @RestController
@@ -264,7 +264,7 @@ public class UserController {
 /**
  * RabbitMQ配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Configuration
@@ -382,7 +382,7 @@ public class RabbitMQConfig {
 /**
  * Kafka配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Configuration
@@ -447,7 +447,7 @@ public class KafkaConfig {
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "spring4demo-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "Junmo Platform-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -482,7 +482,7 @@ public class KafkaConfig {
 /**
  * 消息生产者
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Component
@@ -584,7 +584,7 @@ public class MessageProducer {
 /**
  * RabbitMQ消息消费者
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Component
@@ -668,7 +668,7 @@ public class RabbitMQMessageConsumer {
 /**
  * Kafka消息消费者
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 2.0.0
  */
 @Component
@@ -738,7 +738,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: spring4demo-group
+      group-id: Junmo Platform-group
       auto-offset-reset: earliest
       enable-auto-commit: false
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -778,7 +778,7 @@ spring:
 /**
  * 消息消费者（Kafka）
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -805,7 +805,7 @@ public class KafkaMessageConsumer {
 /**
  * 消息对象
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -903,16 +903,16 @@ spring:
 /**
  * MongoDB配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
-@EnableMongoRepositories(basePackages = "com.kev1n.spring4demo.core.repository.mongo")
+@EnableMongoRepositories(basePackages = "com.junmo.Junmo Platform.core.repository.mongo")
 public class MongoConfig {
 
     @Bean
     public MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/spring4demo");
+        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/Junmo Platform");
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();
@@ -921,14 +921,14 @@ public class MongoConfig {
 
     @Bean
     public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(mongoClient(), "spring4demo");
+        return new MongoTemplate(mongoClient(), "Junmo Platform");
     }
 }
 
 /**
  * 用户日志文档
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -965,7 +965,7 @@ public class UserLog {
 /**
  * 用户日志Repository
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 public interface UserLogRepository extends MongoRepository<UserLog, String> {
@@ -989,7 +989,7 @@ public interface UserLogRepository extends MongoRepository<UserLog, String> {
 /**
  * 用户日志服务
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -1065,11 +1065,11 @@ public class UserLogService {
 /**
  * Elasticsearch配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.kev1n.spring4demo.core.repository.elasticsearch")
+@EnableElasticsearchRepositories(basePackages = "com.junmo.Junmo Platform.core.repository.elasticsearch")
 public class ElasticsearchConfig {
 
     @Bean
@@ -1089,7 +1089,7 @@ public class ElasticsearchConfig {
 /**
  * 文档文档
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -1143,7 +1143,7 @@ public class DocumentDocument {
 /**
  * 文档Repository
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 public interface DocumentRepository extends ElasticsearchRepository<DocumentDocument, String> {
@@ -1167,7 +1167,7 @@ public interface DocumentRepository extends ElasticsearchRepository<DocumentDocu
 /**
  * 文档搜索服务
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -1290,11 +1290,11 @@ public class DocumentSearchService {
 /**
  * Neo4j配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
-@EnableNeo4jRepositories(basePackages = "com.kev1n.spring4demo.core.repository.neo4j")
+@EnableNeo4jRepositories(basePackages = "com.junmo.Junmo Platform.core.repository.neo4j")
 public class Neo4jConfig {
 
     @Bean
@@ -1307,7 +1307,7 @@ public class Neo4jConfig {
 /**
  * 用户节点
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -1337,7 +1337,7 @@ public class UserNode {
 /**
  * 用户关系Repository
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 public interface UserRepository extends Neo4jRepository<UserNode, Long> {
@@ -1363,7 +1363,7 @@ public interface UserRepository extends Neo4jRepository<UserNode, Long> {
 /**
  * 用户图服务
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -1451,7 +1451,7 @@ public class UserGraphService {
 /**
  * InfluxDB配置
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -1492,7 +1492,7 @@ public class InfluxDBConfig {
 /**
  * 系统指标数据
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Data
@@ -1527,7 +1527,7 @@ public class SystemMetrics {
 /**
  * 系统指标服务
  *
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -1555,7 +1555,7 @@ public class SystemMetricsService {
                 "|> range(start: %d, stop: %d) " +
                 "|> filter(fn: (r) => r._measurement == \"system_metrics\") " +
                 "|> filter(fn: (r) => r.host == \"%s\")",
-                "spring4demo",
+                "Junmo Platform",
                 start.toEpochMilli(),
                 end.toEpochMilli(),
                 host
@@ -1576,7 +1576,7 @@ public class SystemMetricsService {
                 "|> filter(fn: (r) => r.host == \"%s\") " +
                 "|> filter(fn: (r) => r._field == \"cpu_usage\") " +
                 "|> mean()",
-                "spring4demo",
+                "Junmo Platform",
                 start.toEpochMilli(),
                 end.toEpochMilli(),
                 host
@@ -1633,7 +1633,7 @@ public class SystemMetricsService {
 /**
  * 用户响应式控制器
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @RestController
@@ -1725,7 +1725,7 @@ public class UserReactiveController {
 /**
  * 用户响应式服务
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -1816,7 +1816,7 @@ public class UserService {
 /**
  * WebSocket配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -1843,7 +1843,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 /**
  * WebSocket消息处理器
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Controller
@@ -1890,7 +1890,7 @@ public class WebSocketController {
 /**
  * WebSocket消息监听器
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -2036,7 +2036,7 @@ input UserUpdateInput {
 /**
  * GraphQL查询处理器
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Controller
@@ -2101,7 +2101,7 @@ public class UserGraphQLController {
 /**
  * 用户DataFetcher
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -2150,7 +2150,7 @@ public class UserDataFetcher implements DataFetcher<User> {
 /**
  * ShardingSphere配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -2187,8 +2187,8 @@ public class ShardingConfig {
     @Bean
     public DataSource shardingDataSource() throws SQLException {
         Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds0", createDataSource("jdbc:mysql://localhost:3306/spring4demo_0"));
-        dataSourceMap.put("ds1", createDataSource("jdbc:mysql://localhost:3306/spring4demo_1"));
+        dataSourceMap.put("ds0", createDataSource("jdbc:mysql://localhost:3306/Junmo Platform_0"));
+        dataSourceMap.put("ds1", createDataSource("jdbc:mysql://localhost:3306/Junmo Platform_1"));
         
         return ShardingDataSourceFactory.createDataSource(
                 dataSourceMap, 
@@ -2212,7 +2212,7 @@ public class ShardingConfig {
 /**
  * 分库算法
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 public class DatabaseShardingAlgorithm implements PreciseShardingAlgorithm<Long> {
@@ -2232,7 +2232,7 @@ public class DatabaseShardingAlgorithm implements PreciseShardingAlgorithm<Long>
 /**
  * 分表算法
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 public class TableShardingAlgorithm implements PreciseShardingAlgorithm<Long> {
@@ -2280,7 +2280,7 @@ public class TableShardingAlgorithm implements PreciseShardingAlgorithm<Long> {
 /**
  * 缓存配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -2347,7 +2347,7 @@ public class CacheConfig {
 /**
  * 用户缓存服务
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -2464,7 +2464,7 @@ public class UserCacheService {
 /**
  * RabbitMQ配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -2530,7 +2530,7 @@ public class RabbitMQConfig {
 /**
  * 用户消息生产者
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -2584,7 +2584,7 @@ public class UserMessageProducer {
 /**
  * 用户消息消费者
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -2677,7 +2677,7 @@ public class UserMessageConsumer {
 /**
  * 异步配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -2711,7 +2711,7 @@ public class AsyncConfig implements AsyncConfigurer {
 /**
  * 用户异步服务
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -2841,7 +2841,7 @@ public class UserAsyncService {
 /**
  * Seata配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -2849,7 +2849,7 @@ public class SeataConfig {
 
     @Bean
     public GlobalTransactionScanner globalTransactionScanner() {
-        return new GlobalTransactionScanner("spring4demo", "my_test_tx_group");
+        return new GlobalTransactionScanner("Junmo Platform", "my_test_tx_group");
     }
 }
 ```
@@ -2858,7 +2858,7 @@ public class SeataConfig {
 /**
  * 用户分布式事务服务
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Service
@@ -2974,7 +2974,7 @@ public class UserDistributedService {
 /**
  * 定时任务配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -3000,7 +3000,7 @@ public class ScheduleConfig {
 /**
  * 用户定时任务
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -3120,7 +3120,7 @@ public class UserScheduledTask {
 /**
  * Quartz任务配置
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Configuration
@@ -3149,7 +3149,7 @@ public class QuartzConfig {
 /**
  * 用户统计任务
  * 
- * @author spring4demo
+ * @author Junmo Platform
  * @version 1.0.0
  */
 @Component
@@ -3201,7 +3201,7 @@ public class UserStatsJob extends QuartzJobBean {
 
 ## 📝 总结
 
-本文档提供了Spring4demo项目工程框架搭建阶段的技术架构最佳实践，涵盖了Web层、数据库、缓存、消息队列、异步处理、分布式事务和定时任务等核心技术领域。
+本文档提供了Junmo Platform项目工程框架搭建阶段的技术架构最佳实践，涵盖了Web层、数据库、缓存、消息队列、异步处理、分布式事务和定时任务等核心技术领域。
 
 ### 技术栈总结
 

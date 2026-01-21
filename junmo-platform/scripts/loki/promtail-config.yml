@@ -10,14 +10,14 @@ clients:
 
 scrape_configs:
   # 采集应用日志
-  - job_name: spring4demo-app
+  - job_name: junmo-platform-app
     static_configs:
       - targets:
           - localhost
         labels:
-          job: spring4demo
+          job: junmo-platform
           env: docker
-          app: spring4demo
+          app: junmo-platform
     pipeline_stages:
       - json:
           expressions:

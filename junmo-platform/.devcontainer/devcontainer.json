@@ -1,10 +1,10 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/java
 {
-	"name": "Spring4demo Dev Container",
+	"name": "Junmo Platform Dev Container",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/workspace/spring4demo",
+	"workspaceFolder": "/workspace/junmo-platform",
 
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {

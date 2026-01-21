@@ -1,4 +1,4 @@
--- Spring4demo 数据库初始化脚本
+-- Junmo Platform 数据库初始化脚本
 -- 创建时间: 2025-12-24
 -- 更新时间: 2025-12-29
 -- 版本: 1.1.0
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 -- 创建默认管理员用户（密码: admin123，BCrypt加密）
 -- 注意：实际ID由雪花算法生成，此处使用固定值用于初始化
 INSERT INTO `sys_user` (`id`, `username`, `password`, `email`, `real_name`, `status`, `create_by`) VALUES
-(1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFDYZt/I5/BFnhkSLsVBDSC', 'admin@spring4demo.com', '系统管理员', 1, 1)
+(1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iYqiSfFDYZt/I5/BFnhkSLsVBDSC', 'admin@junmo-platform.com', '系统管理员', 1, 1)
 ON DUPLICATE KEY UPDATE `update_time` = CURRENT_TIMESTAMP;
 
 -- 使用zipkin数据库

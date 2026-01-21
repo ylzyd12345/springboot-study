@@ -1,10 +1,10 @@
-# Spring4demo 项目代码质量评审报告
+# Junmo Platform 项目代码质量评审报告
 
 ## 📋 文档信息
 
 | 项目 | 内容 |
 |------|------|
-| **文档名称** | Spring4demo 项目代码质量评审报告 |
+| **文档名称** | Junmo Platform 项目代码质量评审报告 |
 | **版本号** | v1.0.0 |
 | **生成日期** | 2026-01-14 |
 | **评审人** | Code Reviewer Agent |
@@ -17,7 +17,7 @@
 
 ### 评审概况
 
-本次代码评审对 spring4demo 项目进行了全面的质量检查，涵盖代码规范、代码质量、安全性、最佳实践、测试质量等多个维度。
+本次代码评审对 Junmo Platform 项目进行了全面的质量检查，涵盖代码规范、代码质量、安全性、最佳实践、测试质量等多个维度。
 
 ### 关键发现
 
@@ -80,7 +80,7 @@
 在 `SqlInjectionFilter.java` 中，第62行、第67行和第73行在 `forEach` 循环中抛出 `SecurityException`，这会导致异常被吞掉，无法正确触发安全防护。
 
 **文件路径**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-common\src\main\java\com\kev1n\spring4demo\common\security\SqlInjectionFilter.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-common\src\main\java\com\kev1n\Junmo Platform\common\security\SqlInjectionFilter.java`
 
 **问题代码**:
 ```java
@@ -143,7 +143,7 @@ private boolean containsSqlInjection(HttpServletRequest request) {
 存在多处硬编码密码和密钥，存在安全风险。
 
 **文件路径1**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-common\src\main\java\com\kev1n\spring4demo\common\config\DynamicDataSourceProperties.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-common\src\main\java\com\kev1n\Junmo Platform\common\config\DynamicDataSourceProperties.java`
 
 **问题代码**:
 ```java
@@ -155,7 +155,7 @@ private String statViewServletLoginPassword = "admin";
 ```
 
 **文件路径2**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-common\src\main\java\com\kev1n\spring4demo\common\config\RustFSProperties.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-common\src\main\java\com\kev1n\Junmo Platform\common\config\RustFSProperties.java`
 
 **问题代码**:
 ```java
@@ -264,7 +264,7 @@ rustfs:
 所有质量检查工具都设置为 `skip=true`，无法进行有效的代码质量监控。
 
 **文件路径**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\pom.xml`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\pom.xml`
 
 **问题代码**:
 ```xml
@@ -346,7 +346,7 @@ jobs:
 **典型问题代码**:
 
 **文件路径1**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-core\src\main\java\com\kev1n\spring4demo\core\service\impl\UserServiceImpl.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-core\src\main\java\com\kev1n\Junmo Platform\core\service\impl\UserServiceImpl.java`
 
 ```java
 // 第151-154行
@@ -359,7 +359,7 @@ try {
 ```
 
 **文件路径2**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-web\src\main\java\com\kev1n\spring4demo\web\controller\UserController.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-web\src\main\java\com\kev1n\Junmo Platform\web\controller\UserController.java`
 
 ```java
 // 第110-113行
@@ -440,7 +440,7 @@ try {
 **典型TODO示例**:
 
 **文件路径1**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-web\src\main\java\com\kev1n\spring4demo\web\controller\WebSocketController.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-web\src\main\java\com\kev1n\Junmo Platform\web\controller\WebSocketController.java`
 
 ```java
 // 第79行
@@ -451,7 +451,7 @@ try {
 ```
 
 **文件路径2**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-core\src\main\java\com\kev1n\spring4demo\core\mq\RabbitMQMessageConsumer.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-core\src\main\java\com\kev1n\Junmo Platform\core\mq\RabbitMQMessageConsumer.java`
 
 ```java
 // 第90行
@@ -487,7 +487,7 @@ try {
 部分Service实现中存在重复的日志和缓存逻辑。
 
 **文件路径**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-core\src\main\java\com\kev1n\spring4demo\core\service\impl\UserServiceImpl.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-core\src\main\java\com\kev1n\Junmo Platform\core\service\impl\UserServiceImpl.java`
 
 **重复代码示例**:
 ```java
@@ -593,14 +593,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 部分方法过长，违反单一职责原则（SRP），圈复杂度过高。
 
 **文件路径1**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-web\src\main\java\com\kev1n\spring4demo\web\controller\UserController.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-web\src\main\java\com\kev1n\Junmo Platform\web\controller\UserController.java`
 
 **过长方法**:
 - `getUsers()` 方法: 约90行
 - `createUser()` 方法: 约50行
 
 **文件路径2**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-core\src\main\java\com\kev1n\spring4demo\core\service\RedissonService.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-core\src\main\java\com\kev1n\Junmo Platform\core\service\RedissonService.java`
 
 **过长类**:
 - `RedissonService` 类: 496行
@@ -741,7 +741,7 @@ public class RedissonCollectionService {
 **典型问题代码**:
 
 **文件路径1**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-core\src\main\java\com\kev1n\spring4demo\core\service\impl\UserServiceImpl.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-core\src\main\java\com\kev1n\Junmo Platform\core\service\impl\UserServiceImpl.java`
 
 ```java
 // 第151-154行
@@ -803,7 +803,7 @@ try {
 部分类职责过多，违反单一职责原则（SRP）。
 
 **文件路径**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-core\src\main\java\com\kev1n\spring4demo\core\service\RedissonService.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-core\src\main\java\com\kev1n\Junmo Platform\core\service\RedissonService.java`
 
 **问题分析**:
 - 类长度: 496行
@@ -881,7 +881,7 @@ public class RedissonUtilityService {
 **典型问题代码**:
 
 **文件路径1**:
-`F:\codes\roadmap\github-project\springboot-study\spring4demo\spring4demo-web\src\main\java\com\kev1n\spring4demo\web\controller\UserController.java`
+`F:\codes\roadmap\github-project\springboot-study\Junmo Platform\Junmo Platform-web\src\main\java\com\kev1n\Junmo Platform\web\controller\UserController.java`
 
 ```java
 // 第144行
@@ -1561,7 +1561,7 @@ if (request.getCurrent() > ApiConstants.MAX_PAGE_NUMBER) {
 如有问题或建议，请通过以下方式联系：
 
 - GitHub Issues: https://github.com/ylzyd12345/springboot-study/issues
-- Email: support@spring4demo.com
+- Email: support@Junmo Platform.com
 
 ---
 

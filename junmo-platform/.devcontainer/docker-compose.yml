@@ -4,7 +4,7 @@ services:
   # MySQL数据库
   mysql:
     image: mysql:8.0
-    container_name: spring4demo-mysql-dev
+    container_name: junmo-mysql-dev
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: spring4demo
@@ -18,7 +18,7 @@ services:
       - ../scripts/mysql:/docker-entrypoint-initdb.d
     command: --default-authentication-plugin=mysql_native_password
     networks:
-      - spring4demo-network
+      - junmo-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -27,14 +27,14 @@ services:
   # Redis缓存
   redis:
     image: redis:7.0-alpine
-    container_name: spring4demo-redis-dev
+    container_name: junmo-redis-dev
     ports:
       - "6379:6379"
     volumes:
       - redis_data_dev:/data
     command: redis-server --appendonly yes
     networks:
-      - spring4demo-network
+      - junmo-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       timeout: 3s
@@ -43,7 +43,7 @@ services:
   # RabbitMQ消息队列
   rabbitmq:
     image: rabbitmq:3.12-management-alpine
-    container_name: spring4demo-rabbitmq-dev
+    container_name: junmo-rabbitmq-dev
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
@@ -54,7 +54,7 @@ services:
     volumes:
       - rabbitmq_data_dev:/var/lib/rabbitmq
     networks:
-      - spring4demo-network
+      - junmo-network
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       timeout: 10s
@@ -63,7 +63,7 @@ services:
   # Kafka消息队列
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
-    container_name: spring4demo-zookeeper-dev
+    container_name: junmo-zookeeper-dev
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -71,11 +71,11 @@ services:
       - zookeeper_data_dev:/var/lib/zookeeper/data
       - zookeeper_logs_dev:/var/lib/zookeeper/log
     networks:
-      - spring4demo-network
+      - junmo-network
 
   kafka:
     image: confluentinc/cp-kafka:7.4.0
-    container_name: spring4demo-kafka-dev
+    container_name: junmo-kafka-dev
     depends_on:
       - zookeeper
     ports:
@@ -90,7 +90,7 @@ services:
     volumes:
       - kafka_data_dev:/var/lib/kafka/data
     networks:
-      - spring4demo-network
+      - junmo-network
     healthcheck:
       test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       timeout: 10s
@@ -99,7 +99,7 @@ services:
   # Kafka UI
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    container_name: spring4demo-kafka-ui-dev
+    container_name: junmo-kafka-ui-dev
     depends_on:
       - kafka
     ports:
@@ -109,12 +109,12 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
-      - spring4demo-network
+      - junmo-network
 
   # Elasticsearch搜索引擎
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    container_name: spring4demo-elasticsearch-dev
+    container_name: junmo-elasticsearch-dev
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -126,7 +126,7 @@ services:
     volumes:
       - elasticsearch_data_dev:/usr/share/elasticsearch/data
     networks:
-      - spring4demo-network
+      - junmo-network
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       timeout: 10s
@@ -135,7 +135,7 @@ services:
   # Kibana可视化
   kibana:
     image: docker.elastic.co/kibana/kibana:8.11.0
-    container_name: spring4demo-kibana-dev
+    container_name: junmo-kibana-dev
     depends_on:
       - elasticsearch
     ports:
@@ -144,12 +144,12 @@ services:
       ELASTICSEARCH_HOSTS: http://elasticsearch:9200
       XPACK_SECURITY_ENABLED: false
     networks:
-      - spring4demo-network
+      - junmo-network
 
   # Neo4j图数据库
   neo4j:
     image: neo4j:5.12-community
-    container_name: spring4demo-neo4j-dev
+    container_name: junmo-neo4j-dev
     environment:
       NEO4J_AUTH: neo4j/password
       NEO4J_PLUGINS: '["apoc"]'
@@ -163,12 +163,12 @@ services:
       - neo4j_data_dev:/data
       - neo4j_logs_dev:/logs
     networks:
-      - spring4demo-network
+      - junmo-network
 
   # InfluxDB时序数据库
   influxdb:
     image: influxdb:2.7-alpine
-    container_name: spring4demo-influxdb-dev
+    container_name: junmo-influxdb-dev
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: admin
@@ -181,12 +181,12 @@ services:
     volumes:
       - influxdb_data_dev:/var/lib/influxdb2
     networks:
-      - spring4demo-network
+      - junmo-network
 
   # Prometheus监控
   prometheus:
     image: prom/prometheus:v2.47.0
-    container_name: spring4demo-prometheus-dev
+    container_name: junmo-prometheus-dev
     ports:
       - "9090:9090"
     volumes:
@@ -198,12 +198,12 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     networks:
-      - spring4demo-network
+      - junmo-network
 
   # Grafana可视化
   grafana:
     image: grafana/grafana:10.1.0
-    container_name: spring4demo-grafana-dev
+    container_name: junmo-grafana-dev
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
@@ -215,14 +215,14 @@ services:
       - ../scripts/grafana/provisioning:/etc/grafana/provisioning
       - ../scripts/grafana/dashboards:/var/lib/grafana/dashboards
     networks:
-      - spring4demo-network
+      - junmo-network
     depends_on:
       - prometheus
 
   # Loki 日志聚合系统
   loki:
     image: grafana/loki:2.9.2
-    container_name: spring4demo-loki-dev
+    container_name: junmo-loki-dev
     ports:
       - "3100:3100"
     volumes:
@@ -230,7 +230,7 @@ services:
       - ../scripts/loki/loki-config.yml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
     networks:
-      - spring4demo-network
+      - junmo-network
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
       timeout: 5s
@@ -239,7 +239,7 @@ services:
   # Zipkin链路追踪
   zipkin:
     image: openzipkin/zipkin:2.24
-    container_name: spring4demo-zipkin-dev
+    container_name: junmo-zipkin-dev
     ports:
       - "9411:9411"
     environment:
@@ -249,14 +249,14 @@ services:
       MYSQL_PASS: spring4demo
       MYSQL_DB: zipkin
     networks:
-      - spring4demo-network
+      - junmo-network
     depends_on:
       - mysql
 
   # Node Exporter系统监控
   node-exporter:
     image: prom/node-exporter:v1.6.1
-    container_name: spring4demo-node-exporter-dev
+    container_name: junmo-node-exporter-dev
     ports:
       - "9100:9100"
     volumes:
@@ -267,33 +267,33 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)'
     networks:
-      - spring4demo-network
+      - junmo-network
 
   # MySQL Exporter
   mysql-exporter:
     image: prom/mysqld-exporter:v0.14.0
-    container_name: spring4demo-mysql-exporter-dev
+    container_name: junmo-mysql-exporter-dev
     ports:
       - "9104:9104"
     environment:
       DATA_SOURCE_NAME: "spring4demo:spring4demo@(mysql:3306)/"
     networks:
-      - spring4demo-network
+      - junmo-network
     depends_on:
       - mysql
 
   # Redis Exporter
   redis-exporter:
     image: oliver006/redis_exporter:v1.44.0
-    container_name: spring4demo-redis-exporter-dev
+    container_name: junmo-redis-exporter-dev
     ports:
       - "9121:9121"
     environment:
       REDIS_ADDR: "redis://redis:6379"
     networks:
-      - spring4demo-network
+      - junmo-network
     depends_on:
       - redis
 
@@ -304,38 +304,38 @@ services:
       dockerfile: Dockerfile
       args:
         BUILDKIT_INLINE_CACHE: 1
-    image: spring4demo:latest
-    container_name: spring4demo-app-dev
+    image: junmo-platform:latest
+    container_name: junmo-app-dev
     ports:
       - "8080:8080"
     environment:
       # Spring 配置
       SPRING_PROFILES_ACTIVE: dev
       JAVA_OPTS: "-Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
-      
+
       # 数据库配置
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/spring4demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: spring4demo
       SPRING_DATASOURCE_PASSWORD: spring4demo
-      
+
       # Redis 配置
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: ""
-      
+
       # RabbitMQ 配置
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: admin
       SPRING_RABBITMQ_PASSWORD: admin
       SPRING_RABBITMQ_VIRTUAL_HOST: spring4demo
-      
+
       # Kafka 配置
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      
+
       # Elasticsearch 配置
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
-      
+
       # Prometheus 配置
       MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,metrics,prometheus"
@@ -343,7 +343,7 @@ services:
       - ../src:/app/src
       - ../logs:/app/logs
     networks:
-      - spring4demo-network
+      - junmo-network
     depends_on:
       mysql:
         condition: service_healthy
@@ -386,5 +386,5 @@ volumes:
     driver: local
 
 networks:
-  spring4demo-network:
+  junmo-network:
     driver: bridge

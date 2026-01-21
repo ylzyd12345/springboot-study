@@ -1,6 +1,6 @@
 # Docker 部署指南
 
-本文档介绍如何使用 Docker 部署 Spring4demo 应用。
+本文档介绍如何使用 Docker 部署 Junmo Platform 应用。
 
 ## 前置要求
 
@@ -145,9 +145,9 @@ environment:
   JAVA_OPTS: "-Xms512m -Xmx1024m"
   
   # 数据库配置
-  SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/spring4demo
-  SPRING_DATASOURCE_USERNAME: spring4demo
-  SPRING_DATASOURCE_PASSWORD: spring4demo
+  SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/Junmo Platform
+  SPRING_DATASOURCE_USERNAME: Junmo Platform
+  SPRING_DATASOURCE_PASSWORD: Junmo Platform
   
   # Redis 配置
   SPRING_DATA_REDIS_HOST: redis
@@ -220,7 +220,7 @@ docker-compose logs app
 docker-compose ps
 
 # 检查网络连接
-docker network inspect spring4demo_spring4demo-network
+docker network inspect Junmo Platform_Junmo Platform-network
 ```
 
 ### 数据库连接失败
@@ -231,7 +231,7 @@ docker-compose ps mysql
 docker-compose logs mysql
 
 # 测试连接
-docker exec -it spring4demo-mysql mysql -u spring4demo -p
+docker exec -it Junmo Platform-mysql mysql -u Junmo Platform -p
 ```
 
 ### 内存不足
@@ -308,23 +308,23 @@ services:
 
 ```bash
 # 备份 MySQL
-docker exec spring4demo-mysql mysqldump -u spring4demo -p spring4demo > backup.sql
+docker exec Junmo Platform-mysql mysqldump -u Junmo Platform -p Junmo Platform > backup.sql
 
 # 备份 Redis
-docker exec spring4demo-redis redis-cli BGSAVE
+docker exec Junmo Platform-redis redis-cli BGSAVE
 
 # 备份 Elasticsearch
-docker exec spring4demo-elasticsearch curl -X POST "localhost:9200/_snapshot/backup/snapshot_1"
+docker exec Junmo Platform-elasticsearch curl -X POST "localhost:9200/_snapshot/backup/snapshot_1"
 ```
 
 ### 恢复数据
 
 ```bash
 # 恢复 MySQL
-docker exec -i spring4demo-mysql mysql -u spring4demo -p spring4demo < backup.sql
+docker exec -i Junmo Platform-mysql mysql -u Junmo Platform -p Junmo Platform < backup.sql
 
 # 恢复 Redis
-docker cp backup.rdb spring4demo-redis:/data/dump.rdb
+docker cp backup.rdb Junmo Platform-redis:/data/dump.rdb
 docker-compose restart redis
 ```
 
@@ -353,10 +353,10 @@ A: 使用 `docker exec` 命令：
 
 ```bash
 # 进入应用容器
-docker exec -it spring4demo-app sh
+docker exec -it Junmo Platform-app sh
 
 # 进入 MySQL 容器
-docker exec -it spring4demo-mysql bash
+docker exec -it Junmo Platform-mysql bash
 ```
 
 ### Q: 如何更新应用？

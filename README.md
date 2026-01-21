@@ -1,4 +1,4 @@
-# Spring4demo 企业级智能管理平台
+# Junmo Platform 企业级智能管理平台
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.java.net/)
@@ -10,7 +10,7 @@
 
 ## 📋 项目概述
 
-Spring4demo 是一个全面的企业级智能管理平台，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，为企业提供一站式数字化管理解决方案。
+Junmo Platform 是一个全面的企业级智能管理平台，采用前后端分离架构。项目采用 Maven 多模块设计，集成了现代 Java 生态系统中的主流技术栈，为企业提供一站式数字化管理解决方案。
 
 **架构定位**：单体 Spring Boot 应用（非微服务架构），适用于中小规模业务场景。
 
@@ -55,19 +55,18 @@ Spring4demo 是一个全面的企业级智能管理平台，采用前后端分�
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/ylzyd12345/springboot-study.git
-cd springboot-study
+git clone https://github.com/junmo/junmo-platform.git
+cd junmo-platform
 
 # 2. 启动基础服务
-cd spring4demo
+cd junmo-platform
 docker-compose up -d mysql redis rabbitmq
 
 # 3. 启动后端服务
-cd spring4demo-web
-mvn spring-boot:run
+mvn spring-boot:run -pl junmo-starter
 
 # 4. 启动前端服务
-cd ../../spring4demo-ui
+cd junmo-ui
 npm install
 npm run dev
 ```
@@ -99,21 +98,23 @@ npm run dev
 ## 📁 项目结构
 
 ```
-springboot-study/
-├── spring4demo/                    # 后端项目
-│   ├── spring4demo-common/         # 公共模块
-│   ├── spring4demo-core/           # 核心业务模块
-│   ├── spring4demo-web/            # Web应用模块
-│   ├── spring4demo-api/            # API接口模块
-│   ├── spring4demo-admin/          # 管理后台模块
-│   ├── spring4demo-test-support/   # 测试支持模块
-│   ├── spring4demo-build-tools/    # 构建工具模块
-│   ├── spring4demo-generator/      # 代码生成器模块
-│   ├── spring4demo-integration/    # 集成测试模块
-│   ├── spring4demo-starter/        # 启动器模块
+junmo-platform/
+├── junmo-platform/                 # 后端项目
+│   ├── junmo-base/                 # 基础模块
+│   ├── junmo-common/               # 公共模块
+│   ├── junmo-core/                 # 核心业务模块
+│   ├── junmo-api/                  # API接口模块
+│   ├── junmo-model/                # 模型模块
+│   ├── junmo-admin-starter/        # 管理后台启动模块
+│   ├── junmo-starter/              # 前端启动模块
+│   ├── junmo-test-support/         # 测试支持模块
+│   ├── junmo-build-tools/          # 构建工具模块
+│   ├── junmo-generator/            # 代码生成器模块
+│   ├── junmo-integration/          # 集成测试模块
+│   ├── scripts/                    # 脚本目录
 │   ├── docker-compose.yml          # Docker 编排文件
 │   └── pom.xml                     # Maven 父 POM
-├── spring4demo-ui/                 # 前端项目
+├── junmo-ui/                       # 前端项目
 │   ├── src/                        # 源代码
 │   ├── package.json                # 依赖配置
 │   └── vite.config.ts              # Vite 配置
@@ -172,7 +173,7 @@ springboot-study/
 ### 启动所有服务
 
 ```bash
-cd spring4demo
+cd junmo-platform
 docker-compose up -d
 ```
 
@@ -341,8 +342,8 @@ npm run test:ui
 
 如有问题或建议，请通过以下方式联系：
 
-- **GitHub Issues**: https://github.com/ylzyd12345/springboot-study/issues
-- **Email**: support@spring4demo.com
+- **GitHub Issues**: https://github.com/junmo/junmo-platform/issues
+- **Email**: support@junmo-platform.com
 
 ## 🙏 致谢
 

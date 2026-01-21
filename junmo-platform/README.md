@@ -10,7 +10,7 @@ Junmo Platform 是一个基于 Spring Boot 4.0.1 和 Java 25 的企业级单体�
 
 - **Java**: 25
 - **Spring Boot**: 4.0.1
-- **Spring Framework**: 6.x
+- **Spring Framework**: 7.0.2
 - **Maven**: 3.9.12
 
 ## 模块说明

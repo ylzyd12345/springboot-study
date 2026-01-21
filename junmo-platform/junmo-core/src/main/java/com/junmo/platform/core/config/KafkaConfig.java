@@ -33,7 +33,7 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
     private String bootstrapServers;
 
-    @Value("${spring.kafka.consumer.group-id:spring4demo-group}")
+    @Value("${spring.kafka.consumer.group-id:junmo-platform-group}")
     private String groupId;
 
     @Value("${spring.kafka.consumer.auto-offset-reset:earliest}")

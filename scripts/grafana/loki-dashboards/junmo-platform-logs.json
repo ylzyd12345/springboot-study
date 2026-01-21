@@ -39,7 +39,7 @@
       },
       "targets": [
         {
-          "expr": "{job=\"spring4demo\"}",
+          "expr": "{job=\"junmo-platform\"}",
           "refId": "A"
         }
       ],
@@ -134,7 +134,7 @@
   "refresh": "5s",
   "schemaVersion": 27,
   "style": "dark",
-  "tags": ["spring4demo", "loki", "logs"],
+  "tags": ["junmo-platform", "loki", "logs"],
   "templating": {
     "list": []
   },
@@ -144,7 +144,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Spring4demo 日志监控",
-  "uid": "spring4demo-loki-logs",
+  "title": "Junmo Platform 日志监控",
+  "uid": "junmo-platform-loki-logs",
   "version": 1
 }

@@ -2,7 +2,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    cluster: 'spring4demo-cluster'
+    cluster: 'junmo-platform-cluster'
     environment: 'dev'
 
 rule_files:
@@ -11,12 +11,12 @@ rule_files:
 
 scrape_configs:
   # Spring Boot应用监控
-  - job_name: 'spring4demo'
+  - job_name: 'junmo-platform'
     metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['app:8080']
         labels:
-          service: 'spring4demo'
+          service: 'junmo-platform'
           env: 'dev'
     scrape_interval: 30s
     scrape_timeout: 10s

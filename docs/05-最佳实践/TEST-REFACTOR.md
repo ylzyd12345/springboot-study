@@ -1,4 +1,4 @@
-# Spring4Demo 测试代码分析与整体方案
+# Junmo Platform 测试代码分析与整体方案
 
 ## 一、当前测试现状分析
 
@@ -6,9 +6,9 @@
 
 | 模块 | 测试类数量 | 测试类型 | 状态 |
 |------|-----------|---------|------|
-| spring4demo-common | 14个 | 配置类测试 | ✅ 已实现 |
-| spring4demo-core | 5个 | 服务层测试 | ⚠️ 部分实现 |
-| spring4demo-web | 17个 | 控制器测试 | ⚠️ 部分实现 |
+| Junmo Platform-common | 14个 | 配置类测试 | ✅ 已实现 |
+| Junmo Platform-core | 5个 | 服务层测试 | ⚠️ 部分实现 |
+| Junmo Platform-web | 17个 | 控制器测试 | ⚠️ 部分实现 |
 | 其他模块 | 0个 | - | ❌ 未实现 |
 
 **总计**: 36个测试类（目标：70+个）
@@ -277,7 +277,7 @@ class RustFSPropertiesTest {
 |------|---------|------|
 | 测试类 | `{ClassName}Test.java` | `UserServiceImplTest.java` |
 | 测试方法 | `{methodName}_{scenario}_{expectedResult}` | `createUser_Success()` |
-| 测试包 | 与源代码包结构一致 | `com.kev1n.spring4demo.core.service.impl` |
+| 测试包 | 与源代码包结构一致 | `com.junmo.Junmo Platform.core.service.impl` |
 
 ---
 
@@ -294,7 +294,7 @@ class RustFSPropertiesTest {
 
 #### 4.2.1 创建统一 Testcontainers 配置
 
-**位置**: `spring4demo-web/src/test/java/com/kev1n/spring4demo/web/config/TestcontainersConfig.java`
+**位置**: `Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/config/TestcontainersConfig.java`
 
 ```java
 public class TestcontainersConfig {
@@ -533,7 +533,7 @@ class UserMapperIT extends BaseIntegrationTest {
 |------|---------|------|
 | 测试类 | `{ClassName}IT.java` | `UserServiceIT.java` |
 | 测试方法 | `{methodName}_{scenario}_{expectedResult}` | `createUser_FullFlow()` |
-| 测试包 | `src/test/java/.../integration/` | `com.kev1n.spring4demo.core.service.integration` |
+| 测试包 | `src/test/java/.../integration/` | `com.junmo.Junmo Platform.core.service.integration` |
 
 ---
 
@@ -543,7 +543,7 @@ class UserMapperIT extends BaseIntegrationTest {
 
 **目标**: 消除配置重复，统一测试环境
 
-**方案**: 在 `spring4demo-web` 模块维护唯一的 `application-test.yml`
+**方案**: 在 `Junmo Platform-web` 模块维护唯一的 `application-test.yml`
 
 **内容**:
 ```yaml
@@ -591,7 +591,7 @@ spring:
 # 日志配置
 logging:
   level:
-    com.kev1n.spring4demo: DEBUG
+    com.junmo.Junmo Platform: DEBUG
     org.springframework.test: INFO
 ```
 
@@ -600,13 +600,13 @@ logging:
 **目标**: 统一表结构，消除重复
 
 **方案**:
-1. 删除 `spring4demo-core/src/test/resources/db/schema.sql`
-2. 保留 `spring4demo-web/src/test/resources/sql/schema.sql`
+1. 删除 `Junmo Platform-core/src/test/resources/db/schema.sql`
+2. 保留 `Junmo Platform-web/src/test/resources/sql/schema.sql`
 3. 统一表命名为 `sys_user`
 
 **内容**:
 ```sql
--- spring4demo-web/src/test/resources/sql/schema.sql
+-- Junmo Platform-web/src/test/resources/sql/schema.sql
 CREATE TABLE IF NOT EXISTS `sys_user` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
@@ -627,7 +627,7 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
 
 **测试数据**:
 ```sql
--- spring4demo-web/src/test/resources/sql/data.sql
+-- Junmo Platform-web/src/test/resources/sql/data.sql
 INSERT INTO `sys_user` (`username`, `password`, `email`, `phone`, `status`) VALUES
 ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EH', 'admin@example.com', '13800138000', 1),
 ('user1', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EH', 'user1@example.com', '13800138001', 1),
@@ -639,12 +639,12 @@ INSERT INTO `sys_user` (`username`, `password`, `email`, `phone`, `status`) VALU
 **目标**: 减少重复代码，提供统一测试工具
 
 **方案**:
-1. 在 `spring4demo-web` 模块创建 `BaseTest` 和 `BaseWebTest`
-2. 在 `spring4demo-core` 模块删除 `BaseTest`
+1. 在 `Junmo Platform-web` 模块创建 `BaseTest` 和 `BaseWebTest`
+2. 在 `Junmo Platform-core` 模块删除 `BaseTest`
 
 **BaseTest**:
 ```java
-// spring4demo-web/src/test/java/com/kev1n/spring4demo/web/BaseTest.java
+// Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/BaseTest.java
 @SpringBootTest(classes = TestApplication.class)
 @ActiveProfiles("test")
 @Transactional
@@ -684,7 +684,7 @@ public abstract class BaseTest {
 
 **BaseWebTest**:
 ```java
-// spring4demo-web/src/test/java/com/kev1n/spring4demo/web/BaseWebTest.java
+// Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/BaseWebTest.java
 @SpringBootTest(classes = TestApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -742,7 +742,7 @@ public abstract class BaseWebTest {
 
 **TestDataBuilder**:
 ```java
-// spring4demo-web/src/test/java/com/kev1n/spring4demo/web/util/TestDataBuilder.java
+// Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/util/TestDataBuilder.java
 public class TestDataBuilder {
 
     public static User buildUser() {
@@ -775,7 +775,7 @@ public class TestDataBuilder {
 
 **TestAssertions**:
 ```java
-// spring4demo-web/src/test/java/com/kev1n/spring4demo/web/util/TestAssertions.java
+// Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/util/TestAssertions.java
 public class TestAssertions {
 
     public static void assertUserEquals(User expected, User actual) {
@@ -801,7 +801,7 @@ public class TestAssertions {
 
 **目标**: 支持不同测试场景的快速切换
 
-**配置**: 在 `spring4demo/pom.xml` 中添加 Profile
+**配置**: 在 `Junmo Platform/pom.xml` 中添加 Profile
 
 ```xml
 <profiles>
@@ -900,7 +900,7 @@ jobs:
 
 ### 7.2 覆盖率检查
 
-**配置**: 在 `spring4demo/pom.xml` 中配置 JaCoCo
+**配置**: 在 `Junmo Platform/pom.xml` 中配置 JaCoCo
 
 ```xml
 <plugin>
@@ -1025,10 +1025,10 @@ jobs:
   - 缺点：需要编写清理代码
 
 **问题 4**: 是否创建独立的测试基础设施模块
-- **选项 A**: 创建 `spring4demo-test` 模块
+- **选项 A**: 创建 `Junmo Platform-test` 模块
   - 优点：职责清晰，可复用
   - 缺点：增加模块复杂度
-- **选项 B**: 继续放在 `spring4demo-web` 模块
+- **选项 B**: 继续放在 `Junmo Platform-web` 模块
   - 优点：简单，无需额外模块
   - 缺点：职责不清晰
 
@@ -1082,14 +1082,14 @@ jobs:
 
 | 模块 | 测试类数量 | 测试类型 | 主要测试内容 |
 |------|-----------|---------|-------------|
-| **spring4demo-common** | 14个 | 配置类测试 | Quartz、Redisson、RustFS、Seata、动态数据源等配置 |
-| **spring4demo-core** | 5个 | 服务层测试 | UserService、FileStorageService 的单元测试和集成测试 |
-| **spring4demo-web** | 17个 | 控制器测试 | Auth、User、FileStorage、DocumentPreview 等控制器 |
-| **spring4demo-starter** | 0个 | - | 仅有测试配置文件，无测试类 |
-| **spring4demo-admin** | 0个 | - | 无测试类 |
-| **spring4demo-api** | 0个 | - | 无测试类 |
-| **spring4demo-generator** | 0个 | - | 无测试类 |
-| **spring4demo-integration** | 0个 | - | 无测试类 |
+| **Junmo Platform-common** | 14个 | 配置类测试 | Quartz、Redisson、RustFS、Seata、动态数据源等配置 |
+| **Junmo Platform-core** | 5个 | 服务层测试 | UserService、FileStorageService 的单元测试和集成测试 |
+| **Junmo Platform-web** | 17个 | 控制器测试 | Auth、User、FileStorage、DocumentPreview 等控制器 |
+| **Junmo Platform-starter** | 0个 | - | 仅有测试配置文件，无测试类 |
+| **Junmo Platform-admin** | 0个 | - | 无测试类 |
+| **Junmo Platform-api** | 0个 | - | 无测试类 |
+| **Junmo Platform-generator** | 0个 | - | 无测试类 |
+| **Junmo Platform-integration** | 0个 | - | 无测试类 |
 
 **总计**: 36个测试类
 
@@ -1105,9 +1105,9 @@ jobs:
 ### 3. 包结构分析
 
 ```
-com.kev1n.spring4demo
+com.junmo.Junmo Platform
 ├── common
-│   └── src/test/java/com/kev1n/spring4demo/common
+│   └── src/test/java/com/kev1n/Junmo Platform/common
 │       └── config/                    # 配置类测试
 │           ├── CustomSeataPropertiesTest.java
 │           ├── DynamicDataSourceConfigTest.java
@@ -1124,7 +1124,7 @@ com.kev1n.spring4demo
 │           └── SeataConfigTest.java
 │
 ├── core
-│   └── src/test/java/com/kev1n/spring4demo/core
+│   └── src/test/java/com/kev1n/Junmo Platform/core
 │       ├── BaseTest.java              # 核心层测试基类
 │       ├── TestApplication.java       # 测试应用配置
 │       ├── config/
@@ -1136,7 +1136,7 @@ com.kev1n.spring4demo
 │               └── FileStorageServiceImplTest.java  # 文件存储服务单元测试
 │
 └── web
-    └── src/test/java/com/kev1n/spring4demo/web
+    └── src/test/java/com/kev1n/Junmo Platform/web
         ├── BaseWebTest.java           # Web层测试基类
         ├── TestApplication.java       # 测试应用配置
         ├── config/
@@ -1161,7 +1161,7 @@ com.kev1n.spring4demo
 
 ### 4. 测试基类详细分析
 
-**BaseTest** (`spring4demo-core/src/test/java/com/kev1n/spring4demo/core/BaseTest.java`)
+**BaseTest** (`Junmo Platform-core/src/test/java/com/kev1n/Junmo Platform/core/BaseTest.java`)
 
 ```java
 @SpringBootTest(classes = TestApplication.class)
@@ -1180,7 +1180,7 @@ public abstract class BaseTest {
 - ✅ 提供 `setupTest()` 和 `cleanupTest()` 钩子方法
 - ✅ 提供 `sleep()` 方法用于异步测试
 
-**BaseWebTest** (`spring4demo-web/src/test/java/com/kev1n/spring4demo/web/BaseWebTest.java`)
+**BaseWebTest** (`Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/BaseWebTest.java`)
 
 ```java
 @SpringBootTest(classes = TestApplication.class)
@@ -1208,7 +1208,7 @@ public abstract class BaseWebTest {
 
 ### 5. Testcontainers 配置
 
-**TestcontainersConfig** (`spring4demo-web/src/test/java/com/kev1n/spring4demo/web/config/TestcontainersConfig.java`)
+**TestcontainersConfig** (`Junmo Platform-web/src/test/java/com/kev1n/Junmo Platform/web/config/TestcontainersConfig.java`)
 
 ```java
 public class TestcontainersConfig {
@@ -1235,7 +1235,7 @@ public class TestcontainersConfig {
 
 ### 6. 测试配置文件分析
 
-**spring4demo-starter/application-test.yml** (最完整的配置)
+**Junmo Platform-starter/application-test.yml** (最完整的配置)
 
 ```yaml
 spring:
@@ -1262,7 +1262,7 @@ spring:
 - ⚠️ **依赖外部服务（Redis、RabbitMQ、Kafka），未使用嵌入式解决方案**
 - ⚠️ **与 Testcontainers 配置不一致**
 
-**spring4demo-web/application-test.yml**
+**Junmo Platform-web/application-test.yml**
 
 ```yaml
 spring:
@@ -1283,7 +1283,7 @@ spring:
 - ✅ 启用 H2 控制台
 - ⚠️ **依赖外部 Redis 服务**
 
-**spring4demo-core/application-test.yml**
+**Junmo Platform-core/application-test.yml**
 
 ```yaml
 spring:
@@ -1307,15 +1307,15 @@ spring:
 
 **SQL 初始化脚本**:
 
-1. **spring4demo-core/src/test/resources/db/schema.sql**
+1. **Junmo Platform-core/src/test/resources/db/schema.sql**
    - 创建 `sys_user` 表
    - 包含索引创建语句
 
-2. **spring4demo-web/src/test/resources/sql/init-test.sql**
+2. **Junmo Platform-web/src/test/resources/sql/init-test.sql**
    - 创建 `user` 表
    - 插入测试数据（3条用户记录）
 
-3. **spring4demo-web/src/test/resources/test-data.sql**
+3. **Junmo Platform-web/src/test/resources/test-data.sql**
    - 插入测试用户数据（4条用户记录）
    - 包含部门数据的注释（未执行）
 

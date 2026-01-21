@@ -182,7 +182,7 @@
 | **生态完善** | ✅ | ⚠️ | ⚠️ | ✅ |
 | **社区活跃** | ✅ | ✅ | ⚠️ | ✅ |
 
-## 🚀 Spring4demo 推荐方案
+## 🚀 Junmo Platform 推荐方案
 
 ### 推荐：Loki + Grafana + Elasticsearch（混合方案）
 
@@ -199,7 +199,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Spring4demo 应用                         │
+│                    Junmo Platform 应用                         │
 └─────────────────────────────────────────────────────────────┘
                             │
         ┌───────────────┴───────────────────┐
@@ -242,7 +242,7 @@
 #### 1. 启动所有服务（包括 Loki 和 Elasticsearch）
 
 ```bash
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 
 # 启动所有服务（Loki 已集成到基线配置）
 docker-compose up -d
@@ -257,7 +257,7 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{userId:-}] %logger{50} - %msg%n"
   file:
-    name: /app/logs/spring4demo.log
+    name: /app/logs/Junmo Platform.log
 ```
 
 #### 3. 访问服务
@@ -274,7 +274,7 @@ logging:
 1. 登录 Grafana (admin/admin)
 2. 点击左侧 **Explore** 图标
 3. 选择 **Loki** 数据源
-4. 输入查询：`{job="spring4demo"}`
+4. 输入查询：`{job="Junmo Platform"}`
 5. 点击 **Run query**
 
 #### 5. 在 Kibana 中检索文档
@@ -289,19 +289,19 @@ logging:
 
 ```
 # 查询所有应用日志
-{job="spring4demo"}
+{job="Junmo Platform"}
 
 # 查询错误日志
-{job="spring4demo", level="error"}
+{job="Junmo Platform", level="error"}
 
 # 查询特定用户日志
-{job="spring4demo", userId="123"}
+{job="Junmo Platform", userId="123"}
 
 # 查询特定 Trace ID 日志
-{job="spring4demo", traceId="abc123"}
+{job="Junmo Platform", traceId="abc123"}
 
 # 统计错误数量
-count_over_time({job="spring4demo", level="error"}[5m])
+count_over_time({job="Junmo Platform", level="error"}[5m])
 ```
 
 #### 在 Kibana 中检索文档（Elasticsearch）
@@ -429,7 +429,7 @@ MDC.put("userId", userId);
 logging:
   level:
     root: info
-    com.kev1n.spring4demo: debug
+    com.junmo.Junmo Platform: debug
     org.springframework: warn
     org.hibernate: warn
 ```
@@ -493,7 +493,7 @@ labels:
 | **云原生环境** | Loki | 专为容器化设计 |
 | **日志+业务文档** | 混合方案 | 功能互补，各司其职 |
 
-### Spring4demo 部署说明
+### Junmo Platform 部署说明
 
 **配置文件**：
 - Docker Compose 配置：`docker-compose.yml`
@@ -525,7 +525,7 @@ docker-compose logs -f app
 
 **快速启动**：
 ```bash
-cd F:\codes\roadmap\github-project\springboot-study\spring4demo
+cd F:\codes\roadmap\github-project\springboot-study\Junmo Platform
 docker-compose up -d
 ```
 

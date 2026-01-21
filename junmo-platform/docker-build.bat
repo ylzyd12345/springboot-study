@@ -1,9 +1,9 @@
 @echo off
-REM Spring4demo Docker 构建和部署脚本 (Windows)
+REM Junmo Platform Docker 构建和部署脚本 (Windows)
 
 setlocal enabledelayedexpansion
 
-set PROJECT_NAME=spring4demo
+set PROJECT_NAME=junmo-platform
 
 if "%1"=="" goto help
 if "%1"=="help" goto help
@@ -91,7 +91,7 @@ docker ps --filter "name=%PROJECT_NAME%"
 goto end
 
 :help
-echo Spring4demo Docker 管理脚本 (Windows)
+echo Junmo Platform Docker 管理脚本 (Windows)
 echo.
 echo 用法: docker-build.bat [命令]
 echo.

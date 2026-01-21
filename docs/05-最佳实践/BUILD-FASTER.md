@@ -1,6 +1,6 @@
-# Spring4demo 构建优化指南
+# Junmo Platform 构建优化指南
 
-本文档介绍如何优化 Spring4demo 项目的构建速度和包体积，提升开发效率和 CI/CD 性能。
+本文档介绍如何优化 Junmo Platform 项目的构建速度和包体积，提升开发效率和 CI/CD 性能。
 
 ## 目录
 
@@ -153,7 +153,7 @@ mvn clean package -Dmaven.repo.local=./.m2/repository
 - name: Run integration tests with parallel execution
   run: |
     # 使用并行编译加速集成测试
-    mvn clean verify -Dspring.profiles.active=test -Dspring.datasource.url=jdbc:mysql://localhost:3306/spring4demo_test -T 4
+    mvn clean verify -Dspring.profiles.active=test -Dspring.datasource.url=jdbc:mysql://localhost:3306/Junmo Platform_test -T 4
 ```
 
 #### code-quality job 优化
@@ -270,15 +270,15 @@ mvn clean package -DskipTests -Djacoco.skip=true -T 4
 
 **示例**：
 ```
-spring4demo (父模块)
-├── spring4demo-common (可并行)
-├── spring4demo-core (依赖 common)
-├── spring4demo-web (依赖 core)
-├── spring4demo-api (可并行)
-├── spring4demo-integration (可并行)
-├── spring4demo-admin (可并行)
-├── spring4demo-generator (可并行)
-└── spring4demo-starter (依赖所有模块)
+Junmo Platform (父模块)
+├── Junmo Platform-common (可并行)
+├── Junmo Platform-core (依赖 common)
+├── Junmo Platform-web (依赖 core)
+├── Junmo Platform-api (可并行)
+├── Junmo Platform-integration (可并行)
+├── Junmo Platform-admin (可并行)
+├── Junmo Platform-generator (可并行)
+└── Junmo Platform-starter (依赖所有模块)
 ```
 
 ### JaCoCo 跳过原理
@@ -368,13 +368,13 @@ mvn dependency:tree -Dverbose
 FROM maven:3.9.12-eclipse-temurin-21 AS builder
 WORKDIR /app
 COPY pom.xml .
-COPY spring4demo ./spring4demo
+COPY Junmo Platform ./Junmo Platform
 RUN mvn clean package -DskipTests -T 4
 
 # 运行阶段
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/spring4demo/spring4demo-starter/target/spring4demo-1.0.0-SNAPSHOT.jar app.jar
+COPY --from=builder /app/Junmo Platform/Junmo Platform-starter/target/Junmo Platform-1.0.0-SNAPSHOT.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
@@ -413,11 +413,11 @@ mvn -Pnative native:compile
 
 ```bash
 # 只构建变更的模块
-mvn clean install -pl spring4demo-web -am -DskipTests
+mvn clean install -pl Junmo Platform-web -am -DskipTests
 ```
 
 **参数说明**：
-- `-pl spring4demo-web`：只构建 web 模块
+- `-pl Junmo Platform-web`：只构建 web 模块
 - `-am`：同时构建依赖的模块
 - `-DskipTests`：跳过测试
 
@@ -464,7 +464,7 @@ mvn clean verify -T 4
 mvn clean package -DskipTests -Djacoco.skip=true -T 4
 
 # 5. Docker 构建
-docker build -t spring4demo:latest .
+docker build -t Junmo Platform:latest .
 ```
 
 ### 4. 生产部署
@@ -574,4 +574,4 @@ mvn compile -o
 
 **文档版本**: 1.0.0  
 **最后更新**: 2024-12-29  
-**维护者**: Spring4demo Team
+**维护者**: Junmo Platform Team

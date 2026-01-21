@@ -1,8 +1,8 @@
 {
   "dashboard": {
     "id": null,
-    "title": "Spring4Demo 应用监控",
-    "tags": ["spring4demo", "spring-boot"],
+    "title": "Junmo Platform 应用监控",
+    "tags": ["junmo-platform", "spring-boot"],
     "timezone": "browser",
     "panels": [
       {
@@ -11,7 +11,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "up{job=\"spring4demo\"}",
+            "expr": "up{job=\"junmo-platform\"}",
             "legendFormat": "{{instance}}"
           }
         ],
@@ -47,11 +47,11 @@
         "type": "graph",
         "targets": [
           {
-            "expr": "jvm_memory_used_bytes{application=\"spring4demo\"}",
+            "expr": "jvm_memory_used_bytes{application=\"junmo-platform\"}",
             "legendFormat": "Used"
           },
           {
-            "expr": "jvm_memory_max_bytes{application=\"spring4demo\"}",
+            "expr": "jvm_memory_max_bytes{application=\"junmo-platform\"}",
             "legendFormat": "Max"
           }
         ],
@@ -74,7 +74,7 @@
         "type": "graph",
         "targets": [
           {
-            "expr": "rate(http_server_requests_seconds_count{application=\"spring4demo\"}[5m])",
+            "expr": "rate(http_server_requests_seconds_count{application=\"junmo-platform\"}[5m])",
             "legendFormat": "{{method}} {{uri}}"
           }
         ],
@@ -96,11 +96,11 @@
         "type": "graph",
         "targets": [
           {
-            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{application=\"spring4demo\"}[5m]))",
+            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{application=\"junmo-platform\"}[5m]))",
             "legendFormat": "95th percentile"
           },
           {
-            "expr": "histogram_quantile(0.50, rate(http_server_requests_seconds_bucket{application=\"spring4demo\"}[5m]))",
+            "expr": "histogram_quantile(0.50, rate(http_server_requests_seconds_bucket{application=\"junmo-platform\"}[5m]))",
             "legendFormat": "50th percentile"
           }
         ],
@@ -122,15 +122,15 @@
         "type": "graph",
         "targets": [
           {
-            "expr": "hikaricp_connections_active{application=\"spring4demo\"}",
+            "expr": "hikaricp_connections_active{application=\"junmo-platform\"}",
             "legendFormat": "Active"
           },
           {
-            "expr": "hikaricp_connections_idle{application=\"spring4demo\"}",
+            "expr": "hikaricp_connections_idle{application=\"junmo-platform\"}",
             "legendFormat": "Idle"
           },
           {
-            "expr": "hikaricp_connections_max{application=\"spring4demo\"}",
+            "expr": "hikaricp_connections_max{application=\"junmo-platform\"}",
             "legendFormat": "Max"
           }
         ],
@@ -152,7 +152,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "increase(user_login_count_total{application=\"spring4demo\"}[1h])",
+            "expr": "increase(user_login_count_total{application=\"junmo-platform\"}[1h])",
             "legendFormat": "Last Hour"
           }
         ],
@@ -169,11 +169,11 @@
         "type": "graph",
         "targets": [
           {
-            "expr": "rate(http_server_requests_seconds_count{application=\"spring4demo\",status=~\"5..\"}[5m]) / rate(http_server_requests_seconds_count{application=\"spring4demo\"}[5m])",
+            "expr": "rate(http_server_requests_seconds_count{application=\"junmo-platform\",status=~\"5..\"}[5m]) / rate(http_server_requests_seconds_count{application=\"junmo-platform\"}[5m])",
             "legendFormat": "5xx Error Rate"
           },
           {
-            "expr": "rate(http_server_requests_seconds_count{application=\"spring4demo\",status=~\"4..\"}[5m]) / rate(http_server_requests_seconds_count{application=\"spring4demo\"}[5m])",
+            "expr": "rate(http_server_requests_seconds_count{application=\"junmo-platform\",status=~\"4..\"}[5m]) / rate(http_server_requests_seconds_count{application=\"junmo-platform\"}[5m])",
             "legendFormat": "4xx Error Rate"
           }
         ],
@@ -196,7 +196,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "user_active_count{application=\"spring4demo\"}",
+            "expr": "user_active_count{application=\"junmo-platform\"}",
             "legendFormat": "Active Users"
           }
         ],

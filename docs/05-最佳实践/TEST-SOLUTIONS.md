@@ -2,7 +2,7 @@
 
 ## 概述
 
-本文档详细说明了 spring4demo 项目的完整测试方案，包括框架层面、数据存储、消息中间件、分布式组件等各模块的可测试点和推荐测试方案。
+本文档详细说明了 Junmo Platform 项目的完整测试方案，包括框架层面、数据存储、消息中间件、分布式组件等各模块的可测试点和推荐测试方案。
 
 ## 一、框架层面测试点
 
@@ -573,7 +573,7 @@ class ZipkinTest {
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  E2E 测试 (spring4demo-integration)                      │
+│  E2E 测试 (Junmo Platform-integration)                      │
 │  - 完整业务流程                                          │
 │  - Testcontainers 真实环境                               │
 └─────────────────────────────────────────────────────────┘
@@ -613,7 +613,7 @@ class ZipkinTest {
 - **特点**：模拟真实用户操作、使用真实环境
 - **外部依赖**：Testcontainers 真实环境
 - **数据源**：Testcontainers 所有组件
-- **示例**：`spring4demo-integration` 模块
+- **示例**：`Junmo Platform-integration` 模块
 
 ---
 

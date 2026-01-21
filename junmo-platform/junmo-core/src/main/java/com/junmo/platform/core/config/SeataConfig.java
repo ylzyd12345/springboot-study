@@ -20,7 +20,7 @@ public class SeataConfig {
     /**
      * 应用名称
      */
-    @Value("${spring.application.name:spring4demo}")
+    @Value("${spring.application.name:junmo-platform}")
     private String applicationName;
 
     /**

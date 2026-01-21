@@ -1,10 +1,10 @@
-# Spring4demo API文档规范
+# Junmo Platform API文档规范
 
 ## 📋 文档信息
 
 | 项目 | 内容 |
 |------|------|
-| **文档名称** | Spring4demo API文档规范 |
+| **文档名称** | Junmo Platform API文档规范 |
 | **版本号** | v1.0.0 |
 | **创建日期** | 2025-12-24 |
 | **作者** | API架构师 |
@@ -13,7 +13,7 @@
 
 ## 🎯 文档目的
 
-本文档定义了Spring4demo企业级智能管理平台的API设计规范、文档标准和最佳实践，确保所有API接口的一致性、可维护性和易用性。
+本文档定义了Junmo Platform企业级智能管理平台的API设计规范、文档标准和最佳实践，确保所有API接口的一致性、可维护性和易用性。
 
 ## 🏗️ API架构概述
 
@@ -42,7 +42,7 @@
 
 **基础URI结构**
 ```
-https://spring4demo.example.com/api/{version}/{resource}/{id}
+https://Junmo Platform.example.com/api/{version}/{resource}/{id}
 ```
 
 **命名规范**
@@ -206,20 +206,20 @@ docs/
 ```yaml
 openapi: 3.0.3
 info:
-  title: Spring4demo API
+  title: Junmo Platform API
   description: 企业级智能管理平台API文档
   version: 1.0.0
   contact:
     name: API Support
-    email: api-support@spring4demo.com
+    email: api-support@Junmo Platform.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: https://api.spring4demo.com/v1
+  - url: https://api.Junmo Platform.com/v1
     description: 生产环境
-  - url: https://staging-api.spring4demo.com/v1
+  - url: https://staging-api.Junmo Platform.com/v1
     description: 测试环境
   - url: http://localhost:8080/api/v1
     description: 开发环境
@@ -950,15 +950,15 @@ SYS_MAINT_001: 系统维护中
 public class OpenApiConfig {
     
     @Bean
-    public OpenAPI spring4demoOpenAPI() {
+    public OpenAPI Junmo PlatformOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("Spring4demo API")
+                .title("Junmo Platform API")
                 .description("企业级智能管理平台API文档")
                 .version("v1.0.0")
                 .contact(new Contact()
                     .name("API Support")
-                    .email("api-support@spring4demo.com"))
+                    .email("api-support@Junmo Platform.com"))
                 .license(new License()
                     .name("MIT")
                     .url("https://opensource.org/licenses/MIT")))
@@ -1219,7 +1219,7 @@ public class ApiMetrics {
 {
   "timestamp": "2025-12-24T10:30:00.123Z",
   "level": "INFO",
-  "logger": "com.kev1n.spring4demo.web.controller.UserController",
+  "logger": "com.junmo.Junmo Platform.web.controller.UserController",
   "message": "Get users request completed",
   "context": {
     "requestId": "req_123456789",
